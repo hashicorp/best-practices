@@ -1,0 +1,14 @@
+{
+  "log_level": "INFO",
+  "datacenter": "{{ datacenter }}",
+  "data_dir": "C:\\opt\\consul\\data",
+  "ui_dir": "C:\\opt\\consul\\ui",
+  "client_addr": "0.0.0.0",
+  "bind_addr": "0.0.0.0",
+  "atlas_infrastructure": "{{ atlas_username }}/{{ atlas_environment }}",
+  "atlas_join": true,
+  "atlas_token": "{{ atlas_token }}",
+  "node_name": "{{ node_name }}",
+  "skip_leave_on_interrupt": true,
+  "leave_on_terminate": true
+}

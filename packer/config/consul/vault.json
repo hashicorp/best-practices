@@ -1,0 +1,6 @@
+{
+  "service": {
+    "name": "vault",
+    "port": 8200
+  }
+}

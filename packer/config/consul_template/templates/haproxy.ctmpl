@@ -1,0 +1,28 @@
+global
+    maxconn 4
+    log 127.0.0.1 local0 notice
+    user haproxy
+    group haproxy
+
+defaults
+    log global
+    retries 2
+    timeout connect 3000
+    timeout server 5000
+    timeout client 5000
+
+listen localnodes
+    bind *:80
+    mode http
+    default_backend webs
+
+backend webs
+    balance roundrobin
+    mode http{{range service "nodejs.web"}}
+    server {{.Node}} {{.Address}}:{{.Port}}{{end}}
+
+listen stats *:1936
+    mode http
+    stats enable
+    stats uri /haproxy?stats
+    stats hide-version

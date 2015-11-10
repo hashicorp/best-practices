@@ -1,0 +1,2 @@
+<br /><br />
+Vault and Consul Template are setup! The Vault secret for {{ node_name }} is: {{with vault "{{ secret_path }}"}}"{{.Data.{{ secret_key }}}}"{{end}}
