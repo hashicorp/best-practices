@@ -92,43 +92,7 @@ resource "aws_route53_record" "haproxy_private" {
   records = ["${aws_instance.haproxy.*.private_ip}"]
 }
 
-resource "cloudflare_record" "haproxy_public" {
-  # count  = "${length(aws_instance.haproxy.*.public_ip)}" # Causes cycle error
-  count = "${var.nodes}"
-
-  domain = "${var.domain}"
-  name   = "haproxy.${var.sub_domain}"
-  type   = "A"
-  ttl    = "1"
-  value  = "${element(aws_instance.haproxy.*.public_ip, count.index)}"
-}
-
-resource "cloudflare_record" "haproxy_public_all" {
-  # count  = "${length(aws_instance.haproxy.*.public_ip)}" # Causes cycle error
-  count = "${var.nodes}"
-
-  domain = "${var.domain}"
-  name   = "${var.haproxy_sub_domain}"
-  type   = "A"
-  ttl    = "1"
-  value  = "${element(aws_instance.haproxy.*.public_ip, count.index)}"
-}
-
-resource "cloudflare_record" "haproxy_private" {
-  # count  = "${length(aws_instance.haproxy.*.private_ip)}" # Causes cycle error
-  count = "${var.nodes}"
-
-  domain = "${var.domain}"
-  name   = "private.haproxy.${var.sub_domain}"
-  type   = "A"
-  ttl    = "1"
-  value  = "${element(aws_instance.haproxy.*.private_ip, count.index)}"
-}
-
 output "public_ips"     { value = "${join(",", aws_instance.haproxy.*.public_ip)}" }
 output "private_ips"    { value = "${join(",", aws_instance.haproxy.*.private_ip)}" }
 output "public_fqdn"     { value = "${aws_route53_record.haproxy_public.fqdn}" }
 output "private_fqdn"    { value = "${aws_route53_record.haproxy_private.fqdn}" }
-output "public_fqdn_all" { value = "${element(cloudflare_record.haproxy_public_all.*.hostname, 0)}" }
-# output "public_fqdn"     { value = "${element(cloudflare_record.haproxy_public.*.hostname, 0)}" }
-# output "private_fqdn"    { value = "${element(cloudflare_record.haproxy_private.*.hostname, 0)}" }

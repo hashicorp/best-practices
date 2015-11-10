@@ -250,8 +250,7 @@ Visit the Node.js website:
   Node.js: ${module.compute.nodejs_private_fqdn}
            ${module.compute.nodejs_elb_dns}
 
-  HAProxy: ${module.compute.haproxy_public_fqdn_all}
-           ${module.compute.haproxy_public_fqdn}
+  HAProxy: ${module.compute.haproxy_public_fqdn}
            ${replace(formatlist("http://%s/\n           ", split(",", module.compute.haproxy_public_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
 Add your private key and SSH into any private node via the Bastion host:
   ssh-add ../../../modules/keys/demo.pem
