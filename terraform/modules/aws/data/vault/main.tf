@@ -152,15 +152,6 @@ resource "aws_route53_record" "vault" {
   records = ["${aws_elb.vault.dns_name}"]
 }
 
-resource "cloudflare_record" "vault" {
-  domain = "${var.domain}"
-  name   = "vault.${var.sub_domain}"
-  type   = "CNAME"
-  ttl    = "1"
-  value  = "${aws_elb.vault.dns_name}"
-}
-
 output "private_ips" { value = "${join(",", aws_instance.vault.*.private_ip)}" }
 output "elb_dns"     { value = "${aws_elb.vault.dns_name}" }
 output "private_fqdn" { value = "${aws_route53_record.vault.fqdn}" }
-# output "private_fqdn" { value = "${cloudflare_record.vault.hostname}" }

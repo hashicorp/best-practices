@@ -80,7 +80,6 @@ output "haproxy_private_ips"     { value = "${module.haproxy.private_ips}" }
 output "haproxy_public_ips"      { value = "${module.haproxy.public_ips}" }
 output "haproxy_private_fqdn"    { value = "${module.haproxy.private_fqdn}" }
 output "haproxy_public_fqdn"     { value = "${module.haproxy.public_fqdn}" }
-output "haproxy_public_fqdn_all" { value = "${module.haproxy.public_fqdn_all}" }
 
 output "nodejs_zone_id"      { value = "${module.nodejs.zone_id}" }
 output "nodejs_elb_dns"      { value = "${module.nodejs.elb_dns}" }

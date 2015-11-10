@@ -27,10 +27,6 @@ This project will deploy an end to end infrastructure in AWS that includes the b
   - [ ] `export AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID`
   - [ ] `export AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY`
   - [ ] `export AWS_DEFAULT_REGION=us-east-1`
-- [ ] [Create a CloudFlare account](https://www.cloudflare.com/a/sign-up) and set the environment variable
-  - [ ] `export CLOUDFLARE_EMAIL=YOUR_CLOUDFLARE_EMAIL`
-- [ ] [Generate a CloudFlare API token](https://www.cloudflare.com/a/account/my-account) and set the environment variable
-  - [ ] `export CLOUDFLARE_TOKEN=YOUR_CLOUDFLARE_TOKEN`
 - [ ] [Create an Atlas account](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#create-atlas-account) and set the environment variable
   - [ ] `export ATLAS_USERNAME=YOUR_ATLAS_USERNAME`
 - [ ] [Generate an Atlas API token](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#generate-atlas-token) and set the environment variable
@@ -148,9 +144,6 @@ As mentioned in the [Terraform docs](https://github.com/hashicorp/atlas-examples
   - [ ] `AWS_ACCESS_KEY_ID`
   - [ ] `AWS_SECRET_ACCESS_KEY`
   - [ ] `AWS_DEFAULT_REGION`
-- [ ] Set CloudFlare environment vars
-  - [ ] `CLOUDFLARE_EMAIL`
-  - [ ] `CLOUDFLARE_TOKEN`
 - [ ] Set Atlas environment vars
   - [ ] `ATLAS_USERNAME`
 

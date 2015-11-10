@@ -105,15 +105,6 @@ resource "aws_route53_record" "openvpn" {
   records = ["${aws_instance.openvpn.public_ip}"]
 }
 
-resource "cloudflare_record" "openvpn" {
-  domain = "${var.domain}"
-  name   = "vpn.${var.sub_domain}"
-  type   = "A"
-  ttl    = "1"
-  value  = "${aws_instance.openvpn.public_ip}"
-}
-
 output "private_ip"  { value = "${aws_instance.openvpn.private_ip}" }
 output "public_ip"   { value = "${aws_instance.openvpn.public_ip}" }
 output "public_fqdn" { value = "${aws_route53_record.openvpn.fqdn}" }
-# output "public_fqdn" { value = "${cloudflare_record.openvpn.hostname}" }

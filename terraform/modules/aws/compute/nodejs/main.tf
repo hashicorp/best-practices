@@ -144,15 +144,6 @@ resource "aws_route53_record" "nodejs" {
   }
 }
 
-resource "cloudflare_record" "nodejs" {
-  domain = "${var.domain}"
-  name   = "nodejs.${var.sub_domain}"
-  type   = "CNAME"
-  ttl    = "1"
-  value  = "${aws_elb.nodejs.dns_name}"
-}
-
 output "zone_id"     { value = "${aws_elb.nodejs.zone_id}" }
 output "elb_dns"     { value = "${aws_elb.nodejs.dns_name}" }
 output "private_fqdn" { value = "${aws_route53_record.nodejs.fqdn}" }
-# output "private_fqdn" { value = "${cloudflare_record.nodejs.hostname}" }
