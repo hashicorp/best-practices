@@ -31,7 +31,7 @@ if [ ! $(cget root-token) ]; then
   # Remove master keys from disk
   shred /tmp/vault.init
 else
-  echo "Vault has already been initialized, skipping"
+  echo "Vault has already been initialized, skipping."
 fi
 
 echo "Unsealing Vault"
@@ -44,12 +44,21 @@ if vault status | grep standby > /dev/null; then
   exit 0
 fi
 
+echo "Mounting Transit backend."
+
 cget root-token | vault auth -
-shred -u -z ~/.vault-token
+
+if vault mounts | grep transit > /dev/null; then
+  echo "Transit backend already mounted. Exiting."
+  shred -u -z ~/.vault-token
+  exit 0
+fi
 
 vault mount transit
 
-echo "Vault setup complete"
+shred -u -z ~/.vault-token
+
+echo "Vault setup complete."
 
 instructions() {
   cat <<EOF

@@ -9,7 +9,6 @@ variable "ssl_cert" {}
 variable "ssl_key" {}
 variable "key_name" {}
 variable "key_file" {}
-variable "domain" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 
@@ -114,7 +113,6 @@ module "openvpn" {
   admin_pw          = "${var.openvpn_admin_pw}"
   dns_ips           = "${var.openvpn_dns_ips}"
   vpn_cidr          = "${var.openvpn_cidr}"
-  domain            = "${var.domain}"
   sub_domain        = "${var.sub_domain}"
   route_zone_id     = "${var.route_zone_id}"
 }

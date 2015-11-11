@@ -12,7 +12,6 @@ variable "vault_ssl_cert" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "atlas_token" {}
-variable "domain" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 variable "vault_token" { default = "" }
@@ -21,7 +20,6 @@ variable "haproxy_user_data" {}
 variable "haproxy_nodes" {}
 variable "haproxy_amis" {}
 variable "haproxy_instance_type" {}
-variable "haproxy_sub_domain" {}
 
 variable "nodejs_user_data" {}
 variable "nodejs_nodes" {}
@@ -43,8 +41,6 @@ module "haproxy" {
   nodes              = "${var.haproxy_nodes}"
   amis               = "${var.haproxy_amis}"
   instance_type      = "${var.haproxy_instance_type}"
-  haproxy_sub_domain = "${var.haproxy_sub_domain}"
-  domain             = "${var.domain}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
 }
@@ -70,7 +66,6 @@ module "nodejs" {
   nodes              = "${var.nodejs_nodes}"
   ami                = "${var.nodejs_ami}"
   instance_type      = "${var.nodejs_instance_type}"
-  domain             = "${var.domain}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
   vault_token        = "${var.vault_token}"
@@ -80,7 +75,6 @@ output "haproxy_private_ips"     { value = "${module.haproxy.private_ips}" }
 output "haproxy_public_ips"      { value = "${module.haproxy.public_ips}" }
 output "haproxy_private_fqdn"    { value = "${module.haproxy.private_fqdn}" }
 output "haproxy_public_fqdn"     { value = "${module.haproxy.public_fqdn}" }
-output "haproxy_public_fqdn_all" { value = "${module.haproxy.public_fqdn_all}" }
 
 output "nodejs_zone_id"      { value = "${module.nodejs.zone_id}" }
 output "nodejs_elb_dns"      { value = "${module.nodejs.elb_dns}" }

@@ -84,12 +84,6 @@ output "admin_iam_config" {
 IAMCONFIG
 }
 
-output "nameserver_config_cf" {
-  value = <<NAMESERVERCONFIG
-DNS records have been set in CloudFlare, add NS records for ${var.domain} pointing to your CloudFlare name servers
-NAMESERVERCONFIG
-}
-
 output "nameserver_config_r53" {
   value = <<NAMESERVERCONFIG
 DNS records have been set in Route53, add NS records for ${var.domain} pointing to:

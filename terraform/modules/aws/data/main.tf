@@ -10,7 +10,6 @@ variable "key_name" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "atlas_token" {}
-variable "domain" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 
@@ -60,7 +59,6 @@ module "vault" {
   instance_type      = "${var.vault_instance_type}"
   nodes              = "${var.vault_nodes}"
   amis               = "${var.vault_amis}"
-  domain             = "${var.domain}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
 }

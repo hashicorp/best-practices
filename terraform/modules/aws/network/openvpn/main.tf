@@ -14,7 +14,6 @@ variable "admin_user" {}
 variable "admin_pw" {}
 variable "dns_ips" {}
 variable "vpn_cidr" {}
-variable "domain" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 
@@ -105,15 +104,6 @@ resource "aws_route53_record" "openvpn" {
   records = ["${aws_instance.openvpn.public_ip}"]
 }
 
-resource "cloudflare_record" "openvpn" {
-  domain = "${var.domain}"
-  name   = "vpn.${var.sub_domain}"
-  type   = "A"
-  ttl    = "1"
-  value  = "${aws_instance.openvpn.public_ip}"
-}
-
 output "private_ip"  { value = "${aws_instance.openvpn.private_ip}" }
 output "public_ip"   { value = "${aws_instance.openvpn.public_ip}" }
 output "public_fqdn" { value = "${aws_route53_record.openvpn.fqdn}" }
-# output "public_fqdn" { value = "${cloudflare_record.openvpn.hostname}" }

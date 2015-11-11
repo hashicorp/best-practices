@@ -46,7 +46,6 @@ variable "haproxy_nodes" {}
 variable "haproxy_latest_name" {}
 variable "haproxy_pinned_name" {}
 variable "haproxy_pinned_version" {}
-variable "haproxy_sub_domain" {}
 
 variable "nodejs_instance_type" {}
 variable "nodejs_nodes" {}
@@ -100,7 +99,6 @@ module "network" {
   key_name          = "${module.site_key.key_name}"
   key_file          = "${module.site_key.pem_path}"
   # key_file          = "${var.site_private_key}" # Use this once Terraform supports it
-  domain            = "${terraform_remote_state.aws_global.output.prod_fqdn}"
   sub_domain        = "${var.sub_domain}"
   route_zone_id     = "${terraform_remote_state.aws_global.output.zone_id}"
 
@@ -152,7 +150,6 @@ module "data" {
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
-  domain             = "${terraform_remote_state.aws_global.output.prod_fqdn}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
 
@@ -207,7 +204,6 @@ module "compute" {
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
-  domain             = "${terraform_remote_state.aws_global.output.prod_fqdn}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
   vault_token        = "${var.vault_token}"
@@ -216,7 +212,6 @@ module "compute" {
   haproxy_nodes         = "${var.haproxy_nodes}"
   haproxy_amis          = "${module.artifact_haproxy.latest}"
   haproxy_instance_type = "${var.haproxy_instance_type}"
-  haproxy_sub_domain    = "${var.haproxy_sub_domain}"
 
   nodejs_user_data     = "${module.scripts.ubuntu_nodejs_user_data}"
   nodejs_nodes         = "${var.nodejs_nodes}"
@@ -228,7 +223,6 @@ module "website" {
   source = "../../../modules/aws/util/website"
 
   fqdn          = "${var.sub_domain}.${terraform_remote_state.aws_global.output.prod_fqdn}"
-  domain        = "${terraform_remote_state.aws_global.output.prod_fqdn}"
   sub_domain    = "${var.sub_domain}"
   route_zone_id = "${terraform_remote_state.aws_global.output.zone_id}"
 }
@@ -250,8 +244,7 @@ Visit the Node.js website:
   Node.js: ${module.compute.nodejs_private_fqdn}
            ${module.compute.nodejs_elb_dns}
 
-  HAProxy: ${module.compute.haproxy_public_fqdn_all}
-           ${module.compute.haproxy_public_fqdn}
+  HAProxy: ${module.compute.haproxy_public_fqdn}
            ${replace(formatlist("http://%s/\n           ", split(",", module.compute.haproxy_public_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
 Add your private key and SSH into any private node via the Bastion host:
   ssh-add ../../../modules/keys/demo.pem
@@ -275,11 +268,20 @@ Once you're on the VPN, you can...
 
 Visit the Consul UI:
   http://consul.service.consul:8500/ui/
-  ${replace(formatlist("http://%s:8500/ui/\n  ", split(",", module.data.consul_private_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
+
+Use Consul DNS:
+  ssh ubuntu@consul.service.consul
+  ssh ubuntu@vault.service.consul
+  ssh ubuntu@haproxy.service.consul
+  ssh ubuntu@web.service.consul
+  ssh ubuntu@nodejs.web.service.consul
+
 Visit the HAProxy stats page:
+  http://haproxy.service.consul:1936/haproxy?stats
   http://${module.compute.haproxy_private_fqdn}:1936/haproxy?stats
   ${replace(formatlist("http://%s:1936/haproxy?stats\n  ", split(",", module.compute.haproxy_private_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
 Interact with Vault:
   Vault: ${module.data.vault_private_fqdn}
+         http://vault.service.consul
 CONFIGURATION
 }

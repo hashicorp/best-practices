@@ -1,15 +1,15 @@
 {
   "variables": {
-    "aws_access_key":   "{{env `AWS_ACCESS_KEY`}}",
-    "aws_secret_key":   "{{env `AWS_SECRET_KEY`}}",
-    "atlas_username":   "{{env `ATLAS_USERNAME`}}",
-    "us_east_1_ami":    "ami-9a562df2",
-    "name":             "aws-ubuntu-base",
-    "us_east_1_name":   "aws-us-east-1-ubuntu-base",
-    "ssh_username":     "ubuntu",
-    "scripts_dir":      "packer/scripts/ubuntu",
-    "config_dir":       "packer/config",
-    "dns_listen_addr":  "127.0.0.1"
+    "aws_access_key":  "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key":  "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "atlas_username":  "{{env `ATLAS_USERNAME`}}",
+    "us_east_1_ami":   "ami-9a562df2",
+    "name":            "aws-ubuntu-base",
+    "us_east_1_name":  "aws-us-east-1-ubuntu-base",
+    "ssh_username":    "ubuntu",
+    "scripts_dir":     "packer/scripts/ubuntu",
+    "config_dir":      "packer/config",
+    "dns_listen_addr": "127.0.0.1"
   },
   "push": {
     "name": "{{user `atlas_username`}}/{{user `name`}}",
@@ -43,6 +43,7 @@
       "ami_description": "{{user `us_east_1_name`}} AMI",
       "run_tags": { "ami-create": "{{user `us_east_1_name`}}" },
       "tags": { "ami": "{{user `us_east_1_name`}}" },
+      "ssh_private_ip": false,
       "associate_public_ip_address": true
     }
   ],
