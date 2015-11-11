@@ -146,7 +146,7 @@ If you'd like to create artifacts in other regions, complete these same steps bu
     - [ ] `AWS_ACCESS_KEY_ID`
     - [ ] `AWS_SECRET_ACCESS_KEY`
     - [ ] `AWS_DEFAULT_REGION`
-    - [ ] `TF_ATLAS_DIR`: `providers/aws/aws-global`
+    - [ ] `TF_ATLAS_DIR`: `providers/aws/global`
       - Atlas uses the `TF_ATLAS_DIR` variable to identify where it should run Terraform commands within the repo
   - [ ] In "Changes": click **Queue plan** then **Confirm & Apply** to provision the `aws-global` environment
 
@@ -164,7 +164,7 @@ If you'd like to create artifacts in other regions, complete these same steps bu
     - [ ] `AWS_ACCESS_KEY_ID`
     - [ ] `AWS_SECRET_ACCESS_KEY`
     - [ ] `AWS_DEFAULT_REGION`
-    - [ ] `TF_ATLAS_DIR`: `providers/aws/aws-us-east-1-staging`
+    - [ ] `TF_ATLAS_DIR`: `providers/aws/us_east_1_staging`
       - Atlas uses the `TF_ATLAS_DIR` variable to identify where it should run Terraform commands within the repo
   - [ ] In "Variables":  update the keys and certs containing the value `REPLACE_IN_ATLAS` with the certs and keys created in [Generate Keys and Certs](#generate-keys-and-certs).
     - [ ] Update `site_ssl_cert` with the contents of `site.crt`
@@ -174,6 +174,8 @@ If you'd like to create artifacts in other regions, complete these same steps bu
     - [ ] Update `site_public_key` with the contents of `site.pub`
     - [ ] Update `site_private_key` with the contents of `site.pem`
   - [ ] In "Changes": click **Queue plan** then `Confirm & Apply` to provision the `aws-us-east-1-staging` environment
+
+This [same process](#provision-the-us-east-1-staging-infrastructure-with-terraform-in-atlas) can be repeated for the `aws-us-east-1-production` environment as well as any other regions you would like to deploy infrastructure into. If you are deploying into a new region, be sure you have Artifacts created for it.
 
 ### Setup Vault
 
