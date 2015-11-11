@@ -16,7 +16,6 @@ variable "user_data" {}
 variable "nodes" {}
 variable "ami" {}
 variable "instance_type" {}
-variable "domain" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 variable "vault_token" { default = "" }
@@ -143,16 +142,6 @@ resource "aws_route53_record" "nodejs" {
     evaluate_target_health = true
   }
 }
-
-resource "cloudflare_record" "nodejs" {
-  domain = "${var.domain}"
-  name   = "nodejs.${var.sub_domain}"
-  type   = "CNAME"
-  ttl    = "1"
-  value  = "${aws_elb.nodejs.dns_name}"
-}
-
 output "zone_id"     { value = "${aws_elb.nodejs.zone_id}" }
 output "elb_dns"     { value = "${aws_elb.nodejs.dns_name}" }
 output "private_fqdn" { value = "${aws_route53_record.nodejs.fqdn}" }
-# output "private_fqdn" { value = "${cloudflare_record.nodejs.hostname}" }

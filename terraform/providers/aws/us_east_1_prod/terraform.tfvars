@@ -81,7 +81,6 @@ haproxy_nodes          = "1"
 haproxy_latest_name    = "aws-us-east-1-ubuntu-haproxy"
 haproxy_pinned_name    = "aws-us-east-1-ubuntu-haproxy"
 haproxy_pinned_version = "latest"
-haproxy_sub_domain     = "haproxy"
 
 nodejs_instance_type  = "t2.micro"
 nodejs_nodes          = "2"

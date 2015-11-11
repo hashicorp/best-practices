@@ -1,5 +1,4 @@
 variable "fqdn" {}
-variable "domain" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 variable "index_page" { default = "index.html" }
@@ -91,16 +90,7 @@ resource "aws_route53_record" "website" {
   }
 }
 
-resource "cloudflare_record" "website" {
-  domain = "${var.domain}"
-  name   = "${var.sub_domain}"
-  type   = "CNAME"
-  ttl    = "1"
-  value  = "${aws_s3_bucket.website.website_endpoint}"
-}
-
 output "domain"         { value = "${aws_s3_bucket.website.website_domain}" }
 output "hosted_zone_id" { value = "${aws_s3_bucket.website.hosted_zone_id}" }
 output "endpoint"       { value = "${aws_s3_bucket.website.website_endpoint}" }
 output "fqdn"           { value = "${aws_route53_record.website.fqdn}" }
-# output "fqdn"            { value = "${cloudflare_record.website.hostname}" }

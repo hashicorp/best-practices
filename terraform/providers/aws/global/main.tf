@@ -62,7 +62,6 @@ module "prod_website" {
 
   route_zone_id = "${aws_route53_zone.zone.zone_id}"
   fqdn          = "${var.domain}"
-  domain        = "${var.domain}"
   sub_domain    = "${var.domain}"
 }
 
@@ -71,7 +70,6 @@ module "staging_website" {
 
   route_zone_id = "${aws_route53_zone.zone.zone_id}"
   fqdn          = "staging.${var.domain}"
-  domain        = "${var.domain}"
   sub_domain    = "staging"
 }
 
@@ -82,12 +80,6 @@ output "admin_iam_config" {
   Access Key IDs: ${replace(formatlist("%s\n                  ", aws_iam_access_key.admins.*.id), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
   Secret Access Keys: ${replace(formatlist("%s\n                      ", aws_iam_access_key.admins.*.secret), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
 IAMCONFIG
-}
-
-output "nameserver_config_cf" {
-  value = <<NAMESERVERCONFIG
-DNS records have been set in CloudFlare, add NS records for ${var.domain} pointing to your CloudFlare name servers
-NAMESERVERCONFIG
 }
 
 output "nameserver_config_r53" {
