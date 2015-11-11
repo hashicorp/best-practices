@@ -246,14 +246,18 @@ Visit the Node.js website:
 
   HAProxy: ${module.compute.haproxy_public_fqdn}
            ${join("\n           ", formatlist("http://%s/", split(",", module.compute.haproxy_public_ips)))}
+
 Add your private key and SSH into any private node via the Bastion host:
   ssh-add ../../../modules/keys/demo.pem
   ssh -A ${module.network.bastion_user}@${module.network.bastion_public_ip}
 
 Private node IPs:
-  Consul: ${replace(formatlist("ssh ubuntu@%s\n          ", split(",", module.data.consul_private_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
-  Vault: ${replace(formatlist("ssh ubuntu@%s\n         ", split(",", module.data.vault_private_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
-  HAProxy: ${replace(formatlist("ssh ubuntu@%s\n           ", split(",", module.compute.haproxy_private_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
+  Consul: ${join("\n          ", formatlist("ssh ubuntu@%s", split(",", module.data.consul_private_ips)))}
+
+  Vault: ${join("\n         ", formatlist("ssh ubuntu@%s", split(",", module.data.vault_private_ips)))}
+
+  HAProxy: ${join("\n           ", formatlist("ssh ubuntu@%s", split(",", module.compute.haproxy_private_ips)))}
+
 The VPC environment is accessible via an OpenVPN connection:
   Server:   ${module.network.openvpn_public_fqdn}
             ${module.network.openvpn_public_ip}
@@ -279,7 +283,8 @@ Use Consul DNS:
 Visit the HAProxy stats page:
   http://haproxy.service.consul:1936/haproxy?stats
   http://${module.compute.haproxy_private_fqdn}:1936/haproxy?stats
-  ${replace(formatlist("http://%s:1936/haproxy?stats\n  ", split(",", module.compute.haproxy_private_ips)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
+  ${join("\n  ", formatlist("http://%s:1936/haproxy?stats", split(",", module.compute.haproxy_private_ips)))}
+
 Interact with Vault:
   Vault: ${module.data.vault_private_fqdn}
          http://vault.service.consul

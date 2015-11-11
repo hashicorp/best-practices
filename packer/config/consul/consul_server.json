@@ -11,6 +11,5 @@
   "bootstrap_expect": {{ consul_server_count }},
   "datacenter": "{{ datacenter }}",
   "node_name": "{{ node_name }}",
-  "skip_leave_on_interrupt": true,
-  "leave_on_terminate": true
+  "skip_leave_on_interrupt": true
 }

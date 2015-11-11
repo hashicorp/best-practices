@@ -76,16 +76,19 @@ module "staging_website" {
 output "admin_iam_config" {
   value = <<IAMCONFIG
 
-  Admins: ${replace(formatlist("%s\n          ", aws_iam_access_key.admins.*.user), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
-  Access Key IDs: ${replace(formatlist("%s\n                  ", aws_iam_access_key.admins.*.id), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
-  Secret Access Keys: ${replace(formatlist("%s\n                      ", aws_iam_access_key.admins.*.secret), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
+  Admins: ${join("\n          ", formatlist("%s", aws_iam_access_key.admins.*.user))}
+
+  Access IDs: ${join("\n              ", formatlist("%s", aws_iam_access_key.admins.*.id))}
+
+  Secret Keys: ${join("\n               ", formatlist("%s", aws_iam_access_key.admins.*.secret))}
 IAMCONFIG
 }
 
-output "nameserver_config_r53" {
+output "nameserver_config" {
   value = <<NAMESERVERCONFIG
+
 DNS records have been set in Route53, add NS records for ${var.domain} pointing to:
-  ${replace(formatlist("%s\n  ", split(",", aws_route53_zone.zone.*.name_servers)), "B780FFEC-B661-4EB8-9236-A01737AD98B6", "")}
+  ${join("\n  ", formatlist("%s", aws_route53_zone.zone.*.name_servers))}
 NAMESERVERCONFIG
 }
 
