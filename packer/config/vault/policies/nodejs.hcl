@@ -18,6 +18,6 @@ path "transit/decrypt/nodejs_*" {
 }
 
 # Secrets backend
-path "secret/nodejs" {
+path "secret/nodejs/*" {
   policy = "write"
 }

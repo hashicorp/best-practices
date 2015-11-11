@@ -1,4 +1,4 @@
-# Deploy a Complete Infrastructure in AWS
+## Deploy a Best Practices Infrastructure in AWS
 
 This project will deploy an end to end infrastructure in AWS that includes the below resources.
 

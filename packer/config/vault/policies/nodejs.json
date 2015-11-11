@@ -11,7 +11,7 @@
   "transit/decrypt/nodejs_*": {
     "policy": "write"
   },
-  "secret/nodejs": {
+  "secret/nodejs/*": {
     "policy": "write"
   }
 }
