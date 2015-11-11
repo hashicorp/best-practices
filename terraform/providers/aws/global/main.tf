@@ -62,7 +62,6 @@ module "prod_website" {
 
   route_zone_id = "${aws_route53_zone.zone.zone_id}"
   fqdn          = "${var.domain}"
-  domain        = "${var.domain}"
   sub_domain    = "${var.domain}"
 }
 
@@ -71,7 +70,6 @@ module "staging_website" {
 
   route_zone_id = "${aws_route53_zone.zone.zone_id}"
   fqdn          = "staging.${var.domain}"
-  domain        = "${var.domain}"
   sub_domain    = "staging"
 }
 
