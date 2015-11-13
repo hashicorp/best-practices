@@ -35,9 +35,9 @@
       "ssh_timeout":     "10m",
       "ami_name":        "{{user `name`}} {{timestamp}}",
       "ami_description": "{{user `name`}} AMI",
-      "run_tags": { "ami-create": "{{user `name`}}" },
-      "tags": { "ami": "{{user `name`}}" },
-      "ssh_private_ip": false,
+      "run_tags":        { "ami-create": "{{user `name`}}" },
+      "tags":            { "ami": "{{user `name`}}" },
+      "ssh_private_ip":  false,
       "associate_public_ip_address": true
     }
   ],

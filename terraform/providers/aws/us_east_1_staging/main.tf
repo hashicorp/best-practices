@@ -5,13 +5,13 @@ variable "atlas_aws_global" {}
 variable "atlas_token" {}
 variable "artifact_type" {}
 variable "name" {}
+variable "site_key_name" {}
+variable "site_public_key" {}
+variable "site_private_key" {}
 variable "site_ssl_cert" {}
 variable "site_ssl_key" {}
 variable "vault_ssl_cert" {}
 variable "vault_ssl_key" {}
-variable "site_key_name" {}
-variable "site_public_key" {}
-variable "site_private_key" {}
 variable "vpc_cidr" {}
 variable "public_subnets" {}
 variable "private_subnets" {}
