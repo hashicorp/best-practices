@@ -328,6 +328,6 @@ In each of the new "us\_west\_2" `terraform.tfvars` files...
 - Replace all instances of `us-east-1` with `us-west-2`.
 - Update the OpenVPN ami from `ami-5fe36434` to `ami-9fe2f2af`
   - Go [here](https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/) to find an AMI for your region if it's not `us-west-2`
-- You may need to update the `azs` variable depending on what the subnets in that region support and
+- You may need to update the `azs` variable depending on what the subnets in that region support
 
 Finally, push these new environments to `master` and follow the [same steps](#provision-the-us-east-1-staging-infrastructure-with-terraform-in-atlas) you completed to deploy your environments in `us-east-1`.
