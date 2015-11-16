@@ -21,7 +21,7 @@ ENVIRONMENT=$1
 
 if [ "x$ENVIRONMENT" == "x" ]; then
   echo
-  echo "ERROR: Specify environment as the second argument, e.g. aws-us-east-1"
+  echo "ERROR: Specify environment as the second argument, e.g. aws-us-east-1-prod"
   echo
   usage
 fi
