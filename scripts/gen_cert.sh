@@ -89,7 +89,7 @@ DNS.6 = private.haproxy.${DOMAIN}
 EOF
 ) >> $SITESSLCONF
 
-SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=site/CN=${DOMAIN}"
+SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=${DOMAIN}"
 
 openssl genrsa -out $KEY 2048
 openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $SITESSLCONF
@@ -97,6 +97,7 @@ openssl x509 -req -days 3650 -in $CSR -signkey $KEY -out $CRT -extensions v3_req
 
 echo "Creating Consul cert"
 
+DOMAIN=consul
 BASE="consul"
 CSR="${BASE}.csr"
 KEY="${BASE}.key"
@@ -106,15 +107,15 @@ CONSULSSLCONF=${BUILDDIR}/consul_selfsigned_openssl.cnf
  cp openssl.cnf ${CONSULSSLCONF}
  (cat <<EOF
 [ alt_names ]
-DNS.1 = vault.service.consul
-DNS.2 = consul.service.consul
-DNS.3 = *.node.consul
+DNS.1 = vault.service.${DOMAIN}
+DNS.2 = consul.service.${DOMAIN}
+DNS.3 = *.node.${DOMAIN}
 IP.1 = 0.0.0.0
 IP.2 = 127.0.0.1
 EOF
 ) >> $CONSULSSLCONF
 
-SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=consul/CN=*.node.${DOMAIN}"
+SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=*.node.${DOMAIN}"
 
 openssl genrsa -out $KEY 2048
 openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $CONSULSSLCONF
