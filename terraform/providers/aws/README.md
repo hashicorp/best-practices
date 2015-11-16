@@ -221,6 +221,7 @@ If you'd like to create artifacts in other regions, complete these same steps bu
     - [ ] `TF_ATLAS_DIR`: `providers/aws/us_east_1_staging`
       - Atlas uses the `TF_ATLAS_DIR` variable to identify where it should run Terraform commands within the repo
   - [ ] In "Variables": update all Terraform variables containing the value `REPLACE_IN_ATLAS`, you will use the contents of the keys and certs created in [Generate Keys and Certs](#generate-keys-and-certs) as values for most of these variables
+    - [ ] Update `atlas_token` with your Atlas token
     - [ ] Update `atlas_username` with your Atlas username
     - [ ] Update `site_public_key` with the contents of `site.pub`
     - [ ] Update `site_private_key` with the contents of `site.pem`
@@ -230,6 +231,7 @@ If you'd like to create artifacts in other regions, complete these same steps bu
     - [ ] Update `vault_ssl_key` with the contents of `vault.key`
   - [ ] Commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`) so Atlas ingresses the Terraform templates from GitHub
   - [ ] In "Changes": click **Queue plan** then `Confirm & Apply` to provision the `aws-us-east-1-staging` environment
+    - You may see a notification regarding the OpenVPN AMI during the apply referring you to the AWS Marketplace, you'll need to opt-in to use this AMI for the apply to complete successfully
 
 This [same process](#provision-the-us-east-1-staging-infrastructure-with-terraform-in-atlas) can be repeated for the `aws-us-east-1-production` environment as well as any other regions you would like to deploy infrastructure into. If you are deploying into a new region, be sure you have Artifacts created for it by following the steps [below](#multi-region).
 

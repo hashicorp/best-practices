@@ -14,6 +14,7 @@
 # terraform.tfstate file, so use caution
 
 region            = "us-east-1"
+atlas_token       = "REPLACE_IN_ATLAS"
 atlas_username    = "REPLACE_IN_ATLAS"
 atlas_environment = "aws-us-east-1-staging"
 atlas_aws_global  = "aws-global"
