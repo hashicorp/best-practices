@@ -8,6 +8,7 @@ Setup the Vault Transit backend
 Prerequisites:
 
 Needs to be run on a node with Vault installed, authenticated, and unsealed.
+
 This script assumes your root-token is stored in Consul KV at /v1/kv/service/vault/
 EOF
 
