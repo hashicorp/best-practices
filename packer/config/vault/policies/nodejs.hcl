@@ -19,5 +19,10 @@ path "transit/decrypt/nodejs_*" {
 
 # Secrets backend
 path "secret/nodejs/*" {
-  policy = "write"
+  policy = "read"
+}
+
+# AWS backend
+path "aws/creds/nodejs/*" {
+  policy = "read"
 }

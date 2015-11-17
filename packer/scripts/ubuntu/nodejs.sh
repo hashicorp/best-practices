@@ -26,6 +26,7 @@ cp $CONFIGDIR/consul_template/templates/nodejs.ctmpl /opt/consul_template/nodejs
 
 # Vault Policy config
 cp $CONFIGDIR/vault/policies/nodejs.json $VAULTPOLICIES/nodejs.json
+cp $CONFIGDIR/vault/policies/aws_allow_all.json $VAULTPOLICIES/aws_nodejs.json
 
 # Upstart config
 cp $SCRIPTSDIR/upstart/nodejs.conf /etc/init/nodejs.conf

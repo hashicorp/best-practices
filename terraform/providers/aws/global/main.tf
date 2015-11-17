@@ -4,6 +4,7 @@ variable "atlas_environment" {}
 variable "name" {}
 variable "domain" {}
 variable "admins" {}
+variable "account_id" {}
 
 # Provider
 provider "aws" {
@@ -15,41 +16,12 @@ atlas {
 }
 
 # IAM
-resource "aws_iam_group" "admins" {
-  name = "${var.name}-admins"
-}
+module "iam" {
+  source = "./iam"
 
-resource "aws_iam_group_policy" "admins" {
-  name   = "${var.name}-admins"
-  group  = "${aws_iam_group.admins.id}"
-  policy = <<EOF
-{
-  "Version"  : "2012-10-17",
-  "Statement": [
-    {
-      "Effect"  : "Allow",
-      "Action"  : "*",
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_user" "admins" {
-  name   = "${element(split(",", var.admins), count.index)}"
-  count  = "${length(split(",", var.admins))}"
-}
-
-resource "aws_iam_access_key" "admins" {
-  user = "${element(aws_iam_user.admins.*.name, count.index)}"
-  count  = "${length(split(",", var.admins))}"
-}
-
-resource "aws_iam_group_membership" "admins" {
-  name  = "${var.name}-admins"
-  group = "${aws_iam_group.admins.name}"
-  users = ["${aws_iam_user.admins.*.name}"]
+  name       = "${var.name}"
+  admins     = "${var.admins}"
+  account_id = "${var.account_id}"
 }
 
 # DNS/Website
@@ -73,16 +45,28 @@ module "staging_website" {
   sub_domain    = "staging"
 }
 
-output "admin_iam_config" {
+output "iam_admin_config" {
   value = <<IAMCONFIG
 
-  Admins: ${join("\n          ", formatlist("%s", aws_iam_access_key.admins.*.user))}
+Admin IAM:
+  Admin Users: ${join("\n               ", formatlist("%s", split(",", module.iam.admin_users)))}
 
-  Access IDs: ${join("\n              ", formatlist("%s", aws_iam_access_key.admins.*.id))}
+  Access IDs: ${join("\n              ", formatlist("%s", split(",", module.iam.admin_access_ids)))}
 
-  Secret Keys: ${join("\n               ", formatlist("%s", aws_iam_access_key.admins.*.secret))}
+  Secret Keys: ${join("\n               ", formatlist("%s", split(",", module.iam.admin_secret_keys)))}
+
+Vault IAM:
+  Vault User: ${join("\n              ", formatlist("%s", split(",", module.iam.vault_user)))}
+
+  Access ID: ${join("\n             ", formatlist("%s", split(",", module.iam.vault_access_id)))}
+
+  Secret Key: ${join("\n              ", formatlist("%s", split(",", module.iam.vault_secret_key)))}
 IAMCONFIG
 }
+
+output "iam_vault_user"       { value = "${module.iam.vault_user}" }
+output "iam_vault_access_id"  { value = "${module.iam.vault_access_id}" }
+output "iam_vault_secret_key" { value = "${module.iam.vault_secret_key}" }
 
 output "nameserver_config" {
   value = <<NAMESERVERCONFIG

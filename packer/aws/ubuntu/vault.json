@@ -19,7 +19,8 @@
       "{{user `config_dir`}}/*",
       "{{user `config_dir`}}/consul/*",
       "{{user `config_dir`}}/vault/*",
-      "{{user `config_dir`}}/vault/policies/*"
+      "{{user `config_dir`}}/vault/policies/*",
+      "{{user `config_dir`}}/vault/scripts/*"
     ],
     "vcs": false
   },

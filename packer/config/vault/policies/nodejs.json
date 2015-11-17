@@ -12,6 +12,9 @@
     "policy": "write"
   },
   "secret/nodejs/*": {
-    "policy": "write"
+    "policy": "read"
+  },
+  "aws/creds/nodejs/*": {
+    "policy": "read"
   }
 }

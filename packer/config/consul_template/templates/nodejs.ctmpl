@@ -1,2 +1,17 @@
 <br /><br />
-Vault and Consul Template are setup! The Vault secret for {{ node_name }} is: {{with vault "{{ secret_path }}"}}"{{.Data.{{ secret_key }}}}"{{end}}
+Vault and Consul Template are setup!
+
+{{with vault "{{ secret_path }}"}}
+<br /><br />
+Vault is setup with the Generic secret backend...
+
+The Vault secret for {{ node_name }} is: "{{.Data.{{ secret_key }}}}"
+{{end}}
+
+{{with vault "{{ role_path }}"}}
+<br /><br />
+Vault is setup with the AWS backend...
+
+Access Key: {{.Data.access_key}}
+Secret Key: {{.Data.secret_key}}
+{{end}}
