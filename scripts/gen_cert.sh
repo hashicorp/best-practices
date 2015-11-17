@@ -98,7 +98,7 @@ openssl x509 -req -days 3650 -in $CSR -signkey $KEY -out $CRT -extensions v3_req
 echo "Creating Consul cert"
 
 DOMAIN=consul
-BASE="consul"
+BASE="vault"
 CSR="${BASE}.csr"
 KEY="${BASE}.key"
 CRT="${BASE}.crt"

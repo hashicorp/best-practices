@@ -46,14 +46,11 @@ Set the below environment variables if you'd like to use Packer & Terraform loca
 
 ### Generate Keys and Certs
 
-There are certain resources in this project that require the use of keys and certs to validate identity, such as Terraform's `remote-exec` provisioners and TLS in Consul/Vault. For the sake of quicker & easier onboarding, we've created a [gen\_cert.sh](../../../scripts/gen_cert.sh) and [gen\_key.sh](../../../scripts/gen_key.sh) script that can generate these for you.
+There are certain resources in this project that require the use of keys and certs to validate identity, such as Terraform's `remote-exec` provisioners and TLS in Consul/Vault. For the sake of quicker & easier onboarding, we've created a [gen\_key.sh](../../../scripts/gen_key.sh) and [gen\_cert.sh](../../../scripts/gen_cert.sh) script that can generate these for you.
 
 **Note**: While using this for PoC purposes, these keys and certs should suffice. However, as you start to move your actual applications into this infrastructure, you'll likely want to replace these self-signed certs with certs that are signed by a CA and use keys that are created with your security principles in mind.
 
-- [ ] Generate certs
-  - [ ] Run `sh gen_cert.sh YOUR_DOMAIN YOUR_COMPANY` in [scripts](../../../scripts) (e.g. `sh gen_cert.sh hashicorpdemo.com HashiCorp`)
-    - This will generate 2 certs, one named `site` (external self-signed cert for browsers) and one named `consul` (internal self-signed cert for Consul/Vault TLS), both within the [scripts/.](../../../scripts) directory
-- [ ] Generate keys
+- [ ] Generate `site` keys
   - [ ] Run `sh gen_key.sh site` or `sh gen_key.sh site ~/.ssh/my-existing-private-key.pem` in [scripts](../../../scripts)
     - This will generate a public (`.pub`) and private (`.pem`) key in the [scripts/.](../../../scripts) directory
     - If you enter the path of an existing private key as an optional second parameter, it will create a public (`.pub`) key from the existing private (`.pem`) key specified
@@ -61,10 +58,13 @@ There are certain resources in this project that require the use of keys and cer
     - **Note**: This is a temporary workaround **that is NOT best practices** put in place until the `key_file` attribute of the `connection` block within `remote-exec` provisioners can accept file contents instead of just file paths, you can track that issue [here](https://github.com/hashicorp/terraform/pull/3846)
     - For the time being this key will be checked into GitHub, again, **this is not best practices and should only be done for demo purposes**
     - This will be updated after the next Terraform release to follow a best practices approach
+- [ ] Generate `site` and `vault` certs
+  - [ ] Run `sh gen_cert.sh YOUR_DOMAIN YOUR_COMPANY` in [scripts](../../../scripts) (e.g. `sh gen_cert.sh hashicorpdemo.com HashiCorp`)
+    - This will generate 2 certs, one named `site` (external self-signed cert for browsers) and one named `vault` (internal self-signed cert for Consul/Vault TLS), both within the [scripts/.](../../../scripts) directory
 - [ ] Move all keys & certs created here out of the repo and to a secure location
   - Aside from the workaround mentioned above, no keys or certs should be checked into version control
 
-### Create and Configure Artifacts with Packer in Atlas
+### Create and Configure Artifacts
 
 Use the [New Build Configuration](https://atlas.hashicorp.com/builds/new) tool to create your Builds. Leave the **Automatically build on version uploads** box unchecked.
 
@@ -99,7 +99,7 @@ You do **NOT** want to queue builds for `aws-us-east-1-ubuntu-nodejs` because th
 
 - [ ] Create `aws-ubuntu-base` Artifact
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-ubuntu-base`
-  - [ ] In "Variables": [Add environment variables](#add-environment-variables) mentioned above
+  - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
     - **Packer template**: `packer/aws/ubuntu/base.json`
 - [ ] In "GitHub": [Ingress Packer template](#trigger-packer-template-ingress)
@@ -109,30 +109,30 @@ You do **NOT** want to queue builds for `aws-us-east-1-ubuntu-nodejs` because th
 
 Wait until the Base Artifact has been created before moving on to the child Build Configurations. These will fail with an error of `* A source_ami must be specified` until the Base Artifact has been created.
 
-For child Build Configurations there is one additional step you need to take. In "Settings", set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base` for each.
+For child Build Configurations, there is one additional step you need to take. In "Settings", set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base` for each.
 
 - [ ] Create `aws-us-east-1-ubuntu-consul` Artifact
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-us-east-1-ubuntu-consul`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
-  - [ ] In "Variables": [Add environment variables](#add-environment-variables) mentioned above
+  - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
     - **Packer template**: `packer/aws/ubuntu/consul.json`
 - [ ] Create `aws-us-east-1-ubuntu-vault` Artifact
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-us-east-1-ubuntu-vault`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
-  - [ ] In "Variables": [Add environment variables](#add-environment-variables) mentioned above
+  - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
     - **Packer template**: `packer/aws/ubuntu/vault.json`
 - [ ] Create `aws-us-east-1-ubuntu-haproxy` Artifact
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-us-east-1-ubuntu-haproxy`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
-  - [ ] In "Variables": [Add environment variables](#add-environment-variables) mentioned above
+  - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
     - **Packer template**: `packer/aws/ubuntu/haproxy.json`
 - [ ] Update `aws-us-east-1-ubuntu-nodejs` Build Configuration
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-us-east-1-ubuntu-nodejs`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
-  - [ ] In "Variables": [Add environment variables](#add-environment-variables) mentioned above
+  - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
     - **Packer template**: `packer/aws/ubuntu/nodejs.json`
 - [ ] In "GitHub": [Ingress Packer templates](#trigger-packer-template-ingress)
@@ -141,11 +141,11 @@ For child Build Configurations there is one additional step you need to take. In
   - [ ] `aws-us-east-1-ubuntu-vault`
   - [ ] `aws-us-east-1-ubuntu-haproxy`
 
-We will be building artifacts for the `us-east-1` region in this walkthrough. If you'd like to add another region, follow the [Multi-Region](#multi-region) setup instructions below.
+We built artifacts for the `us-east-1` region in this walkthrough. If you'd like to add another region, follow the [Multi-Region](#multi-region) setup instructions below.
 
-If you decide to update any of the artifact names, be sure those name changes are reflected in your `terraform.tfvars` file.
+If you decide to update any of the artifact names, be sure those name changes are reflected in your `terraform.tfvars` file(s).
 
-### Deploy a `us-east-1` Node.js Application with Atlas
+### Deploy a `us-east-1` Node.js Application
 
 - [ ] Fork the [`demo-app-nodejs` repo](https://github.com/hashicorp/demo-app-nodejs)
 - [ ] Use the [New Application](https://atlas.hashicorp.com/applications/new) tool to create your Node.js Application
@@ -164,14 +164,14 @@ If you don't have a change to make, you can force an application ingress into At
 
 If you want to create artifacts in other regions, complete these same steps but select a Build Template from the region you'd like.
 
-### Provision the `aws-global` Environment with Terraform in Atlas
+### Provision the `aws-global` Environment
 
 - [ ] Use the [Terraform Configuration Import](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-global` Environment from GitHub
   - [ ] **Name the environment**: `YOUR_ATLAS_ORG/aws-global`
   - [ ] **GitHub repository**: `YOUR_GITHUB_USERNAME/best-practices`
   - [ ] **Path to directory of Terraform files**: `terraform`
 - [ ] Configure and provision the `aws-global` [environment](https://atlas.hashicorp.com/environments)
-  - [ ] In "Settings": check **Plan on artifact uploads** and click `Save`
+  - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
   - [ ] In "Variables": add the below Environment Variables with appropriate values
     - [ ] `ATLAS_USERNAME`
     - [ ] `AWS_ACCESS_KEY_ID`
@@ -189,14 +189,14 @@ If you want to create artifacts in other regions, complete these same steps but 
   - [ ] Commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`) so Atlas ingresses the Terraform templates from GitHub
   - [ ] In "Changes": click **Queue plan** then **Confirm & Apply** to provision the `aws-global` environment
 
-### Provision the `aws-us-east-1-staging` Environment with Terraform in Atlas
+### Provision the `aws-us-east-1-staging` Environment
 
 - [ ] Use the [Terraform Configuration Import](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-us-east-1-staging` Environment from GitHub
   - [ ] **Name the environment**: `YOUR_ATLAS_ORG/aws-us-east-1-staging`
   - [ ] **GitHub repository**: `YOUR_GITHUB_USERNAME/best-practices`
   - [ ] **Path to directory of Terraform files**: `terraform`
 - [ ] Configure and provision the `aws-us-east-1-staging` [environment](https://atlas.hashicorp.com/environments)
-  - [ ] In "Settings": check **Plan on artifact uploads** and click `Save`
+  - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
   - [ ] In "Variables": add the below Environment Variables with appropriate values
     - [ ] `ATLAS_USERNAME`
     - [ ] `AWS_ACCESS_KEY_ID`
@@ -216,12 +216,17 @@ If you want to create artifacts in other regions, complete these same steps but 
   - [ ] Commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`) so Atlas ingresses the Terraform templates from GitHub
   - [ ] In "Changes": click **Queue plan** then **Confirm & Apply** to provision the `aws-us-east-1-staging` environment
     - You may see a notification regarding the OpenVPN AMI during the apply referring you to the AWS Marketplace, you'll need to opt-in to use this AMI for the apply to complete successfully
+    - On a successful apply, there will be instructions output in a green font that will tell you how to interact with your new infrastructure
 
-This [same process](#provision-the-aws-us-east-1-staging-environment-with-terraform-in-atlas) can be repeated for the `aws-us-east-1-production` environment as well as any other regions you would like to deploy infrastructure into. If you are deploying into a new region, be sure you have Artifacts created for it by following the [Multi-Region steps below](#multi-region).
+This [same process](#provision-the-aws-us-east-1-staging-environment) can be repeated for the `aws-us-east-1-prod` environment as well as any other regions you would like to deploy infrastructure into. If you are deploying into a new region, be sure you have Artifacts created for it by following the [Multi-Region steps below](#multi-region).
 
 ### Setup Vault
 
-A HA Vault should have already been provisioned, but you'll need to initialize and unseal Vault to make it work. To do so, SSH into each of the newly provisioned Vault instances and follow the below instructions.
+A HA Vault should have already been provisioned, but you'll need to initialize and unseal Vault to make it work. To do so, SSH into each of the newly provisioned Vault instances and follow the below instructions. The output from your apply in Atlas will tell you how to SSH into Vault.
+
+- [ ] Initialize Vault
+
+    `$ vault init | tee /tmp/vault.init > /dev/null`
 
 - [ ] Initialize Vault
 
