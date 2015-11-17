@@ -21,20 +21,18 @@ ENVIRONMENT=$1
 
 if [ "x$ENVIRONMENT" == "x" ]; then
   echo
-  echo "ERROR: Specify environment as the second argument, e.g. demo"
+  echo "ERROR: Specify environment as the second argument, e.g. aws-us-east-1-prod"
   echo
   usage
 fi
 
 EXISTINGKEY=$2
-KEYPATH=keys
-KEY="$KEYPATH/$ENVIRONMENT"
+KEY=$ENVIRONMENT
 
 if [ -s "$KEY.pem" ] && [ -s "$KEY.pub" ] && [ -z "$EXISTINGKEY" ]; then
   echo Using existing key pair
 else
   rm -rf $KEY*
-  mkdir -p $KEYPATH
 
   if [ -z "$EXISTINGKEY" ]; then
     echo No key pair exists and no private key arg was passed, generating new keys...

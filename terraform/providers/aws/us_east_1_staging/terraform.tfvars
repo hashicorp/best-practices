@@ -14,17 +14,19 @@
 # terraform.tfstate file, so use caution
 
 region            = "us-east-1"
+atlas_token       = "REPLACE_IN_ATLAS"
+atlas_username    = "REPLACE_IN_ATLAS"
 atlas_environment = "aws-us-east-1-staging"
 atlas_aws_global  = "aws-global"
 name              = "staging-demo"
+site_key_name     = "site"
+site_public_key   = "REPLACE_IN_ATLAS"
+site_private_key  = "REPLACE_IN_ATLAS"
 site_ssl_cert     = "REPLACE_IN_ATLAS"
 site_ssl_key      = "REPLACE_IN_ATLAS"
 vault_ssl_cert    = "REPLACE_IN_ATLAS"
 vault_ssl_key     = "REPLACE_IN_ATLAS"
 vault_token       = "REPLACE_IN_ATLAS"
-site_key_name     = "site"
-site_public_key   = "REPLACE_IN_ATLAS"
-site_private_key  = "REPLACE_IN_ATLAS"
 artifact_type     = "amazon.image"
 sub_domain        = "us-east-1.aws.staging"
 

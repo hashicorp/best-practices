@@ -41,9 +41,9 @@
       "ssh_timeout":     "10m",
       "ami_name":        "{{user `us_east_1_name`}} {{timestamp}}",
       "ami_description": "{{user `us_east_1_name`}} AMI",
-      "run_tags": { "ami-create": "{{user `us_east_1_name`}}" },
-      "tags": { "ami": "{{user `us_east_1_name`}}" },
-      "ssh_private_ip": false,
+      "run_tags":        { "ami-create": "{{user `us_east_1_name`}}" },
+      "tags":            { "ami": "{{user `us_east_1_name`}}" },
+      "ssh_private_ip":  false,
       "associate_public_ip_address": true
     }
   ],
