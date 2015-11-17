@@ -24,7 +24,7 @@ This will generate a self-signed site cert with the following subjectAltNames in
  * haproxy.DOMAIN
  * private.haproxy.DOMAIN
 
-And a self-signed cert for Consul & Vault with the following subjectAltNames in the directory specified.
+And a self-signed cert for Consul/Vault with the following subjectAltNames in the directory specified.
 
  * DOMAIN
  * vault.service.consul
@@ -95,16 +95,16 @@ openssl genrsa -out $KEY 2048
 openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $SITESSLCONF
 openssl x509 -req -days 3650 -in $CSR -signkey $KEY -out $CRT -extensions v3_req -extfile $SITESSLCONF
 
-echo "Creating Consul cert"
+echo "Creating Vault cert"
 
 DOMAIN=consul
 BASE="vault"
 CSR="${BASE}.csr"
 KEY="${BASE}.key"
 CRT="${BASE}.crt"
-CONSULSSLCONF=${BUILDDIR}/consul_selfsigned_openssl.cnf
+VAULTSSLCONF=${BUILDDIR}/vault_selfsigned_openssl.cnf
 
- cp openssl.cnf ${CONSULSSLCONF}
+ cp openssl.cnf ${VAULTSSLCONF}
  (cat <<EOF
 [ alt_names ]
 DNS.1 = vault.service.${DOMAIN}
@@ -113,10 +113,10 @@ DNS.3 = *.node.${DOMAIN}
 IP.1 = 0.0.0.0
 IP.2 = 127.0.0.1
 EOF
-) >> $CONSULSSLCONF
+) >> $VAULTSSLCONF
 
 SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=*.node.${DOMAIN}"
 
 openssl genrsa -out $KEY 2048
-openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $CONSULSSLCONF
-openssl x509 -req -days 3650 -in $CSR -signkey $KEY -out $CRT -extensions v3_req -extfile $CONSULSSLCONF
+openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $VAULTSSLCONF
+openssl x509 -req -days 3650 -in $CSR -signkey $KEY -out $CRT -extensions v3_req -extfile $VAULTSSLCONF
