@@ -156,7 +156,7 @@ module "data" {
   consul_user_data     = "${module.scripts.ubuntu_consul_server_user_data}"
   consul_instance_type = "${var.consul_instance_type}"
   consul_ips           = "${var.consul_ips}"
-  consul_amis          = "${module.artifact_consul.latest},${module.artifact_consul.latest},${module.artifact_consul.pinned}"
+  consul_amis          = "${module.artifact_consul.latest},${module.artifact_consul.latest},${module.artifact_consul.latest}"
 
   vault_user_data     = "${module.scripts.ubuntu_vault_user_data}"
   vault_instance_type = "${var.vault_instance_type}"
