@@ -7,14 +7,14 @@
     "atlas_username": "{{env `ATLAS_USERNAME`}}",
     "name":           "aws-{{env `AWS_DEFAULT_REGION`}}-ubuntu-nodejs",
     "ssh_username":   "ubuntu",
-    "scripts_dir":    "packer/scripts/ubuntu",
-    "config_dir":     "packer/config",
+    "scripts_dir":    "scripts/ubuntu",
+    "config_dir":     "config",
     "host_app_dir":   "/application",
     "slug_app_dir":   "app/"
   },
   "push": {
     "name": "{{user `atlas_username`}}/{{user `name`}}",
-    "base_dir": "../../../.",
+    "base_dir": "../../.",
     "include": [
       "{{user `scripts_dir`}}/*",
       "{{user `scripts_dir`}}/upstart/*",

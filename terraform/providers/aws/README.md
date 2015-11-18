@@ -82,7 +82,7 @@ After creating each build configuration, there is some additional configuration 
 
 - Go into "Integrations" in the left navigation of the Build Configuration
 - Select the `best-practices` GitHub repository you just forked
-- Leave **Packer Directory** blank
+- Enter `packer` for **Packer Directory**
 - Enter the appropriate **Packer template** (provided below) and click **Associate**
 
 ##### Trigger Packer Template Ingress
@@ -101,7 +101,8 @@ You do **NOT** want to queue builds for `aws-us-east-1-ubuntu-nodejs` because th
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-ubuntu-base`
   - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
-    - **Packer template**: `packer/aws/ubuntu/base.json`
+    - **Packer directory**: `packer`
+    - **Packer template**: `aws/ubuntu/base.json`
 - [ ] In "GitHub": [Ingress Packer template](#trigger-packer-template-ingress)
 - [ ] In "Builds": [Click **Queue build**](#queue-build) to create a new `base` artifact
 
@@ -116,25 +117,29 @@ For child Build Configurations, there is one additional step you need to take. I
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
   - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
-    - **Packer template**: `packer/aws/ubuntu/consul.json`
+    - **Packer directory**: `packer`
+    - **Packer template**: `aws/ubuntu/consul.json`
 - [ ] Create `aws-us-east-1-ubuntu-vault` Artifact
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-us-east-1-ubuntu-vault`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
   - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
-    - **Packer template**: `packer/aws/ubuntu/vault.json`
+    - **Packer directory**: `packer`
+    - **Packer template**: `aws/ubuntu/vault.json`
 - [ ] Create `aws-us-east-1-ubuntu-haproxy` Artifact
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-us-east-1-ubuntu-haproxy`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
   - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
-    - **Packer template**: `packer/aws/ubuntu/haproxy.json`
+    - **Packer directory**: `packer`
+    - **Packer template**: `aws/ubuntu/haproxy.json`
 - [ ] Update `aws-us-east-1-ubuntu-nodejs` Build Configuration
   - [ ] [Create Build Configuration](https://atlas.hashicorp.com/builds/new): `aws-us-east-1-ubuntu-nodejs`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
   - [ ] In "Variables": [Add Environment Variables](#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](#integrate-with-github) for the `best-practices` repo
-    - **Packer template**: `packer/aws/ubuntu/nodejs.json`
+    - **Packer directory**: `packer`
+    - **Packer template**: `aws/ubuntu/nodejs.json`
 - [ ] In "GitHub": [Ingress Packer templates](#trigger-packer-template-ingress)
 - [ ] [Click **Queue build**](#queue-build) in "Builds" for each of the below Build Configurations to create new artifacts for each (remember, we will not do this for `aws-us-east-1-ubuntu-nodejs`)
   - [ ] `aws-us-east-1-ubuntu-consul`
