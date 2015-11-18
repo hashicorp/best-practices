@@ -19,5 +19,5 @@ A couple things to keep in mind...
 - Each environment's README will reference different sections in [General Setup](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md) to get your environment properly setup to build the infrastructure at hand.
 - Each environment will assume you're using Atlas. If you plan on doing anything locally, there are portions of environments that may not work due to the extra features Atlas provides that we are taking advantage of.
 - Each environment's instructional documentation is based off of the assumption that certain information will be saved as environment variables. If you do not wish to use environment variables, there are different ways to pass this information, but you may have to take extra undocumented steps to get commands to work properly.
-- Any `packer push` commands must be performed in the base directory.
+- Any `packer push` commands must be performed in the base [packer/.](packer) directory.
 - Any `terraform push` commands must be performed in the appropriate Terraform environment directory (e.g. [terraform/providers/aws/us\_east\_1\_staging](terraform/providers/aws/us_east_1_staging)).

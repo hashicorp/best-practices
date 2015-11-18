@@ -7,11 +7,11 @@
     "atlas_username": "{{env `ATLAS_USERNAME`}}",
     "name":           "aws-{{env `AWS_DEFAULT_REGION`}}-ubuntu-rabbitmq",
     "ssh_username":   "ubuntu",
-    "scripts_dir":    "packer/scripts/ubuntu"
+    "scripts_dir":    "scripts/ubuntu"
   },
   "push": {
     "name": "{{user `atlas_username`}}/{{user `name`}}",
-    "base_dir": "../../../.",
+    "base_dir": "../../.",
     "include": [
       "{{user `scripts_dir`}}/*"
     ],
