@@ -76,7 +76,7 @@ EOF
 }
 
 resource "aws_iam_user" "vault" {
-  name = "root"
+  name = "${var.name}-vault"
 }
 
 resource "aws_iam_access_key" "vault" {
