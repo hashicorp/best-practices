@@ -19,6 +19,7 @@ variable "instance_type" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 variable "vault_token" { default = "" }
+variable "policy_name" { default = "nodejs" }
 
 resource "aws_security_group" "elb" {
   name        = "${var.name}.elb"
@@ -112,6 +113,7 @@ resource "template_file" "user_data" {
     site_ssl_cert     = "${var.site_ssl_cert}"
     vault_ssl_cert    = "${var.vault_ssl_cert}"
     vault_token       = "${var.vault_token}"
+    policy_name       = "${var.policy_name}"
   }
 }
 

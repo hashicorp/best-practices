@@ -6,24 +6,24 @@ FILEPATH=$1
 PARAMETER=$2
 
 sed -i -- 's/\"/\\"/g' $FILEPATH
-sed -i '1s/^/{"{{ parameter }}": "{\n/' $FILEPATH
-sed -i '$a}"}' $FILEPATH
+sed -i '1s/^/{"{{ parameter }}": "/' $FILEPATH
+sed -i '$s|$|"}|' $FILEPATH
 sed -i -- "s/{{ parameter }}/$PARAMETER/g" $FILEPATH
 }
 
 NAME="${node_name}-$(hostname)"
+SANITIZEDNAME=$${NAME//-/_}
 SSLCERTDIR=/usr/local/etc
 SSLSITECERTPATH=$SSLCERTDIR/site.crt
 SSLVAULTCERTPATH=$SSLCERTDIR/vault.crt
-TYPE=nodejs
-GENERICPOLICYNAME=$TYPE
+GENERICPOLICYNAME=${policy_name}
 GENERICPOLICY=/opt/vault/policies/$GENERICPOLICYNAME.json
-GENERICSECRETPATH=secret/$GENERICPOLICYNAME/$${NAME//-/_} # Replace hyphens with underscores, Consul Template doesn't like hyphens
+GENERICSECRETPATH=secret/$GENERICPOLICYNAME/$SANITIZEDNAME # Replace hyphens with underscores, Consul Template doesn't like hyphens
 GENERICSECRETKEY=secret_key
 GENERICSECRET="This is a secret stored in Vault for $NAME using the $GENERICPOLICYNAME policy"
-AWSROLENAME=$TYPE
-AWSROLEPOLICY=/opt/vault/policies/aws_$AWSROLENAME.json
-AWSROLEPATH=aws/creds/$AWSROLENAME
+AWSROLEPOLICY=/opt/vault/policies/aws_${policy_name}.json
+AWSROLEPATH=aws/roles/${policy_name}/$SANITIZEDNAME
+AWSCREDPATH=aws/creds/${policy_name}/$SANITIZEDNAME
 VAULT=https://vault.service.consul:8200
 CONSUL=http://127.0.0.1:8500
 LOGS=/var/log/user_data.log
@@ -128,7 +128,7 @@ curl \
   -H "Content-Type: application/json" \
   -LX PUT \
   -d @$AWSROLEPOLICY \
-  $VAULT/v1/aws/roles/$AWSROLENAME
+  $VAULT/v1/$AWSROLEPATH
 
 echo "Update Node.js Consul Template config" | sudo tee -a $LOGS > /dev/null
 
@@ -138,11 +138,12 @@ sed -i -- "s/{{ vault_token }}/$TOKEN/g" /etc/consul_template.d/nodejs.hcl
 sed -i -- "s/{{ cert_path }}/$SSLVAULTCERTPATH/g" /etc/consul_template.d/nodejs.hcl
 
 GENERICSECRETPATH=$${GENERICSECRETPATH//\//\\/}
+AWSCREDPATH=$${AWSCREDPATH//\//\\/}
 
 sed -i -- "s/{{ node_name }}/$NAME/g" /opt/consul_template/nodejs.ctmpl
 sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /opt/consul_template/nodejs.ctmpl
 sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/nodejs.ctmpl
-sed -i -- "s/{{ role_path }}/$AWSROLEPATH/g" /opt/consul_template/nodejs.ctmpl
+sed -i -- "s/{{ cred_path }}/$AWSCREDPATH/g" /opt/consul_template/nodejs.ctmpl
 
 service consul_template restart
 

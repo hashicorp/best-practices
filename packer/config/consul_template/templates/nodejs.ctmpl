@@ -1,17 +1,19 @@
 <br /><br />
-Vault and Consul Template are setup!
+<b>Vault and Consul Template are setup!</b>
 
 {{with vault "{{ secret_path }}"}}
 <br /><br />
-Vault is setup with the Generic secret backend...
-
+<i><u>Vault is setup with the Generic secret backend!</u></i>
+<br /><br />
 The Vault secret for {{ node_name }} is: "{{.Data.{{ secret_key }}}}"
 {{end}}
 
-{{with vault "{{ role_path }}"}}
+{{with vault "{{ cred_path }}"}}
 <br /><br />
-Vault is setup with the AWS backend...
-
-Access Key: {{.Data.access_key}}
-Secret Key: {{.Data.secret_key}}
+<i><u>Vault is setup with the AWS backend!</u></i>
+<br /><br />
+The dynamically generated AWS IAM credentials for {{ node_name }} are...
+<br /><br />
+<u>Access Key</u>: {{.Data.access_key}}<br />
+<u>Secret Key</u>: {{.Data.secret_key}}
 {{end}}

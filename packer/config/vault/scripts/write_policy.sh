@@ -30,7 +30,7 @@ fi
 
 POLICYNAME=$1
 
-if [[ "x${POLICYNAME}" == "x" ]]; then
+if [ -z "${POLICYNAME}" ]; then
   echo
   echo "ERROR: Specify the name of your policy as the first argument, e.g. nodejs"
   echo
@@ -39,7 +39,7 @@ fi
 
 POLICYPATH=$2
 
-if [[ "x${POLICYPATH}" == "x" ]]; then
+if [ -z "${POLICYPATH}" ]; then
   echo
   echo "ERROR: Specify the path to your policy as the second argument, e.g. /opt/vault/policies/nodejs.hcl"
   echo

@@ -30,7 +30,7 @@ fi
 
 ACCESSKEY=$1
 
-if [[ "x${ACCESSKEY}" == "x" ]]; then
+if [ -z "${ACCESSKEY}" ]; then
   echo
   echo "ERROR: Specify the Vault AWS Access Key ID as the first argument"
   echo
@@ -39,7 +39,7 @@ fi
 
 SECRETKEY=$2
 
-if [[ "x${SECRETKEY}" == "x" ]]; then
+if [ -z "${SECRETKEY}" ]; then
   echo
   echo "ERROR: Specify the Vault AWS Secret Access Key as the second argument"
   echo
@@ -48,7 +48,7 @@ fi
 
 REGION=$3
 
-if [[ "x${REGION}" == "x" ]]; then
+if [ -z "${REGION}" ]; then
   echo
   echo "ERROR: Specify the AWS region as the third argument, e.g. us-east-1"
   echo
@@ -78,14 +78,14 @@ vault mount aws
 echo "Writing root AWS IAM credentials..."
 
 vault write aws/config/root \
-    access_key=$ACCESSKEY \
-    secret_key=$SECRETKEY \
-    region=$REGION
+  access_key=$ACCESSKEY \
+  secret_key=$SECRETKEY \
+  region=$REGION
 
 echo "Writing lease settings for generated credentials..."
 
 vault write aws/config/lease \
-    lease="1h" \
-    lease_max="2h"
+  lease="1h" \
+  lease_max="2h"
 
 shred -u -z ~/.vault-token
