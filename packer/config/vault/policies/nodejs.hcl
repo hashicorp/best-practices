@@ -23,6 +23,6 @@ path "secret/nodejs/*" {
 }
 
 # AWS backend
-path "aws/creds/nodejs/*" {
+path "aws/creds/*" {
   policy = "read"
 }
