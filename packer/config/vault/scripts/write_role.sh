@@ -13,9 +13,9 @@ This script assumes your root-token is stored in Consul KV at /v1/kv/service/vau
 
 Usage:
 
-  $0 <ROLE_PATH> <POLICY_PATH>
+  $0 <ROLE_NAME> <POLICY_PATH>
 
-Where ROLE_PATH is the path of the role you wish to create, and POLICY_PATH is the path to the policy for this role.
+Where ROLE_NAME is the name of the role you wish to create, and POLICY_PATH is the path to the policy for this role.
 EOF
 
   exit 1
@@ -28,11 +28,11 @@ if ! which vault > /dev/null; then
   usage
 fi
 
-ROLEPATH=$1
+ROLENAME=$1
 
-if [ -z "${ROLEPATH}" ]; then
+if [ -z "${ROLENAME}" ]; then
   echo
-  echo "ERROR: Specify the path of your role as the first argument, e.g. nodejs/my_app"
+  echo "ERROR: Specify the name of your role as the first argument, e.g. nodejs/my_app"
   echo
   usage
 fi
@@ -54,8 +54,8 @@ echo "Authenticating as root..."
 
 cget root-token | vault auth -
 
-echo "Writing Vault $ROLEPATH role..."
+echo "Writing Vault $ROLENAME role..."
 
-vault write aws/roles/$ROLEPATH policy=@$POLICYPATH
+vault write aws/roles/$ROLENAME policy=@$POLICYPATH
 
 shred -u -z ~/.vault-token
