@@ -45,7 +45,7 @@ module "staging_website" {
   sub_domain    = "staging"
 }
 
-output "iam_admin_config" {
+output "iam_config" {
   value = <<IAMCONFIG
 
 Admin IAM:
@@ -57,16 +57,10 @@ Admin IAM:
 
 Vault IAM:
   Vault User: ${join("\n              ", formatlist("%s", split(",", module.iam.vault_user)))}
-
   Access ID: ${join("\n             ", formatlist("%s", split(",", module.iam.vault_access_id)))}
-
   Secret Key: ${join("\n              ", formatlist("%s", split(",", module.iam.vault_secret_key)))}
 IAMCONFIG
 }
-
-output "iam_vault_user"       { value = "${module.iam.vault_user}" }
-output "iam_vault_access_id"  { value = "${module.iam.vault_access_id}" }
-output "iam_vault_secret_key" { value = "${module.iam.vault_secret_key}" }
 
 output "nameserver_config" {
   value = <<NAMESERVERCONFIG
@@ -84,4 +78,7 @@ output "staging_domain"   { value = "${module.staging_website.domain}" }
 output "staging_endpoint" { value = "${module.staging_website.endpoint}" }
 output "staging_fqdn"     { value = "${module.staging_website.fqdn}" }
 output "staging_zone_id"  { value = "${module.staging_website.hosted_zone_id}" }
+output "vault_user"       { value = "${module.iam.vault_user}" }
+output "vault_access_id"  { value = "${module.iam.vault_access_id}" }
+output "vault_secret_key" { value = "${module.iam.vault_secret_key}" }
 output "zone_id"          { value = "${aws_route53_zone.zone.zone_id}" }
