@@ -27,16 +27,16 @@ if vault status | grep standby > /dev/null; then
   exit 0
 fi
 
-echo "Mounting Transit backend."
+echo "Authenticating as root..."
 
+cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 cget root-token | vault auth -
 
 if vault mounts | grep transit > /dev/null; then
-  echo "Transit backend already mounted. Exiting."
-  shred -u -z ~/.vault-token
-  exit 0
+  echo "Transit backend already mounted."
+else
+  echo "Mounting Transit backend."
+  vault mount transit
 fi
-
-vault mount transit
 
 shred -u -z ~/.vault-token

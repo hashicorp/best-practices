@@ -66,14 +66,11 @@ cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 cget root-token | vault auth -
 
 if vault mounts | grep aws > /dev/null; then
-  echo "AWS backend already mounted. Exiting."
-  shred -u -z ~/.vault-token
-  exit 0
+  echo "AWS backend already mounted."
+else
+  echo "Mounting AWS backend..."
+  vault mount aws
 fi
-
-echo "Mounting AWS backend..."
-
-vault mount aws
 
 echo "Writing root AWS IAM credentials..."
 
