@@ -15,7 +15,7 @@
     "secret/nodejs/*": {
       "policy": "read"
     },
-    "aws/creds/nodejs/*": {
+    "aws/creds/*": {
       "policy": "read"
     }
   }

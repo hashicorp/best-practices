@@ -46,12 +46,9 @@ if [ -z "${POLICYPATH}" ]; then
   usage
 fi
 
-echo "Setting up Vault role..."
-
-cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
-
 echo "Authenticating as root..."
 
+cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 cget root-token | vault auth -
 
 echo "Writing Vault $ROLENAME role..."
