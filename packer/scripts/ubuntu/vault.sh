@@ -9,6 +9,7 @@ VAULTDOWNLOAD=https://releases.hashicorp.com/vault/0.3.1/vault_0.3.1_linux_amd64
 VAULTCONFIGDIR=/etc/vault.d
 VAULTDIR=/opt/vault
 VAULTPOLICIES=$VAULTDIR/policies
+VAULTSCRIPTS=$VAULTDIR/scripts
 
 echo Fetching Vault...
 curl -L $VAULTDOWNLOAD > vault.zip
@@ -30,10 +31,9 @@ cp $CONFIGDIR/consul/vault.json /etc/consul.d/vault.json
 # Vault config
 cp $CONFIGDIR/vault/vault.hcl $VAULTCONFIGDIR/vault.hcl
 
-# Vault Setup & Policy
-cp $SCRIPTSDIR/vault_setup.sh $VAULTDIR/setup.sh
-cp $SCRIPTSDIR/vault_policy.sh $VAULTDIR/policy.sh
-cp $CONFIGDIR/vault/policies/nodejs.hcl $VAULTPOLICIES/nodejs.hcl
+# Vault setup scripts & policies
+cp -R $CONFIGDIR/vault/policies/* $VAULTPOLICIES/.
+cp -R $CONFIGDIR/vault/scripts/* $VAULTSCRIPTS/.
 
 # Upstart config
 cp $SCRIPTSDIR/upstart/vault.conf /etc/init/vault.conf

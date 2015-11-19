@@ -27,7 +27,7 @@ variable "nodejs_ami" {}
 variable "nodejs_instance_type" {}
 
 module "haproxy" {
-  source = "haproxy"
+  source = "./haproxy"
 
   name               = "${var.name}-haproxy"
   vpc_id             = "${var.vpc_id}"
@@ -46,7 +46,7 @@ module "haproxy" {
 }
 
 module "nodejs" {
-  source = "nodejs"
+  source = "./nodejs"
 
   name               = "${var.name}-nodejs"
   region             = "${var.region}"

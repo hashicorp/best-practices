@@ -39,25 +39,6 @@ vault unseal $(cget unseal-key-1)
 vault unseal $(cget unseal-key-2)
 vault unseal $(cget unseal-key-3)
 
-if vault status | grep standby > /dev/null; then
-  echo "Mounts only run on the leader. Exiting."
-  exit 0
-fi
-
-echo "Mounting Transit backend."
-
-cget root-token | vault auth -
-
-if vault mounts | grep transit > /dev/null; then
-  echo "Transit backend already mounted. Exiting."
-  shred -u -z ~/.vault-token
-  exit 0
-fi
-
-vault mount transit
-
-shred -u -z ~/.vault-token
-
 echo "Vault setup complete."
 
 instructions() {

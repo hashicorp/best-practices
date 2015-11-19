@@ -1,17 +1,22 @@
-"path": {
-  "sys/renew/*": {
-    "policy": "write"
-  },
-  "auth/token/renew/*": {
-    "policy": "write"
-  },
-  "transit/encrypt/nodejs_*": {
-    "policy": "write"
-  },
-  "transit/decrypt/nodejs_*": {
-    "policy": "write"
-  },
-  "secret/nodejs/*": {
-    "policy": "write"
+{
+  "path": {
+    "sys/renew/*": {
+      "policy": "write"
+    },
+    "auth/token/renew/*": {
+      "policy": "write"
+    },
+    "transit/encrypt/nodejs_*": {
+      "policy": "write"
+    },
+    "transit/decrypt/nodejs_*": {
+      "policy": "write"
+    },
+    "secret/nodejs/*": {
+      "policy": "read"
+    },
+    "aws/creds/nodejs/*": {
+      "policy": "read"
+    }
   }
 }
