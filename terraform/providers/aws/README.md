@@ -61,16 +61,12 @@ There are certain resources in this project that require the use of keys and cer
   - [ ] Run `sh gen_key.sh site` in [scripts](../../../scripts)
     - If you enter the path of an existing private key as an optional second parameter, it will create a public (`.pub`) key from the existing private (`.pem`) key specified (e.g. `sh gen_key.sh site ~/.ssh/my-existing-private-key.pem`)
     - This will generate a public (`.pub`) and private (`.pem`) key in the [scripts/.](../../../scripts) directory
-  - [ ] Copy the `site.pem` file into the [terraform/modules/keys/.](../../modules/keys) module, replacing the existing private key
-    - **Note**: This is a temporary workaround **that is NOT best practices** put in place until the `key_file` attribute of the `connection` block within `remote-exec` provisioners can accept file contents instead of just file paths, you can track that issue [here](https://github.com/hashicorp/terraform/pull/3846)
-    - For the time being this key will be checked into GitHub, again, **this is not best practices and should only be done for demo purposes**
-    - This will be updated after the next Terraform release to follow a best practices approach
 - [ ] Generate `site` and `vault` certs
   - [ ] Run `sh gen_cert.sh YOUR_DOMAIN YOUR_COMPANY` in [scripts](../../../scripts) (e.g. `sh gen_cert.sh hashicorpdemo.com HashiCorp`)
     - If you don't have a domain currently, you can make one up, or grab one from a service like [NameCheap](https://www.namecheap.com/) to do your testing on
     - This will generate 2 certs, one named `site` (external self-signed cert for browsers) and one named `vault` (internal self-signed cert for Consul/Vault TLS), both within the [scripts/.](../../../scripts) directory
-- [ ] Move all keys & certs created here out of the repo and to a secure location
-  - Aside from the workaround mentioned above, no keys or certs should be checked into version control
+- [ ] Move all keys & certs created here out of the repository and into a secure location
+  - No keys or certs should ever be checked into version control
 
 ### Create and Configure Artifacts
 
