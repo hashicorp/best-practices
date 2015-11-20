@@ -188,9 +188,12 @@ If you want to create artifacts in other regions, complete these same steps but 
     - [ ] Update `domain` with your domain (e.g. `hashicorpdemo.com`)
       - If you don't have a domain currently, you can make one up, or grab one from a service like [NameCheap](https://www.namecheap.com/) to do your testing on
       - We use this domain to create S3 buckets to host a static website, so if you're making a domain up, try to make it unique to your company to avoid S3 bucket naming conflicts
-    - [ ] Update `admins` with a comma separated list of users you'd like added to the `admin` group in IAM (e.g. `cameron,jay,jon,kevin`)
+    - [ ] Update `aws_account_id` with your [AWS Account ID](https://console.aws.amazon.com/billing/home#/account)
+    - [ ] Update `atlas_username` with your Atlas username
+    - [ ] Update `iam_admins` with a comma separated list of users you'd like added to the `admin` group in IAM (e.g. `cameron,jay,jon,kevin`)
+      - This is defaulted to one user named `admin`
       - Be sure that you don't use a name that already exists in IAM for this AWS account or you will see conflict errors
-      - If you don't want any admin users to be created, just leave this field blank
+      - If you don't want any admin users to be created, just leave this blank
   - [ ] Commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`) so Atlas ingresses the Terraform templates from GitHub
   - [ ] In "Changes": click **Queue plan** then **Confirm & Apply** to provision the `aws-global` environment
 
@@ -262,10 +265,11 @@ A HA Vault should have already been provisioned, but you'll need to initialize a
 
     `$ shred -u -z ~/.vault-token`
 
-After Vault is initialized and unsealed, update the below variables in your `aws-us-east-1-staging` environment. Next time you deploy your application, you should see the Vault/Consul Template integration working in your Node.js website!
+After Vault is initialized and unsealed, update the below variable(s) and apply the changes. Next time you deploy your application, you should see the Vault/Consul Template integration working in your Node.js website!
 
-- [ ] In "Variables": Update `vault_token` with the `root-token`
-- [ ] In "Variables": Update `aws_account_id` with your [AWS Account ID](https://console.aws.amazon.com/billing/home#/account)
+- [ ] In "Variables" of the `aws-us-east-1-staging` environment: Update `vault_token` with the `root-token`
+- [ ] Commit a new change (`git commit --allow-empty -m "Force a change in Atlas"`) to your [`demo-app-nodejs` repo](https://github.com/hashicorp/demo-app-nodejs), this should trigger a new "plan" in `aws-us-east-1-staging` after a new artifact is built
+- [ ] In "Changes" of the the `aws-us-east-1-staging` environment: Queue a new plan and apply the changes to deploy the new application to see the Vault/Consul Template integration at work
 
 You'll eventually want to [configure Vault](https://vaultproject.io/docs/index.html) specific to your needs and setup appropriate ACLs.
 

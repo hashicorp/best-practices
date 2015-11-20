@@ -1,10 +1,11 @@
+variable "name" {}
+variable "artifact_type" {}
 variable "region" {}
-variable "atlas_username" {}
+variable "sub_domain" {}
 variable "atlas_environment" {}
 variable "atlas_aws_global" {}
 variable "atlas_token" {}
-variable "artifact_type" {}
-variable "name" {}
+variable "atlas_username" {}
 variable "site_key_name" {}
 variable "site_public_key" {}
 variable "site_private_key" {}
@@ -12,14 +13,13 @@ variable "site_ssl_cert" {}
 variable "site_ssl_key" {}
 variable "vault_ssl_cert" {}
 variable "vault_ssl_key" {}
+variable "vault_token" { default = "" }
+
 variable "vpc_cidr" {}
-variable "public_subnets" {}
 variable "private_subnets" {}
 variable "ephemeral_subnets" {}
+variable "public_subnets" {}
 variable "azs" {}
-variable "sub_domain" {}
-variable "aws_account_id" { default = "" }
-variable "vault_token" { default = "" }
 
 variable "bastion_instance_type" {}
 variable "nat_instance_type" {}
@@ -199,10 +199,10 @@ module "compute" {
   vault_ssl_cert     = "${var.vault_ssl_cert}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
+  atlas_aws_global   = "${var.atlas_aws_global}"
   atlas_token        = "${var.atlas_token}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
-  aws_account_id     = "${var.aws_account_id}"
   vault_token        = "${var.vault_token}"
 
   haproxy_user_data     = "${module.scripts.ubuntu_consul_client_user_data}"
