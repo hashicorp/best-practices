@@ -1,9 +1,11 @@
-variable "region" {}
+variable "domain" {}
+variable "aws_account_id" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "name" {}
-variable "domain" {}
-variable "admins" {}
+variable "region" {}
+variable "iam_admins" {}
+variable "iam_vault_envs" {}
 
 provider "aws" {
   region = "${var.region}"
@@ -13,11 +15,11 @@ atlas {
   name = "${var.atlas_username}/${var.atlas_environment}"
 }
 
-module "iam_admins" {
+module "iam_admin" {
   source = "../../../modules/aws/util/iam"
 
-  name       = "${var.name}-admins"
-  users      = "${var.admins}"
+  name       = "${var.name}-admin"
+  users      = "${var.iam_admins}"
   policy     = <<EOF
 {
   "Version"  : "2012-10-17",
@@ -26,6 +28,38 @@ module "iam_admins" {
       "Effect"  : "Allow",
       "Action"  : "*",
       "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+module "iam_vault" {
+  source = "../../../modules/aws/util/iam"
+
+  name       = "${var.name}-vault"
+  users      = "${var.iam_vault_envs}"
+  policy     = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateAccessKey",
+        "iam:CreateUser",
+        "iam:PutUserPolicy",
+        "iam:ListGroupsForUser",
+        "iam:ListUserPolicies",
+        "iam:ListAccessKeys",
+        "iam:DeleteAccessKey",
+        "iam:DeleteUserPolicy",
+        "iam:RemoveUserFromGroup",
+        "iam:DeleteUser"
+      ],
+      "Resource": [
+        "arn:aws:iam::${replace(var.aws_account_id, "-", "")}:user/vault-*"
+      ]
     }
   ]
 }
@@ -56,11 +90,18 @@ output "iam_config" {
   value = <<IAMCONFIG
 
 Admin IAM:
-  Admin Users: ${join("\n               ", formatlist("%s", split(",", module.iam_admins.users)))}
+  Admin Users: ${join("\n               ", formatlist("%s", split(",", module.iam_admin.users)))}
 
-  Access IDs: ${join("\n              ", formatlist("%s", split(",", module.iam_admins.access_ids)))}
+  Access IDs: ${join("\n              ", formatlist("%s", split(",", module.iam_admin.access_ids)))}
 
-  Secret Keys: ${join("\n               ", formatlist("%s", split(",", module.iam_admins.secret_keys)))}
+  Secret Keys: ${join("\n               ", formatlist("%s", split(",", module.iam_admin.secret_keys)))}
+
+Vault IAM:
+  Vault Users: ${join("\n               ", formatlist("%s", split(",", module.iam_vault.users)))}
+
+  Access IDs: ${join("\n              ", formatlist("%s", split(",", module.iam_vault.access_ids)))}
+
+  Secret Keys: ${join("\n               ", formatlist("%s", split(",", module.iam_vault.secret_keys)))}
 IAMCONFIG
 }
 
@@ -72,6 +113,13 @@ DNS records have been set in Route53, add NS records for ${var.domain} pointing 
 NAMESERVERCONFIG
 }
 
+output "iam_admin_users"       { value = "${module.iam_admin.users}" }
+output "iam_admin_access_ids"  { value = "${module.iam_admin.access_ids}" }
+output "iam_admin_secret_keys" { value = "${module.iam_admin.secret_keys}" }
+output "iam_vault_users"       { value = "${module.iam_vault.users}" }
+output "iam_vault_access_ids"  { value = "${module.iam_vault.access_ids}" }
+output "iam_vault_secret_keys" { value = "${module.iam_vault.secret_keys}" }
+
 output "prod_domain"      { value = "${module.prod_website.domain}" }
 output "prod_endpoint"    { value = "${module.prod_website.endpoint}" }
 output "prod_fqdn"        { value = "${module.prod_website.fqdn}" }
@@ -80,4 +128,5 @@ output "staging_domain"   { value = "${module.staging_website.domain}" }
 output "staging_endpoint" { value = "${module.staging_website.endpoint}" }
 output "staging_fqdn"     { value = "${module.staging_website.fqdn}" }
 output "staging_zone_id"  { value = "${module.staging_website.hosted_zone_id}" }
+
 output "zone_id"          { value = "${aws_route53_zone.zone.zone_id}" }

@@ -14,7 +14,9 @@
 # terraform.tfstate file, so use caution
 
 name              = "staging"
+artifact_type     = "amazon.image"
 region            = "us-east-1"
+sub_domain        = "us-east-1.aws.staging"
 atlas_aws_global  = "aws-global"
 atlas_environment = "aws-us-east-1-staging"
 atlas_token       = "REPLACE_IN_ATLAS"
@@ -26,10 +28,7 @@ site_ssl_cert     = "REPLACE_IN_ATLAS"
 site_ssl_key      = "REPLACE_IN_ATLAS"
 vault_ssl_cert    = "REPLACE_IN_ATLAS"
 vault_ssl_key     = "REPLACE_IN_ATLAS"
-aws_account_id    = "REPLACE_IN_ATLAS" # No need to update until Vault is configured
 vault_token       = "REPLACE_IN_ATLAS" # No need to update until Vault is configured
-artifact_type     = "amazon.image"
-sub_domain        = "us-east-1.aws.staging"
 
 #--------------------------------------------------------------
 # Network

@@ -11,10 +11,10 @@ variable "site_ssl_key" {}
 variable "vault_ssl_cert" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
+variable "atlas_aws_global" {}
 variable "atlas_token" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
-variable "aws_account_id" { default = "" }
 variable "vault_token" { default = "" }
 
 variable "haproxy_user_data" {}
@@ -62,6 +62,7 @@ module "nodejs" {
   vault_ssl_cert     = "${var.vault_ssl_cert}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
+  atlas_aws_global   = "${var.atlas_aws_global}"
   atlas_token        = "${var.atlas_token}"
   user_data          = "${var.nodejs_user_data}"
   nodes              = "${var.nodejs_nodes}"
@@ -69,7 +70,6 @@ module "nodejs" {
   instance_type      = "${var.nodejs_instance_type}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
-  aws_account_id     = "${var.aws_account_id}"
   vault_token        = "${var.vault_token}"
 }
 

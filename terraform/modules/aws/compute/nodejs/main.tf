@@ -11,6 +11,7 @@ variable "site_ssl_key" {}
 variable "vault_ssl_cert" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
+variable "atlas_aws_global" {}
 variable "atlas_token" {}
 variable "user_data" {}
 variable "nodes" {}
@@ -18,7 +19,6 @@ variable "ami" {}
 variable "instance_type" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
-variable "aws_account_id" { default = "" }
 variable "vault_token" { default = "" }
 variable "vault_policy" { default = "nodejs" }
 
@@ -102,36 +102,12 @@ resource "aws_elb" "nodejs" {
   }
 }
 
-module "iam_vault" {
-  source = "../../util/iam"
+resource "terraform_remote_state" "aws_global" {
+  backend = "atlas"
 
-  name       = "${var.name}-vault"
-  users      = "root"
-  policy     = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iam:CreateAccessKey",
-        "iam:CreateUser",
-        "iam:PutUserPolicy",
-        "iam:ListGroupsForUser",
-        "iam:ListUserPolicies",
-        "iam:ListAccessKeys",
-        "iam:DeleteAccessKey",
-        "iam:DeleteUserPolicy",
-        "iam:RemoveUserFromGroup",
-        "iam:DeleteUser"
-      ],
-      "Resource": [
-        "arn:aws:iam::${replace(var.aws_account_id, "-", "")}:user/vault-*"
-      ]
-    }
-  ]
-}
-EOF
+  config {
+    name = "${var.atlas_username}/${var.atlas_aws_global}"
+  }
 }
 
 resource "template_file" "user_data" {
@@ -146,9 +122,9 @@ resource "template_file" "user_data" {
     vault_ssl_cert    = "${var.vault_ssl_cert}"
     vault_token       = "${var.vault_token}"
     vault_policy      = "${var.vault_policy}"
-    aws_access_id     = "${element(split(",", module.iam_vault.access_ids), 0)}"
-    aws_secret_key    = "${element(split(",", module.iam_vault.secret_keys), 0)}"
     aws_region        = "${var.region}"
+    aws_access_id     = "${lookup(terraform_remote_state.aws_global.output.iam_vault_access_ids, var.atlas_environment)}"
+    aws_secret_key    = "${lookup(terraform_remote_state.aws_global.output.iam_vault_secret_keys, var.atlas_environment)}"
   }
 
   lifecycle { create_before_destroy = true }
