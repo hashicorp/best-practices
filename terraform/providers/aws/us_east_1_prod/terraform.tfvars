@@ -13,12 +13,12 @@
 # `terraform push` commands - changing this WILL affect your
 # terraform.tfstate file, so use caution
 
+name              = "prod"
 region            = "us-east-1"
+atlas_aws_global  = "aws-global"
+atlas_environment = "aws-us-east-1-prod"
 atlas_token       = "REPLACE_IN_ATLAS"
 atlas_username    = "REPLACE_IN_ATLAS"
-atlas_environment = "aws-us-east-1-prod"
-atlas_aws_global  = "aws-global"
-name              = "prod"
 site_key_name     = "site"
 site_public_key   = "REPLACE_IN_ATLAS"
 site_private_key  = "REPLACE_IN_ATLAS"
@@ -26,6 +26,7 @@ site_ssl_cert     = "REPLACE_IN_ATLAS"
 site_ssl_key      = "REPLACE_IN_ATLAS"
 vault_ssl_cert    = "REPLACE_IN_ATLAS"
 vault_ssl_key     = "REPLACE_IN_ATLAS"
+aws_account_id    = "REPLACE_IN_ATLAS"
 vault_token       = "REPLACE_IN_ATLAS"
 artifact_type     = "amazon.image"
 sub_domain        = "us-east-1.aws"
@@ -62,7 +63,7 @@ openvpn_cidr          = "172.27.139.0/24"
 
 # Consul
 consul_ips            = "10.139.1.4,10.139.2.4,10.139.3.4"
-consul_instance_type  = "t2.micro"
+consul_instance_type  = "t2.small"
 consul_latest_name    = "aws-us-east-1-ubuntu-consul"
 consul_pinned_name    = "aws-us-east-1-ubuntu-consul"
 consul_pinned_version = "latest"

@@ -1,0 +1,9 @@
+{{with vault "{{ cred_path }}"}}
+<br /><br />
+<i><u>Consul Template is setup with the Vault AWS backend!</u></i>
+<br /><br />
+The dynamically generated AWS IAM credentials for {{ node_name }} are...
+<br /><br />
+<u>Access Key</u>: {{.Data.access_key}}<br />
+<u>Secret Key</u>: {{.Data.secret_key}}
+{{end}}

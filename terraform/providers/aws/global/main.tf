@@ -4,9 +4,7 @@ variable "atlas_environment" {}
 variable "name" {}
 variable "domain" {}
 variable "admins" {}
-variable "account_id" {}
 
-# Provider
 provider "aws" {
   region = "${var.region}"
 }
@@ -15,16 +13,25 @@ atlas {
   name = "${var.atlas_username}/${var.atlas_environment}"
 }
 
-# IAM
-module "iam" {
-  source = "./iam"
+module "iam_admins" {
+  source = "../../../modules/aws/util/iam"
 
-  name       = "${var.name}"
-  admins     = "${var.admins}"
-  account_id = "${var.account_id}"
+  name       = "${var.name}-admins"
+  users      = "${var.admins}"
+  policy     = <<EOF
+{
+  "Version"  : "2012-10-17",
+  "Statement": [
+    {
+      "Effect"  : "Allow",
+      "Action"  : "*",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 }
 
-# DNS/Website
 resource "aws_route53_zone" "zone" {
   name = "${var.domain}"
 }
@@ -49,16 +56,11 @@ output "iam_config" {
   value = <<IAMCONFIG
 
 Admin IAM:
-  Admin Users: ${join("\n               ", formatlist("%s", split(",", module.iam.admin_users)))}
+  Admin Users: ${join("\n               ", formatlist("%s", split(",", module.iam_admins.users)))}
 
-  Access IDs: ${join("\n              ", formatlist("%s", split(",", module.iam.admin_access_ids)))}
+  Access IDs: ${join("\n              ", formatlist("%s", split(",", module.iam_admins.access_ids)))}
 
-  Secret Keys: ${join("\n               ", formatlist("%s", split(",", module.iam.admin_secret_keys)))}
-
-Vault IAM:
-  Vault User: ${join("\n              ", formatlist("%s", split(",", module.iam.vault_user)))}
-  Access ID: ${join("\n             ", formatlist("%s", split(",", module.iam.vault_access_id)))}
-  Secret Key: ${join("\n              ", formatlist("%s", split(",", module.iam.vault_secret_key)))}
+  Secret Keys: ${join("\n               ", formatlist("%s", split(",", module.iam_admins.secret_keys)))}
 IAMCONFIG
 }
 
@@ -78,7 +80,4 @@ output "staging_domain"   { value = "${module.staging_website.domain}" }
 output "staging_endpoint" { value = "${module.staging_website.endpoint}" }
 output "staging_fqdn"     { value = "${module.staging_website.fqdn}" }
 output "staging_zone_id"  { value = "${module.staging_website.hosted_zone_id}" }
-output "vault_user"       { value = "${module.iam.vault_user}" }
-output "vault_access_id"  { value = "${module.iam.vault_access_id}" }
-output "vault_secret_key" { value = "${module.iam.vault_secret_key}" }
 output "zone_id"          { value = "${aws_route53_zone.zone.zone_id}" }

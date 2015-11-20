@@ -18,6 +18,7 @@ variable "private_subnets" {}
 variable "ephemeral_subnets" {}
 variable "azs" {}
 variable "sub_domain" {}
+variable "aws_account_id" { default = "" }
 variable "vault_token" { default = "" }
 
 variable "bastion_instance_type" {}
@@ -53,7 +54,6 @@ variable "nodejs_latest_name" {}
 variable "nodejs_pinned_name" {}
 variable "nodejs_pinned_version" {}
 
-# Provider
 provider "aws" {
   region = "${var.region}"
 }
@@ -70,7 +70,6 @@ resource "terraform_remote_state" "aws_global" {
   }
 }
 
-# Access
 module "site_key" {
   source = "../../../modules/keys"
 
@@ -83,7 +82,6 @@ module "scripts" {
   source = "../../../modules/scripts"
 }
 
-# Network
 module "network" {
   source = "../../../modules/aws/network"
 
@@ -112,7 +110,6 @@ module "network" {
   openvpn_cidr          = "${var.openvpn_cidr}"
 }
 
-# Data
 module "artifact_consul" {
   source = "../../../modules/aws/util/artifact"
 
@@ -164,7 +161,6 @@ module "data" {
   vault_amis          = "${module.artifact_vault.latest},${module.artifact_vault.latest}"
 }
 
-# Compute
 module "artifact_haproxy" {
   source = "../../../modules/aws/util/artifact"
 
@@ -206,6 +202,7 @@ module "compute" {
   atlas_token        = "${var.atlas_token}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
+  aws_account_id     = "${var.aws_account_id}"
   vault_token        = "${var.vault_token}"
 
   haproxy_user_data     = "${module.scripts.ubuntu_consul_client_user_data}"
