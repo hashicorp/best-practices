@@ -24,6 +24,8 @@ mkdir -p $VAULTCONFIGDIR
 chmod 755 $VAULTCONFIGDIR
 mkdir -p $VAULTPOLICIES
 chmod 755 $VAULTPOLICIES
+mkdir -p $VAULTSCRIPTS
+chmod 755 $VAULTSCRIPTS
 
 # Consul config
 cp $CONFIGDIR/consul/vault.json /etc/consul.d/vault.json
