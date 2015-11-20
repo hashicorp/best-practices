@@ -14,6 +14,7 @@ variable "atlas_environment" {}
 variable "atlas_token" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
+variable "aws_account_id" { default = "" }
 variable "vault_token" { default = "" }
 
 variable "haproxy_user_data" {}
@@ -68,6 +69,7 @@ module "nodejs" {
   instance_type      = "${var.nodejs_instance_type}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
+  aws_account_id     = "${var.aws_account_id}"
   vault_token        = "${var.vault_token}"
 }
 

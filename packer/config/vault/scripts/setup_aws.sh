@@ -82,7 +82,7 @@ vault write aws/config/root \
 echo "Writing lease settings for generated credentials..."
 
 vault write aws/config/lease \
-  lease="1h" \
-  lease_max="2h"
+  lease="5s" \
+  lease_max="10s"
 
 shred -u -z ~/.vault-token

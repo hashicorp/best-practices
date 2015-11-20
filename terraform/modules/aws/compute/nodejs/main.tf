@@ -18,8 +18,9 @@ variable "ami" {}
 variable "instance_type" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
+variable "aws_account_id" { default = "" }
 variable "vault_token" { default = "" }
-variable "policy_name" { default = "nodejs" }
+variable "vault_policy" { default = "nodejs" }
 
 resource "aws_security_group" "elb" {
   name        = "${var.name}.elb"
@@ -101,10 +102,41 @@ resource "aws_elb" "nodejs" {
   }
 }
 
+module "iam_vault" {
+  source = "../../util/iam"
+
+  name       = "${var.name}-vault"
+  users      = "${var.name}-vault"
+  policy     = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateAccessKey",
+        "iam:CreateUser",
+        "iam:PutUserPolicy",
+        "iam:ListGroupsForUser",
+        "iam:ListUserPolicies",
+        "iam:ListAccessKeys",
+        "iam:DeleteAccessKey",
+        "iam:DeleteUserPolicy",
+        "iam:RemoveUserFromGroup",
+        "iam:DeleteUser"
+      ],
+      "Resource": [
+        "arn:aws:iam::${replace(var.aws_account_id, "-", "")}:user/vault-*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
 resource "template_file" "user_data" {
   filename = "${var.user_data}"
 
-  lifecycle { create_before_destroy = true }
   vars {
     atlas_username    = "${var.atlas_username}"
     atlas_environment = "${var.atlas_environment}"
@@ -113,8 +145,13 @@ resource "template_file" "user_data" {
     site_ssl_cert     = "${var.site_ssl_cert}"
     vault_ssl_cert    = "${var.vault_ssl_cert}"
     vault_token       = "${var.vault_token}"
-    policy_name       = "${var.policy_name}"
+    vault_policy      = "${var.vault_policy}"
+    aws_access_id     = "${element(split(",", module.iam_vault.access_ids), 0)}"
+    aws_secret_key    = "${element(split(",", module.iam_vault.secret_keys), 0)}"
+    aws_region        = "${var.region}"
   }
+
+  lifecycle { create_before_destroy = true }
 }
 
 module "asg" {
