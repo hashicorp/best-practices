@@ -131,6 +131,14 @@ logger $(
     $VAULT/v1/$GENERICSECRETPATH
 )
 
+logger "Update /opt/consul_template/vault_generic.ctmpl"
+
+GENERICSECRETPATH=$${GENERICSECRETPATH//\//\\/}
+
+sed -i -- "s/{{ node_name }}/$NAME/g" /opt/consul_template/vault_generic.ctmpl
+sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /opt/consul_template/vault_generic.ctmpl
+sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/vault_generic.ctmpl
+
 logger "--- Transit Backend Setup ---"
 logger "Checking if Transit backend is mounted..."
 
@@ -222,6 +230,13 @@ logger $(
     $VAULT/v1/$AWSROLEPATH
 )
 
+logger "Update /opt/consul_template/vault_aws.ctmpl"
+
+AWSCREDPATH=$${AWSCREDPATH//\//\\/}
+
+sed -i -- "s/{{ node_name }}/$NAME/g" /opt/consul_template/vault_aws.ctmpl
+sed -i -- "s/{{ cred_path }}/$AWSCREDPATH/g" /opt/consul_template/vault_aws.ctmpl
+
 logger "--- Consul Template Configuration ---"
 logger "Update Node.js Consul Template config"
 
@@ -229,14 +244,6 @@ SSLVAULTCERTPATH=$${SSLVAULTCERTPATH//\//\\/}
 
 sed -i -- "s/{{ vault_token }}/$TOKEN/g" /etc/consul_template.d/nodejs.hcl
 sed -i -- "s/{{ cert_path }}/$SSLVAULTCERTPATH/g" /etc/consul_template.d/nodejs.hcl
-
-GENERICSECRETPATH=$${GENERICSECRETPATH//\//\\/}
-AWSCREDPATH=$${AWSCREDPATH//\//\\/}
-
-sed -i -- "s/{{ node_name }}/$NAME/g" /opt/consul_template/nodejs.ctmpl
-sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /opt/consul_template/nodejs.ctmpl
-sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/nodejs.ctmpl
-sed -i -- "s/{{ cred_path }}/$AWSCREDPATH/g" /opt/consul_template/nodejs.ctmpl
 
 service consul_template restart
 

@@ -1,0 +1,6 @@
+{{with vault "{{ secret_path }}"}}
+<br /><br />
+<i><u>Consul Template is setup with the Vault Generic Secret backend!</u></i>
+<br /><br />
+The Vault secret for {{ node_name }} is: "{{.Data.{{ secret_key }}}}"
+{{end}}
