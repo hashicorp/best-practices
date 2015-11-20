@@ -262,9 +262,12 @@ A HA Vault should have already been provisioned, but you'll need to initialize a
 
     `$ shred -u -z ~/.vault-token`
 
-After Vault is initialized and unsealed, update the `vault_token` variable in your Atlas `aws-us-east-1-staging` environment with the `root-token`. Next time you deploy your application, you should see the Vault/Consul Template integration working in your Node.js website!
+After Vault is initialized and unsealed, update the below variables in your `aws-us-east-1-staging` environment. Next time you deploy your application, you should see the Vault/Consul Template integration working in your Node.js website!
 
-You'll eventually want to [configure Vault](https://vaultproject.io/docs/index.html) specific to your needs.
+- [ ] In "Variables": Update `vault_token` with the `root-token`
+- [ ] In "Variables": Update `aws_account_id` with your [AWS Account ID](https://console.aws.amazon.com/billing/home#/account)
+
+You'll eventually want to [configure Vault](https://vaultproject.io/docs/index.html) specific to your needs and setup appropriate ACLs.
 
 ### Multi-Region
 

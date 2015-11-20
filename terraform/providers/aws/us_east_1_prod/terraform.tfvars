@@ -26,8 +26,8 @@ site_ssl_cert     = "REPLACE_IN_ATLAS"
 site_ssl_key      = "REPLACE_IN_ATLAS"
 vault_ssl_cert    = "REPLACE_IN_ATLAS"
 vault_ssl_key     = "REPLACE_IN_ATLAS"
-aws_account_id    = "REPLACE_IN_ATLAS"
-vault_token       = "REPLACE_IN_ATLAS"
+aws_account_id    = "REPLACE_IN_ATLAS" # No need to update until Vault is configured
+vault_token       = "REPLACE_IN_ATLAS" # No need to update until Vault is configured
 artifact_type     = "amazon.image"
 sub_domain        = "us-east-1.aws"
 

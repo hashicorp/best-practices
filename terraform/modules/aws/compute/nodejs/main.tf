@@ -106,7 +106,7 @@ module "iam_vault" {
   source = "../../util/iam"
 
   name       = "${var.name}-vault"
-  users      = "${var.name}-vault"
+  users      = "root"
   policy     = <<EOF
 {
   "Version": "2012-10-17",
