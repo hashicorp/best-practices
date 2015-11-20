@@ -10,7 +10,7 @@
     "scripts_dir":    "scripts/ubuntu",
     "config_dir":     "config",
     "host_app_dir":   "/application",
-    "slug_app_dir":   "app"
+    "slug_app_dir":   "app/"
   },
   "push": {
     "name": "{{user `atlas_username`}}/{{user `name`}}",
