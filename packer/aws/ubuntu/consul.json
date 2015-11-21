@@ -30,7 +30,7 @@
       "vpc_id":          "",
       "subnet_id":       "",
       "source_ami":      "{{user `base_ami`}}",
-      "instance_type":   "t2.micro",
+      "instance_type":   "c3.large",
       "ssh_username":    "{{user `ssh_username`}}",
       "ssh_timeout":     "10m",
       "ami_name":        "{{user `name`}} {{timestamp}}",
