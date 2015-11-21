@@ -191,7 +191,7 @@ If you want to create artifacts in other regions, complete these same steps but 
     - [ ] Update `aws_account_id` with your [AWS Account ID](https://console.aws.amazon.com/billing/home#/account)
     - [ ] Update `atlas_username` with your Atlas username
     - [ ] Update `iam_admins` with a comma separated list of users you'd like added to the `admin` group in IAM (e.g. `cameron,jay,jon,kevin`)
-      - This is defaulted to one user named `admin`
+      - This is defaulted to a user named `global-admin`
       - Be sure that you don't use a name that already exists in IAM for this AWS account or you will see conflict errors
       - If you don't want any admin users to be created, just leave this blank
   - [ ] Commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`) so Atlas ingresses the Terraform templates from GitHub

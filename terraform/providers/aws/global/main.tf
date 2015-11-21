@@ -86,8 +86,11 @@ module "staging_website" {
   sub_domain    = "staging"
 }
 
-output "iam_config" {
-  value = <<IAMCONFIG
+output "config" {
+  value = <<CONFIG
+
+DNS records have been set in Route53, add NS records for ${var.domain} pointing to:
+  ${join("\n  ", formatlist("%s", aws_route53_zone.zone.*.name_servers))}
 
 Admin IAM:
   Admin Users: ${join("\n               ", formatlist("%s", split(",", module.iam_admin.users)))}
@@ -102,15 +105,7 @@ Vault IAM:
   Access IDs: ${join("\n              ", formatlist("%s", split(",", module.iam_vault.access_ids)))}
 
   Secret Keys: ${join("\n               ", formatlist("%s", split(",", module.iam_vault.secret_keys)))}
-IAMCONFIG
-}
-
-output "nameserver_config" {
-  value = <<NAMESERVERCONFIG
-
-DNS records have been set in Route53, add NS records for ${var.domain} pointing to:
-  ${join("\n  ", formatlist("%s", aws_route53_zone.zone.*.name_servers))}
-NAMESERVERCONFIG
+CONFIG
 }
 
 output "iam_admin_users"       { value = "${module.iam_admin.users}" }

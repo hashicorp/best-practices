@@ -123,8 +123,9 @@ resource "template_file" "user_data" {
     vault_token       = "${var.vault_token}"
     vault_policy      = "${var.vault_policy}"
     aws_region        = "${var.region}"
-    aws_access_id     = "${lookup(terraform_remote_state.aws_global.output.iam_vault_access_ids, var.atlas_environment)}"
-    aws_secret_key    = "${lookup(terraform_remote_state.aws_global.output.iam_vault_secret_keys, var.atlas_environment)}"
+
+    aws_access_id     = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_access_ids), index(terraform_remote_state.aws_global.output.iam_vault_users, var.atlas_environment))}"
+    aws_secret_key    = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_secret_keys), index(terraform_remote_state.aws_global.output.iam_vault_users, var.atlas_environment))}"
   }
 
   lifecycle { create_before_destroy = true }
