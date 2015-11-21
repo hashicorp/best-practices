@@ -55,8 +55,8 @@ logger "Updating certs..."
 mkdir -p $SSLCERTDIR
 chmod -R 0600 $SSLCERTDIR
 
-logger "${site_ssl_cert}" | sudo tee $SSLSITECERTPATH > /dev/null
-logger "${vault_ssl_cert}" | sudo tee $SSLVAULTCERTPATH > /dev/null
+echo "${site_ssl_cert}" | sudo tee $SSLSITECERTPATH > /dev/null
+echo "${vault_ssl_cert}" | sudo tee $SSLVAULTCERTPATH > /dev/null
 
 cp $SSLSITECERTPATH /usr/local/share/ca-certificates/.
 cp $SSLVAULTCERTPATH /usr/local/share/ca-certificates/.
