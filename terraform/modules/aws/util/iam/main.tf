@@ -14,7 +14,7 @@ resource "aws_iam_group_policy" "mod" {
 
 resource "aws_iam_user" "mod" {
   count = "${length(split(",", var.users))}"
-  name  = "${var.name}-${element(split(",", var.users), count.index)}"
+  name  = "${element(split(",", var.users), count.index)}"
 }
 
 resource "aws_iam_access_key" "mod" {
