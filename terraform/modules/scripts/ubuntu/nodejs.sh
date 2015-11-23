@@ -152,7 +152,7 @@ TRANSITMOUNTED=$(
     -H "X-Vault-Token: ${vault_token}" \
     -X GET \
     $VAULT/v1/sys/mounts \
-    | grep -c 'transit'
+    | grep -c "transit"
 )
 
 logger "Logging curl output..."
@@ -185,7 +185,7 @@ AWSMOUNTED=$(
     -H "X-Vault-Token: ${vault_token}" \
     -X GET \
     $VAULT/v1/sys/mounts \
-    | grep -c 'aws'
+    | grep -c "aws"
 )
 
 if [ $AWSMOUNTED -eq 0 ]; then
