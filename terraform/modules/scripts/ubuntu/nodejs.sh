@@ -2,13 +2,13 @@
 set -e
 
 NAME="${node_name}-$(hostname)"
-SANITIZEDNAME=$${NAME//-/_}
+SANITIZEDNAME=$${NAME//-/_} # Replace hyphens with underscores, Consul Template doesn't like hyphens
 SSLCERTDIR=/usr/local/etc
 SSLSITECERTPATH=$SSLCERTDIR/site.crt
 SSLVAULTCERTPATH=$SSLCERTDIR/vault.crt
 NODEJSPOLICYNAME=${vault_policy}
 NODEJSPOLICY=/opt/vault/policies/$NODEJSPOLICYNAME.json
-GENERICSECRETPATH=secret/$NODEJSPOLICYNAME/$SANITIZEDNAME # Replace hyphens with underscores, Consul Template doesn't like hyphens
+GENERICSECRETPATH=secret/$NODEJSPOLICYNAME/$SANITIZEDNAME
 GENERICSECRETKEY=secret_key
 GENERICSECRET="This is a secret stored in Vault for $NAME using the $NODEJSPOLICYNAME policy"
 AWSROLEPOLICY=/opt/vault/policies/aws_$NODEJSPOLICYNAME.json
