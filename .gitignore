@@ -6,5 +6,6 @@ dist
 logs
 *.srl
 *.crt
+*.csr
 *.key
 *.pub
