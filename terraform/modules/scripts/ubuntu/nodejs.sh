@@ -147,7 +147,6 @@ sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /opt/consul_template/vault_
 sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/vault_generic.ctmpl
 
 logger "--- Transit Backend Setup ---"
-logger "Checking if Transit backend is mounted..."
 
 TRANSITMOUNTED=$(
   curl \
@@ -157,6 +156,7 @@ TRANSITMOUNTED=$(
 )
 
 logger $TRANSITMOUNTED
+logger "Checking if Transit backend is mounted..."
 
 if [ $TRANSITMOUNTED -eq 0 ]; then
   logger "Mounting Transit backend..."
