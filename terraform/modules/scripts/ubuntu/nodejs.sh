@@ -2,19 +2,18 @@
 set -e
 
 NAME="${node_name}-$(hostname)"
-SANITIZEDNAME=$${NAME//-/_}
+SANITIZEDNAME=$${NAME//-/_} # Replace hyphens with underscores, Consul Template doesn't like hyphens
 SSLCERTDIR=/usr/local/etc
 SSLSITECERTPATH=$SSLCERTDIR/site.crt
 SSLVAULTCERTPATH=$SSLCERTDIR/vault.crt
-GENERICPOLICYNAME=${vault_policy}
-GENERICPOLICY=/opt/vault/policies/$GENERICPOLICYNAME.json
-GENERICSECRETPATH=secret/$GENERICPOLICYNAME/$SANITIZEDNAME # Replace hyphens with underscores, Consul Template doesn't like hyphens
+NODEJSPOLICYNAME=${vault_policy}
+NODEJSPOLICY=/opt/vault/policies/$NODEJSPOLICYNAME.json
+GENERICSECRETPATH=secret/$NODEJSPOLICYNAME/$SANITIZEDNAME
 GENERICSECRETKEY=secret_key
-GENERICSECRET="This is a secret stored in Vault for $NAME using the $GENERICPOLICYNAME policy"
-AWSPOLICYNAME=${vault_policy}
-AWSROLEPOLICY=/opt/vault/policies/aws_$AWSPOLICYNAME.json
-AWSROLEPATH=aws/roles/$AWSPOLICYNAME
-AWSCREDPATH=aws/creds/$AWSPOLICYNAME
+GENERICSECRET="This is a secret stored in Vault for $NAME using the $NODEJSPOLICYNAME policy"
+AWSROLEPOLICY=/opt/vault/policies/aws_$NODEJSPOLICYNAME.json
+AWSROLEPATH=aws/roles/$NODEJSPOLICYNAME
+AWSCREDPATH=aws/creds/$NODEJSPOLICYNAME
 VAULT=https://vault.service.consul:8200
 CONSUL=http://127.0.0.1:8500
 LOGS=/var/log/user_data.log
@@ -78,10 +77,10 @@ while ! cget | grep "\"initialized\":true,\"sealed\":false"; do
   fi
 done
 
-logger "--- Generic Secret Backend Setup ---"
+logger "--- Vault Policy Setup ---"
 logger "Preparing Vault $NAME policy..."
 
-preparepolicy $GENERICPOLICY rules
+preparepolicy $NODEJSPOLICY rules
 
 logger "Generating Vault $NAME policy..."
 
@@ -90,36 +89,44 @@ logger $(
     -H "X-Vault-Token: ${vault_token}" \
     -H "Content-Type: application/json" \
     -LX PUT \
-    -d @$GENERICPOLICY \
-    $VAULT/v1/sys/policy/$GENERICPOLICYNAME
+    -d @$NODEJSPOLICY \
+    $VAULT/v1/sys/policy/$NODEJSPOLICYNAME
 )
 
-logger "Generating Vault $GENERICPOLICYNAME token..."
+logger "Generating Vault $NODEJSPOLICYNAME token..."
 
 (cat <<TOKEN
 {
-  "display_name": "$GENERICPOLICYNAME",
+  "display_name": "$NODEJSPOLICYNAME",
   "ttl": "5s",
   "no_parent": "true",
   "policies": [
-    "$GENERICPOLICYNAME"
+    "$NODEJSPOLICYNAME"
   ]
 }
 TOKEN
-) > /tmp/$GENERICPOLICYNAME-token.json
+) > /tmp/$NODEJSPOLICYNAME-token.json
 
 TOKEN=$(
   curl \
     -H "X-Vault-Token: ${vault_token}" \
     -H "Content-Type: application/json" \
     -LX POST \
-    -d @/tmp/$GENERICPOLICYNAME-token.json \
+    -d @/tmp/$NODEJSPOLICYNAME-token.json \
     $VAULT/v1/auth/token/create \
     | grep -Po '"client_token":.*?[^\\]",' | awk -F\" '{print $4}'
 )
 
-rm -rf /tmp/$GENERICPOLICYNAME-token.json
+rm -rf /tmp/$NODEJSPOLICYNAME-token.json
 
+logger "Update /etc/consul_template.d/nodejs.hcl with vault_token and cert_path"
+
+SSLVAULTCERTPATH=$${SSLVAULTCERTPATH//\//\\/}
+
+sed -i -- "s/{{ vault_token }}/$TOKEN/g" /etc/consul_template.d/nodejs.hcl
+sed -i -- "s/{{ cert_path }}/$SSLVAULTCERTPATH/g" /etc/consul_template.d/nodejs.hcl
+
+logger "--- Generic Secret Backend Setup ---"
 logger "Writing $NAME secret..."
 
 logger $(
@@ -140,7 +147,6 @@ sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /opt/consul_template/vault_
 sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/vault_generic.ctmpl
 
 logger "--- Transit Backend Setup ---"
-logger "Checking if Transit backend is mounted..."
 
 TRANSITMOUNTED=$(
   curl \
@@ -148,6 +154,9 @@ TRANSITMOUNTED=$(
     $VAULT/v1/sys/mounts \
     | grep -c transit
 )
+
+logger $TRANSITMOUNTED
+logger "Checking if Transit backend is mounted..."
 
 if [ $TRANSITMOUNTED -eq 0 ]; then
   logger "Mounting Transit backend..."
@@ -236,14 +245,6 @@ AWSCREDPATH=$${AWSCREDPATH//\//\\/}
 
 sed -i -- "s/{{ node_name }}/$NAME/g" /opt/consul_template/vault_aws.ctmpl
 sed -i -- "s/{{ cred_path }}/$AWSCREDPATH/g" /opt/consul_template/vault_aws.ctmpl
-
-logger "--- Consul Template Configuration ---"
-logger "Update Node.js Consul Template config"
-
-SSLVAULTCERTPATH=$${SSLVAULTCERTPATH//\//\\/}
-
-sed -i -- "s/{{ vault_token }}/$TOKEN/g" /etc/consul_template.d/nodejs.hcl
-sed -i -- "s/{{ cert_path }}/$SSLVAULTCERTPATH/g" /etc/consul_template.d/nodejs.hcl
 
 service consul_template restart
 
