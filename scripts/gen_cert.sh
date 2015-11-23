@@ -27,9 +27,8 @@ This will generate a self-signed site cert with the following subjectAltNames in
 And a self-signed cert for Consul/Vault with the following subjectAltNames in the directory specified.
 
  * DOMAIN
- * vault.service.consul
- * consul.service.consul
  * *.node.consul
+ * *.service.consul
 
  * IP
  * 0.0.0.0
@@ -107,15 +106,14 @@ VAULTSSLCONF=${BUILDDIR}/vault_selfsigned_openssl.cnf
  cp openssl.cnf ${VAULTSSLCONF}
  (cat <<EOF
 [ alt_names ]
-DNS.1 = vault.service.${DOMAIN}
-DNS.2 = consul.service.${DOMAIN}
-DNS.3 = *.node.${DOMAIN}
+DNS.1 = *.node.${DOMAIN}
+DNS.2 = *.service.${DOMAIN}
 IP.1 = 0.0.0.0
 IP.2 = 127.0.0.1
 EOF
 ) >> $VAULTSSLCONF
 
-SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=*.node.${DOMAIN}"
+SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=*.${DOMAIN}"
 
 openssl genrsa -out $KEY 2048
 openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $VAULTSSLCONF

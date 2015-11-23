@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 NAME="${node_name}-$(hostname)"
 SANITIZEDNAME=$${NAME//-/_} # Replace hyphens with underscores, Consul Template doesn't like hyphens
@@ -151,12 +150,15 @@ logger "--- Transit Backend Setup ---"
 TRANSITMOUNTED=$(
   curl \
     -H "X-Vault-Token: ${vault_token}" \
+    -X GET \
     $VAULT/v1/sys/mounts \
-    | grep -c transit
+    | grep -c 'transit'
 )
 
-logger $TRANSITMOUNTED
+logger "Logging curl output..."
+logger $?
 logger "Checking if Transit backend is mounted..."
+logger $TRANSITMOUNTED
 
 if [ $TRANSITMOUNTED -eq 0 ]; then
   logger "Mounting Transit backend..."
@@ -181,8 +183,9 @@ logger "Checking if AWS backend is mounted..."
 AWSMOUNTED=$(
   curl \
     -H "X-Vault-Token: ${vault_token}" \
+    -X GET \
     $VAULT/v1/sys/mounts \
-    | grep -c aws
+    | grep -c 'aws'
 )
 
 if [ $AWSMOUNTED -eq 0 ]; then
