@@ -18,7 +18,8 @@ CONSUL=http://127.0.0.1:8500
 LOGS=/var/log/user_data.log
 
 logger() {
-  echo $1 | sudo tee -a $LOGS > /dev/null
+  DT=$(date '+%Y/%m/%d %H:%M:%S')
+  echo "$DT nodejs.sh: $1" | sudo tee -a $LOGS > /dev/null
 }
 
 preparepolicy() {
@@ -77,11 +78,11 @@ while ! cget | grep "\"initialized\":true,\"sealed\":false"; do
 done
 
 logger "--- Vault Policy Setup ---"
-logger "Preparing Vault $NAME policy..."
+logger "Preparing Vault $NODEJSPOLICYNAME policy..."
 
 preparepolicy $NODEJSPOLICY rules
 
-logger "Generating Vault $NAME policy..."
+logger "Generating Vault $NODEJSPOLICYNAME policy..."
 
 logger $(
   curl \
@@ -146,19 +147,17 @@ sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /opt/consul_template/vault_
 sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/vault_generic.ctmpl
 
 logger "--- Transit Backend Setup ---"
+logger "Checking if Transit backend is mounted..."
 
 TRANSITMOUNTED=$(
   curl \
     -H "X-Vault-Token: ${vault_token}" \
-    -X GET \
+    -LX GET \
     $VAULT/v1/sys/mounts \
     | grep -c "transit"
 )
 
-logger "Logging curl output..."
-logger $?
-logger "Checking if Transit backend is mounted..."
-logger $TRANSITMOUNTED
+echo "Transit backend mount status: $TRANSITMOUNTED"
 
 if [ $TRANSITMOUNTED -eq 0 ]; then
   logger "Mounting Transit backend..."
@@ -172,7 +171,7 @@ if [ $TRANSITMOUNTED -eq 0 ]; then
       $VAULT/v1/sys/mounts/transit
   )
 
-  logger "Transit backend mounted..."
+  logger "Transit backend mounted."
 else
   logger "Transit backend already mounted."
 fi
@@ -183,10 +182,12 @@ logger "Checking if AWS backend is mounted..."
 AWSMOUNTED=$(
   curl \
     -H "X-Vault-Token: ${vault_token}" \
-    -X GET \
+    -LX GET \
     $VAULT/v1/sys/mounts \
     | grep -c "aws"
 )
+
+echo "AWS backend mount status: $AWSMOUNTED"
 
 if [ $AWSMOUNTED -eq 0 ]; then
   logger "Mounting AWS backend..."
@@ -200,7 +201,7 @@ if [ $AWSMOUNTED -eq 0 ]; then
       $VAULT/v1/sys/mounts/aws
   )
 
-  logger "AWS backend mounted..."
+  logger "AWS backend mounted."
 else
   logger "AWS backend already mounted."
 fi
@@ -227,11 +228,11 @@ logger $(
   $VAULT/v1/aws/config/lease
 )
 
-logger "Preparing Vault AWS $NAME policy..."
+logger "Preparing Vault AWS $NODEJSPOLICYNAME policy..."
 
 preparepolicy $AWSROLEPOLICY policy
 
-logger "Generating Vault AWS $NAME role..."
+logger "Generating Vault AWS $NODEJSPOLICYNAME role..."
 
 logger $(
   curl \

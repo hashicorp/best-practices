@@ -281,6 +281,6 @@ Visit the HAProxy stats page:
 
 Interact with Vault:
   Vault: ${module.data.vault_private_fqdn}
-         http://vault.service.consul
+         ${module.data.vault_elb_dns}
 CONFIGURATION
 }
