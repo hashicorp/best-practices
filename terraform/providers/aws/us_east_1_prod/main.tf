@@ -6,7 +6,6 @@ variable "atlas_environment" {}
 variable "atlas_aws_global" {}
 variable "atlas_token" {}
 variable "atlas_username" {}
-variable "site_key_name" {}
 variable "site_public_key" {}
 variable "site_private_key" {}
 variable "site_ssl_cert" {}
@@ -74,7 +73,6 @@ module "site_key" {
   source = "../../../modules/keys"
 
   name       = "${var.name}"
-  key_name   = "${var.site_key_name}"
   public_key = "${var.site_public_key}"
 }
 
@@ -95,8 +93,7 @@ module "network" {
   ssl_cert          = "${var.site_ssl_cert}"
   ssl_key           = "${var.site_ssl_key}"
   key_name          = "${module.site_key.key_name}"
-  key_file          = "${module.site_key.pem_path}"
-  # key_file          = "${var.site_private_key}" # Use this once Terraform supports it
+  key_file          = "${var.site_private_key}"
   sub_domain        = "${var.sub_domain}"
   route_zone_id     = "${terraform_remote_state.aws_global.output.zone_id}"
 

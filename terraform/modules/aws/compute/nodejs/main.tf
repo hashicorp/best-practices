@@ -158,6 +158,7 @@ resource "aws_route53_record" "nodejs" {
     evaluate_target_health = true
   }
 }
+
 output "zone_id"     { value = "${aws_elb.nodejs.zone_id}" }
 output "elb_dns"     { value = "${aws_elb.nodejs.dns_name}" }
 output "private_fqdn" { value = "${aws_route53_record.nodejs.fqdn}" }
