@@ -41,7 +41,7 @@ resource "aws_security_group" "vault" {
 
 resource "template_file" "user_data" {
   count    = "${var.nodes}"
-  filename = "${var.user_data}"
+  template = "${var.user_data}"
 
   vars {
     atlas_username    = "${var.atlas_username}"
