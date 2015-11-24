@@ -39,7 +39,7 @@ Take all instructions from [Setup](https://github.com/hashicorp/best-practices/b
     - [Settings](https://atlas.hashicorp.com/settings) -> Your Organization -> "Teams" -> "Manage" or "Create" -> "Add user"
 - [ ] [Generate an Atlas API token](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#generate-atlas-token)
 
-Remember, this creates real resources in AWS that cost money. Don't forget to [destroy](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#terraform-destroy) your PoC environment when finished to avoid unnecessary expenses.
+**Note**: Terraform creates real resources in AWS that **cost money**. Don't forget to [destroy](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#terraform-destroy) your PoC environment when finished to avoid unnecessary expenses.
 
 ##### Set Local Environment Variables
 
@@ -91,7 +91,7 @@ After creating each Build Configuration, there is some additional configuration 
 - Go into "Integrations" in the left navigation of the Build Configuration
 - Select the `best-practices` GitHub repository you just forked
 - Enter `packer` for **Packer Directory**
-- Enter the appropriate **Packer template** (_provided below_) and click **Associate**
+- Enter the appropriate **Packer template** _(provided below)_ and click **Associate**
 
 ##### Trigger Packer Template Ingress
 
@@ -195,6 +195,7 @@ If you want to create artifacts in other regions, complete these same steps but 
     - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/aws-global`
     - [ ] Get latest modules: `terraform get`
     - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-global -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
+      - The plan in Atlas **will** fail, this is okay
   - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
   - [ ] In "Variables": add the below Environment Variables with appropriate values
     - [ ] `ATLAS_USERNAME`
@@ -228,6 +229,7 @@ If you want to create artifacts in other regions, complete these same steps but 
     - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/aws-us-east-1-staging`
     - [ ] Get latest modules: `terraform get`
     - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-us-east-1-staging -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
+      - The plan in Atlas **will** fail, this is okay
   - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
   - [ ] In "Variables": add the below Environment Variables with appropriate values
     - [ ] `ATLAS_USERNAME`
@@ -299,14 +301,14 @@ If you'd like to expand outside of `us-east-1`, there are a few changes you need
 
 In the [base.json](../../../packer/aws/ubuntu/base.json) Packer template...
 
-- Add a [new variable](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L7) for the new region's AMI and a [new variable](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L10) for the new Build name. Note that the AMI will need to be from the region you intend to use.
+Add a [new variable](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L7) for the new region's AMI and a [new variable](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L10) for the new Build name. Note that the AMI will need to be from the region you intend to use.
 
 ```
 "us_west_2_ami":   "ami-8ee605bd",
 "us_west_2_name":  "aws-us-west-2-ubuntu-base",
 ```
 
-- Add an [additional builder](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L51-L69) for the new region
+Add an [additional builder](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L51-L69) for the new region
 
 ```
 {
@@ -330,7 +332,7 @@ In the [base.json](../../../packer/aws/ubuntu/base.json) Packer template...
 }
 ```
 
-- Add an [additional post-processor](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L114-L122) for the new region
+Add an [additional post-processor](https://gist.github.com/bensojona/aeb5976ae4e756e35518#file-base-json-L114-L122) for the new region
 
 ```
 {
@@ -365,6 +367,6 @@ If you want to destroy the environment, run the following command in the appropr
 
     $ terraform destroy -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"
 
-**Note:** `terraform destroy` deletes real resources, it is important that you take extra precaution when using this command. Verify that you are in the correct environment, verify that you are using the correct keys, and set any extra configuration necessary to prevent someone from accidentally destroying infrastructure.
-
 There is currently an [issue](https://github.com/hashicorp/terraform/issues/3747) when destroying the `aws_internet_gateway` resource that requires you to run `terraform destroy` a second time as it fails the first.
+
+**Note:** `terraform destroy` deletes real resources, it is important that you take extra precaution when using this command. Verify that you are in the correct environment, verify that you are using the correct keys, and set any extra configuration necessary to prevent someone from accidentally destroying infrastructure.
