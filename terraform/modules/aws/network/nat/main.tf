@@ -15,8 +15,8 @@ resource "aws_security_group" "nat" {
   vpc_id      = "${var.vpc_id}"
   description = "NAT security group"
 
+  tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
-  tags { Name = "${var.name}" }
 
   ingress {
     protocol    = -1
@@ -37,6 +37,7 @@ resource "template_file" "nat" {
   template = "${path.module}/nat.conf.tpl"
 
   lifecycle { create_before_destroy = true }
+
   vars {
     vpc_cidr = "${var.vpc_cidr}"
   }
@@ -60,13 +61,14 @@ resource "aws_instance" "nat" {
   source_dest_check      = false
   vpc_security_group_ids = ["${aws_security_group.nat.id}"]
 
+  tags      { Name = "${var.name}.${count.index+1}" }
   lifecycle { create_before_destroy = true }
-  tags { Name = "${var.name}.${count.index+1}" }
 
   # Because other resources that depend on NAT need it actually
   # configured and working, we stall until `cloud-init` completes.
   provisioner "remote-exec" {
     inline = ["while sudo pkill -0 cloud-init 2>/dev/null; do sleep 2; done"]
+
     connection {
       user         = "ubuntu"
       host         = "${self.private_ip}"

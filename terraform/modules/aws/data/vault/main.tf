@@ -10,10 +10,10 @@ variable "key_name" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "atlas_token" {}
-variable "user_data" {}
-variable "instance_type" {}
-variable "nodes" {}
 variable "amis" {}
+variable "nodes" {}
+variable "instance_type" {}
+variable "user_data" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 
@@ -22,7 +22,8 @@ resource "aws_security_group" "vault" {
   vpc_id      = "${var.vpc_id}"
   description = "Security group for Vault"
 
-  tags { Name = "${var.name}" }
+  tags      { Name = "${var.name}" }
+  lifecycle { create_before_destroy = true }
 
   ingress {
     protocol    = -1
@@ -42,6 +43,8 @@ resource "aws_security_group" "vault" {
 resource "template_file" "user_data" {
   count    = "${var.nodes}"
   template = "${var.user_data}"
+
+  lifecycle { create_before_destroy = true }
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -63,7 +66,8 @@ resource "aws_instance" "vault" {
 
   vpc_security_group_ids = ["${aws_security_group.vault.id}"]
 
-  tags { Name = "${var.name}.${count.index+1}" }
+  tags      { Name = "${var.name}.${count.index+1}" }
+  lifecycle { create_before_destroy = true }
 }
 
 resource "aws_security_group" "elb" {

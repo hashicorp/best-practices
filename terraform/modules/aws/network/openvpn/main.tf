@@ -10,9 +10,9 @@ variable "ami" {}
 variable "instance_type" {}
 variable "bastion_host" {}
 variable "bastion_user" {}
-variable "admin_user" {}
-variable "admin_pw" {}
-variable "dns_ips" {}
+variable "openvpn_user" {}
+variable "openvpn_admin_user" {}
+variable "openvpn_admin_pw" {}
 variable "vpn_cidr" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
@@ -55,10 +55,11 @@ resource "aws_security_group" "openvpn" {
 }
 
 resource "aws_instance" "openvpn" {
-  ami                    = "${var.ami}"
-  instance_type          = "${var.instance_type}"
-  subnet_id              = "${element(split(",", var.public_subnet_ids), count.index)}"
-  key_name               = "${var.key_name}"
+  ami           = "${var.ami}"
+  instance_type = "${var.instance_type}"
+  key_name      = "${var.key_name}"
+  subnet_id     = "${element(split(",", var.public_subnet_ids), count.index)}"
+
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
 
   tags { Name = "${var.name}" }
@@ -66,27 +67,23 @@ resource "aws_instance" "openvpn" {
   # `admin_user` and `admin_pw` need to be passed in to the appliance through `user_data`, see docs -->
   # https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/
   user_data = <<USERDATA
-admin_user=${var.admin_user}
-admin_pw=${var.admin_pw}
+admin_user=${var.openvpn_admin_user}
+admin_pw=${var.openvpn_admin_pw}
 USERDATA
 
   provisioner "remote-exec" {
     connection {
-      user         = "openvpnas"
+      user         = "${var.openvpn_user}"
       host         = "${self.private_ip}"
       key_file     = "${var.key_file}"
       bastion_host = "${var.bastion_host}"
       bastion_user = "${var.bastion_user}"
     }
+
     inline = [
       # Insert our SSL cert
       "echo '${var.ssl_cert}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.crt > /dev/null",
       "echo '${var.ssl_key}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.key > /dev/null",
-      # Turn on custom DNS
-      "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.client.routing.reroute_dns -v custom ConfigPut",
-      # Point custom DNS at consul
-      "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.server.dhcp_option.dns.0 -v ${element(split(",", var.dns_ips), 0)} ConfigPut",
-      "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.server.dhcp_option.dns.1 -v ${element(split(",", var.dns_ips), 1)} ConfigPut",
       # Set VPN network info
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.daemon.0.client.network -v ${element(split("/", var.vpn_cidr), 0)} ConfigPut",
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.daemon.0.client.netmask_bits -v ${element(split("/", var.vpn_cidr), 1)} ConfigPut",

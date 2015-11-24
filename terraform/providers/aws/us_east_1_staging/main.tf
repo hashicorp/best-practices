@@ -25,11 +25,12 @@ variable "nat_instance_type" {}
 
 variable "openvpn_instance_type" {}
 variable "openvpn_ami" {}
+variable "openvpn_user" {}
 variable "openvpn_admin_user" {}
 variable "openvpn_admin_pw" {}
 variable "openvpn_cidr" {}
 
-variable "consul_ips" {}
+variable "consul_nodes" {}
 variable "consul_instance_type" {}
 variable "consul_latest_name" {}
 variable "consul_pinned_name" {}
@@ -101,9 +102,9 @@ module "network" {
   nat_instance_type     = "${var.nat_instance_type}"
   openvpn_instance_type = "${var.openvpn_instance_type}"
   openvpn_ami           = "${var.openvpn_ami}"
+  openvpn_user          = "${var.openvpn_user}"
   openvpn_admin_user    = "${var.openvpn_admin_user}"
   openvpn_admin_pw      = "${var.openvpn_admin_pw}"
-  openvpn_dns_ips       = "${var.consul_ips}"
   openvpn_cidr          = "${var.openvpn_cidr}"
 }
 
@@ -147,15 +148,20 @@ module "data" {
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
 
-  consul_user_data     = "${module.scripts.ubuntu_consul_server_user_data}"
-  consul_instance_type = "${var.consul_instance_type}"
-  consul_ips           = "${var.consul_ips}"
   consul_amis          = "${module.artifact_consul.latest},${module.artifact_consul.latest},${module.artifact_consul.latest}"
+  consul_nodes         = "${var.consul_nodes}"
+  consul_instance_type = "${var.consul_instance_type}"
+  consul_user_data     = "${module.scripts.ubuntu_consul_server_user_data}"
+  openvpn_user         = "${var.openvpn_user}"
+  openvpn_host         = "${module.network.openvpn_private_ip}"
+  key_file             = "${var.site_private_key}"
+  bastion_host         = "${module.network.bastion_public_ip}"
+  bastion_user         = "${module.network.bastion_user}"
 
-  vault_user_data     = "${module.scripts.ubuntu_vault_user_data}"
-  vault_instance_type = "${var.vault_instance_type}"
-  vault_nodes         = "${var.vault_nodes}"
   vault_amis          = "${module.artifact_vault.latest},${module.artifact_vault.latest}"
+  vault_nodes         = "${var.vault_nodes}"
+  vault_instance_type = "${var.vault_instance_type}"
+  vault_user_data     = "${module.scripts.ubuntu_vault_user_data}"
 }
 
 module "artifact_haproxy" {

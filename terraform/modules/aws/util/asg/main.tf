@@ -14,7 +14,7 @@ resource "aws_security_group" "asg" {
   vpc_id      = "${var.vpc_id}"
   description = "Security group for ${var.name} Launch Configuration"
 
-  tags { Name = "${var.name}" }
+  tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
 
   ingress {

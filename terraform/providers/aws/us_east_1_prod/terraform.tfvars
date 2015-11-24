@@ -51,6 +51,7 @@ nat_instance_type = "t2.micro"
 # OpenVPN - https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/
 openvpn_instance_type = "t2.micro"
 openvpn_ami           = "ami-5fe36434"
+openvpn_user          = "openvpnas"
 openvpn_admin_user    = "vpnadmin"
 openvpn_admin_pw      = "sdEKxN2dwDK4FziU6QEKjUeegcC8ZfBYA3fzMgqXfocgQvWGRw"
 openvpn_cidr          = "172.27.139.0/24"
@@ -60,7 +61,7 @@ openvpn_cidr          = "172.27.139.0/24"
 #--------------------------------------------------------------
 
 # Consul
-consul_ips            = "10.139.1.4,10.139.2.4,10.139.3.4"
+consul_nodes          = "3"
 consul_instance_type  = "t2.small"
 consul_latest_name    = "aws-us-east-1-ubuntu-consul"
 consul_pinned_name    = "aws-us-east-1-ubuntu-consul"
