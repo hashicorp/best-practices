@@ -70,6 +70,7 @@ trap "rm -rf $BUILDDIR" INT TERM EXIT
 
 echo "Creating site cert"
 
+OS=$(uname -s)
 BASE="site"
 CSR="${BASE}.csr"
 KEY="${BASE}.key"
@@ -88,7 +89,12 @@ DNS.6 = private.haproxy.${DOMAIN}
 EOF
 ) >> $SITESSLCONF
 
-SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=${DOMAIN}"
+# MinGW/MSYS issue: http://stackoverflow.com/questions/31506158/running-openssl-from-a-bash-script-on-windows-subject-does-not-start-with
+if [[ "${OS}" == "MINGW32"* || "${OS}" == "MINGW64"* || "${OS}" == "MSYS"* ]]; then
+  SUBJ="//C=US\ST=California\L=San Francisco\O=${COMPANY}\OU=${BASE}\CN=${DOMAIN}"
+else
+  SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=${DOMAIN}"
+fi
 
 openssl genrsa -out $KEY 2048
 openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $SITESSLCONF
@@ -113,7 +119,12 @@ IP.2 = 127.0.0.1
 EOF
 ) >> $VAULTSSLCONF
 
-SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=*.${DOMAIN}"
+# MinGW/MSYS issue: http://stackoverflow.com/questions/31506158/running-openssl-from-a-bash-script-on-windows-subject-does-not-start-with
+if [[ "${OS}" == "MINGW32"* || "${OS}" == "MINGW64"* || "${OS}" == "MSYS"* ]]; then
+  SUBJ="//C=US\ST=California\L=San Francisco\O=${COMPANY}\OU=${BASE}\CN=*.${DOMAIN}"
+else
+  SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=*.${DOMAIN}"
+fi
 
 openssl genrsa -out $KEY 2048
 openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $VAULTSSLCONF

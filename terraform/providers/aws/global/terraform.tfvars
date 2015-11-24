@@ -3,7 +3,6 @@
 #--------------------------------------------------------------
 
 domain            = "REPLACE_IN_ATLAS" # e.g. hashicorpdemo.com
-aws_account_id    = "REPLACE_IN_ATLAS" # Get this from https://console.aws.amazon.com/billing/home#/account
 atlas_username    = "REPLACE_IN_ATLAS"
 atlas_environment = "aws-global"
 name              = "global"

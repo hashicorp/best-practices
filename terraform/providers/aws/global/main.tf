@@ -1,5 +1,4 @@
 variable "domain" {}
-variable "aws_account_id" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "name" {}
@@ -58,7 +57,7 @@ module "iam_vault" {
         "iam:DeleteUser"
       ],
       "Resource": [
-        "arn:aws:iam::${replace(var.aws_account_id, "-", "")}:user/vault-*"
+        "*"
       ]
     }
   ]
