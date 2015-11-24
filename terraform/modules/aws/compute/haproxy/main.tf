@@ -50,7 +50,7 @@ resource "aws_security_group" "haproxy" {
 }
 
 resource "template_file" "user_data" {
-  filename = "${var.user_data}"
+  template = "${var.user_data}"
   count    = "${var.nodes}"
 
   vars {

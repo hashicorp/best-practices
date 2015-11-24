@@ -111,7 +111,7 @@ resource "terraform_remote_state" "aws_global" {
 }
 
 resource "template_file" "user_data" {
-  filename = "${var.user_data}"
+  template = "${var.user_data}"
 
   vars {
     atlas_username    = "${var.atlas_username}"

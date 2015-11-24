@@ -34,7 +34,7 @@ resource "aws_security_group" "nat" {
 }
 
 resource "template_file" "nat" {
-  filename = "${path.module}/nat.conf.tpl"
+  template = "${path.module}/nat.conf.tpl"
 
   lifecycle { create_before_destroy = true }
   vars {

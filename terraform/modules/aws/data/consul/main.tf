@@ -35,7 +35,7 @@ resource "aws_security_group" "consul" {
 
 resource "template_file" "user_data" {
   count    = "${length(split(",", var.static_ips))}"
-  filename = "${var.user_data}"
+  template = "${var.user_data}"
 
   vars {
     atlas_username      = "${var.atlas_username}"
