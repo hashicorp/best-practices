@@ -67,6 +67,6 @@ module "vault" {
 output "consul_private_ips" { value = "${module.consul.private_ips}" }
 
 # Vault
-output "vault_private_ips" { value = "${module.vault.private_ips}" }
-output "vault_elb_dns"     { value = "${module.vault.elb_dns}" }
+output "vault_private_ips"  { value = "${module.vault.private_ips}" }
+output "vault_elb_dns"      { value = "${module.vault.elb_dns}" }
 output "vault_private_fqdn" { value = "${module.vault.private_fqdn}" }
