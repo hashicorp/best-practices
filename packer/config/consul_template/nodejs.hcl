@@ -11,12 +11,12 @@ vault {
 
 template {
   source = "/opt/consul_template/vault_generic.ctmpl"
-  destination = "/application/vault/generic.html"
+  destination = "/application/generic.html"
   command = "service nodejs restart"
 }
 
 template {
   source = "/opt/consul_template/vault_aws.ctmpl"
-  destination = "/application/vault/aws.html"
+  destination = "/application/aws.html"
   command = "service nodejs restart"
 }
