@@ -15,10 +15,10 @@ variable "vault_ssl_key" {}
 variable "vault_token" { default = "" }
 
 variable "vpc_cidr" {}
+variable "azs" {}
 variable "private_subnets" {}
 variable "ephemeral_subnets" {}
 variable "public_subnets" {}
-variable "azs" {}
 
 variable "bastion_instance_type" {}
 variable "nat_instance_type" {}
@@ -42,14 +42,14 @@ variable "vault_latest_name" {}
 variable "vault_pinned_name" {}
 variable "vault_pinned_version" {}
 
-variable "haproxy_instance_type" {}
 variable "haproxy_nodes" {}
+variable "haproxy_instance_type" {}
 variable "haproxy_latest_name" {}
 variable "haproxy_pinned_name" {}
 variable "haproxy_pinned_version" {}
 
-variable "nodejs_instance_type" {}
 variable "nodejs_nodes" {}
+variable "nodejs_instance_type" {}
 variable "nodejs_latest_name" {}
 variable "nodejs_pinned_name" {}
 variable "nodejs_pinned_version" {}
@@ -208,15 +208,15 @@ module "compute" {
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
   vault_token        = "${var.vault_token}"
 
-  haproxy_user_data     = "${module.scripts.ubuntu_consul_client_user_data}"
-  haproxy_nodes         = "${var.haproxy_nodes}"
   haproxy_amis          = "${module.artifact_haproxy.latest}"
+  haproxy_nodes         = "${var.haproxy_nodes}"
   haproxy_instance_type = "${var.haproxy_instance_type}"
+  haproxy_user_data     = "${module.scripts.ubuntu_consul_client_user_data}"
 
-  nodejs_user_data     = "${module.scripts.ubuntu_nodejs_user_data}"
-  nodejs_nodes         = "${var.nodejs_nodes}"
   nodejs_ami           = "${module.artifact_nodejs.latest}"
+  nodejs_nodes         = "${var.nodejs_nodes}"
   nodejs_instance_type = "${var.nodejs_instance_type}"
+  nodejs_user_data     = "${module.scripts.ubuntu_nodejs_user_data}"
 }
 
 module "website" {

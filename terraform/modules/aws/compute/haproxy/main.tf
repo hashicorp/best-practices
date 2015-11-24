@@ -6,10 +6,10 @@ variable "subnet_ids" {}
 variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "atlas_token" {}
-variable "user_data" {}
-variable "nodes" {}
 variable "amis" {}
+variable "nodes" {}
 variable "instance_type" {}
+variable "user_data" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 

@@ -13,10 +13,10 @@ variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "atlas_aws_global" {}
 variable "atlas_token" {}
-variable "user_data" {}
-variable "nodes" {}
 variable "ami" {}
+variable "nodes" {}
 variable "instance_type" {}
+variable "user_data" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 variable "vault_token" { default = "" }
