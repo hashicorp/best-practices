@@ -57,9 +57,15 @@ update-ca-certificates
 logger "Checking for Vault token..."
 
 if [[ "x${vault_token}" == "x" || "${vault_token}" == "REPLACE_IN_ATLAS" ]]; then
+  logger "Setting consul_template retry to 1h and stopping service."
+  sed -i -- "s/retry     = \"5s\"/retry     = \"1h\"/g" /etc/consul_template.d/base.hcl
+  service consul_template stop
+
+  logger "Setting envconsul retry to 1h."
+  sed -i -- "s/retry       = \"5s\"/retry       = \"1h\"/g" /etc/envconsul.d/base.hcl
+  service nodejs restart
+
   logger "Exiting without setting Vault policy due to no Vault token."
-  sed -i -- "s/retry = \"5s\"/retry = \"24h\"/g" /etc/consul_template.d/base.hcl
-  sed -i -- "s/retry = \"5s\"/retry = \"24h\"/g" /etc/envconsul.d/base.hcl
 
   exit 1
 fi
@@ -157,6 +163,8 @@ sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/vault_ge
 logger "Update /etc/envconsul.d/nodejs.hcl with secret_path"
 
 sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /etc/envconsul.d/nodejs.hcl
+
+service nodejs restart
 
 logger "--- Transit Backend Setup ---"
 logger "Checking if Transit backend is mounted..."
