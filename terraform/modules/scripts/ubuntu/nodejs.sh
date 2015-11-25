@@ -59,6 +59,7 @@ logger "Checking for Vault token..."
 if [[ "x${vault_token}" == "x" || "${vault_token}" == "REPLACE_IN_ATLAS" ]]; then
   logger "Exiting without setting Vault policy due to no Vault token."
   sed -i -- "s/retry = \"5s\"/retry = \"24h\"/g" /etc/consul_template.d/base.hcl
+  sed -i -- "s/retry = \"5s\"/retry = \"24h\"/g" /etc/envconsul.d/base.hcl
 
   exit 1
 fi
@@ -100,7 +101,7 @@ logger "Generating Vault $NODEJSPOLICYNAME token..."
 (cat <<TOKEN
 {
   "display_name": "$NODEJSPOLICYNAME",
-  "ttl": "5s",
+  "ttl": "1m",
   "no_parent": "true",
   "policies": [
     "$NODEJSPOLICYNAME"
@@ -121,12 +122,17 @@ TOKEN=$(
 
 rm -rf /tmp/$NODEJSPOLICYNAME-token.json
 
-logger "Update /etc/consul_template.d/nodejs.hcl with vault_token and cert_path"
-
 SSLVAULTCERTPATH=$${SSLVAULTCERTPATH//\//\\/}
+
+logger "Update /etc/consul_template.d/nodejs.hcl with vault_token and cert_path"
 
 sed -i -- "s/{{ vault_token }}/$TOKEN/g" /etc/consul_template.d/nodejs.hcl
 sed -i -- "s/{{ cert_path }}/$SSLVAULTCERTPATH/g" /etc/consul_template.d/nodejs.hcl
+
+logger "Update /etc/envconsul.d/nodejs.hcl with vault_token and cert_path"
+
+sed -i -- "s/{{ vault_token }}/$TOKEN/g" /etc/envconsul.d/nodejs.hcl
+sed -i -- "s/{{ cert_path }}/$SSLVAULTCERTPATH/g" /etc/envconsul.d/nodejs.hcl
 
 logger "--- Generic Secret Backend Setup ---"
 logger "Writing $NAME secret..."
@@ -136,17 +142,21 @@ logger $(
     -H "X-Vault-Token: ${vault_token}" \
     -H "Content-Type: application/json" \
     -LX POST \
-    -d "{\"$GENERICSECRETKEY\":\"$GENERICSECRET\"}" \
+    -d "{\"$GENERICSECRETKEY\": \"$GENERICSECRET\", \"ttl\": \"1m\"}" \
     $VAULT/v1/$GENERICSECRETPATH
 )
 
-logger "Update /opt/consul_template/vault_generic.ctmpl"
-
 GENERICSECRETPATH=$${GENERICSECRETPATH//\//\\/}
+
+logger "Update /opt/consul_template/vault_generic.ctmpl"
 
 sed -i -- "s/{{ node_name }}/$NAME/g" /opt/consul_template/vault_generic.ctmpl
 sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /opt/consul_template/vault_generic.ctmpl
 sed -i -- "s/{{ secret_key }}/$GENERICSECRETKEY/g" /opt/consul_template/vault_generic.ctmpl
+
+logger "Update /etc/envconsul.d/nodejs.hcl with secret_path"
+
+sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /etc/envconsul.d/nodejs.hcl
 
 logger "--- Transit Backend Setup ---"
 logger "Checking if Transit backend is mounted..."
@@ -226,7 +236,7 @@ logger $(
   -H "X-Vault-Token: ${vault_token}" \
   -H "Content-Type: application/json" \
   -LX POST \
-  -d "{\"lease\":\"5s\", \"lease_max\":\"10s\"}" \
+  -d "{\"lease\": \"1m\", \"lease_max\": \"2m\"}" \
   $VAULT/v1/aws/config/lease
 )
 

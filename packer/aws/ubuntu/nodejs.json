@@ -22,6 +22,7 @@
       "{{user `config_dir`}}/consul/*",
       "{{user `config_dir`}}/consul_template/*",
       "{{user `config_dir`}}/consul_template/templates/*",
+      "{{user `config_dir`}}/envconsul/*",
       "{{user `config_dir`}}/vault/*",
       "{{user `config_dir`}}/vault/policies/*"
     ],
