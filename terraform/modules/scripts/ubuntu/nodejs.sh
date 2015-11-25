@@ -101,7 +101,7 @@ logger "Generating Vault $NODEJSPOLICYNAME token..."
 (cat <<TOKEN
 {
   "display_name": "$NODEJSPOLICYNAME",
-  "ttl": "5s",
+  "ttl": "1m",
   "no_parent": "true",
   "policies": [
     "$NODEJSPOLICYNAME"
@@ -142,7 +142,7 @@ logger $(
     -H "X-Vault-Token: ${vault_token}" \
     -H "Content-Type: application/json" \
     -LX POST \
-    -d "{\"$GENERICSECRETKEY\": \"$GENERICSECRET\", \"ttl\": \"5s\"}" \
+    -d "{\"$GENERICSECRETKEY\": \"$GENERICSECRET\", \"ttl\": \"1m\"}" \
     $VAULT/v1/$GENERICSECRETPATH
 )
 
@@ -236,7 +236,7 @@ logger $(
   -H "X-Vault-Token: ${vault_token}" \
   -H "Content-Type: application/json" \
   -LX POST \
-  -d "{\"lease\": \"5s\", \"lease_max\": \"10s\"}" \
+  -d "{\"lease\": \"1m\", \"lease_max\": \"2m\"}" \
   $VAULT/v1/aws/config/lease
 )
 
