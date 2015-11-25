@@ -6,4 +6,3 @@ splay       = "5s"
 sanitize    = true
 upcase      = true
 log_level   = "warn"
-kill_signal = "SIGHUP"
