@@ -140,10 +140,10 @@ module "asg" {
   azs                = "${var.azs}"
   private_subnet_ids = "${var.private_subnet_ids}"
   elb_id             = "${aws_elb.nodejs.id}"
-  user_data          = "${template_file.user_data.rendered}"
-  nodes              = "${var.nodes}"
   ami                = "${var.ami}"
+  nodes              = "${var.nodes}"
   instance_type      = "${var.instance_type}"
+  user_data          = "${template_file.user_data.rendered}"
 }
 
 resource "aws_route53_record" "nodejs" {
