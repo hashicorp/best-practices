@@ -70,7 +70,7 @@ SLEEPTIME=1
 cget() { curl -sf "$VAULT/v1/sys/health?standbyok"; }
 
 while ! cget | grep "\"initialized\":true,\"sealed\":false"; do
-  if [ $SLEEPTIME -gt 24 ]; then
+  if [ $SLEEPTIME -gt 15 ]; then
     logger "ERROR: VAULT SETUP NOT COMPLETE! Manual intervention required."
     exit 2
   else
