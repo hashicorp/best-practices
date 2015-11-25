@@ -5,14 +5,14 @@ variable "key_name" {}
 variable "azs" {}
 variable "private_subnet_ids" {}
 variable "elb_id" {}
-variable "user_data" {}
-variable "nodes" {}
 variable "ami" {}
+variable "nodes" {}
 variable "instance_type" {}
+variable "user_data" {}
 
 resource "aws_security_group" "asg" {
   vpc_id      = "${var.vpc_id}"
-  description = "Security group for ${var.name} Launch Configuration"
+  description = "Security group for ${var.name} ASG Launch Configuration"
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
