@@ -18,7 +18,8 @@ resource "aws_security_group" "haproxy" {
   vpc_id      = "${var.vpc_id}"
   description = "HAProxy security group"
 
-  tags { Name = "${var.name}" }
+  tags      { Name = "${var.name}" }
+  lifecycle { create_before_destroy = true }
 
   ingress {
     protocol    = "tcp"
@@ -53,6 +54,8 @@ resource "template_file" "user_data" {
   template = "${var.user_data}"
   count    = "${var.nodes}"
 
+  lifecycle { create_before_destroy = true }
+
   vars {
     atlas_username    = "${var.atlas_username}"
     atlas_environment = "${var.atlas_environment}"
@@ -71,7 +74,8 @@ resource "aws_instance" "haproxy" {
 
   vpc_security_group_ids = ["${aws_security_group.haproxy.id}"]
 
-  tags { Name = "${var.name}" }
+  tags      { Name = "${var.name}" }
+  lifecycle { create_before_destroy = true }
 }
 
 resource "aws_route53_record" "haproxy_public" {
