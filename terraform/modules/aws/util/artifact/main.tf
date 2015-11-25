@@ -11,6 +11,7 @@ resource "atlas_artifact" "latest" {
   version  = "latest"
 
   lifecycle { create_before_destroy = true }
+
   metadata {
     region = "${var.region}"
   }
@@ -22,6 +23,7 @@ resource "atlas_artifact" "pinned" {
   version  = "${var.pinned_version}"
 
   lifecycle { create_before_destroy = true }
+
   metadata {
     region = "${var.region}"
   }

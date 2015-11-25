@@ -17,15 +17,15 @@ variable "sub_domain" {}
 variable "route_zone_id" {}
 variable "vault_token" { default = "" }
 
-variable "haproxy_user_data" {}
-variable "haproxy_nodes" {}
 variable "haproxy_amis" {}
+variable "haproxy_nodes" {}
 variable "haproxy_instance_type" {}
+variable "haproxy_user_data" {}
 
-variable "nodejs_user_data" {}
-variable "nodejs_nodes" {}
 variable "nodejs_ami" {}
+variable "nodejs_nodes" {}
 variable "nodejs_instance_type" {}
+variable "nodejs_user_data" {}
 
 module "haproxy" {
   source = "./haproxy"
@@ -38,10 +38,10 @@ module "haproxy" {
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
-  user_data          = "${var.haproxy_user_data}"
-  nodes              = "${var.haproxy_nodes}"
   amis               = "${var.haproxy_amis}"
+  nodes              = "${var.haproxy_nodes}"
   instance_type      = "${var.haproxy_instance_type}"
+  user_data          = "${var.haproxy_user_data}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
 }
@@ -64,10 +64,10 @@ module "nodejs" {
   atlas_environment  = "${var.atlas_environment}"
   atlas_aws_global   = "${var.atlas_aws_global}"
   atlas_token        = "${var.atlas_token}"
-  user_data          = "${var.nodejs_user_data}"
-  nodes              = "${var.nodejs_nodes}"
   ami                = "${var.nodejs_ami}"
+  nodes              = "${var.nodejs_nodes}"
   instance_type      = "${var.nodejs_instance_type}"
+  user_data          = "${var.nodejs_user_data}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
   vault_token        = "${var.vault_token}"

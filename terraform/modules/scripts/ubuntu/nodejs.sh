@@ -42,13 +42,6 @@ sed -i -- "s/{{ node_name }}/$NAME/g" /etc/consul.d/base.json
 
 service consul restart
 
-if [[ "x${vault_token}" == "x" || "${vault_token}" == "REPLACE_IN_ATLAS" ]]; then
-  logger "Exiting without setting Vault policy due to no Vault token."
-  sed -i -- "s/retry = \"5s\"/retry = \"24h\"/g" /etc/consul_template.d/base.hcl
-
-  exit 1
-fi
-
 logger "Updating certs..."
 
 mkdir -p $SSLCERTDIR
@@ -60,6 +53,15 @@ echo "${vault_ssl_cert}" | sudo tee $SSLVAULTCERTPATH > /dev/null
 cp $SSLSITECERTPATH /usr/local/share/ca-certificates/.
 cp $SSLVAULTCERTPATH /usr/local/share/ca-certificates/.
 update-ca-certificates
+
+logger "Checking for Vault token..."
+
+if [[ "x${vault_token}" == "x" || "${vault_token}" == "REPLACE_IN_ATLAS" ]]; then
+  logger "Exiting without setting Vault policy due to no Vault token."
+  sed -i -- "s/retry = \"5s\"/retry = \"24h\"/g" /etc/consul_template.d/base.hcl
+
+  exit 1
+fi
 
 logger "Waiting for Vault to become ready..."
 

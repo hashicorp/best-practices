@@ -15,8 +15,8 @@ resource "aws_subnet" "public" {
   availability_zone = "${element(split(",", var.azs), count.index)}"
   count             = "${length(split(",", var.cidrs))}"
 
+  tags      { Name = "${var.name}.${element(split(",", var.azs), count.index)}" }
   lifecycle { create_before_destroy = true }
-  tags { Name = "${var.name}.${element(split(",", var.azs), count.index)}" }
 
   map_public_ip_on_launch = true
 }

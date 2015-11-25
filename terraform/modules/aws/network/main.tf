@@ -16,9 +16,9 @@ variable "bastion_instance_type" {}
 variable "nat_instance_type" {}
 variable "openvpn_instance_type" {}
 variable "openvpn_ami" {}
+variable "openvpn_user" {}
 variable "openvpn_admin_user" {}
 variable "openvpn_admin_pw" {}
-variable "openvpn_dns_ips" {}
 variable "openvpn_cidr" {}
 
 module "vpc" {
@@ -97,24 +97,24 @@ module "ephemeral_subnets" {
 module "openvpn" {
   source = "./openvpn"
 
-  name              = "${var.name}-openvpn"
-  vpc_id            = "${module.vpc.vpc_id}"
-  vpc_cidr          = "${module.vpc.vpc_cidr}"
-  public_subnet_ids = "${module.public_subnet.subnet_ids}"
-  ssl_cert          = "${var.ssl_cert}"
-  ssl_key           = "${var.ssl_key}"
-  key_name          = "${var.key_name}"
-  key_file          = "${var.key_file}"
-  ami               = "${var.openvpn_ami}"
-  instance_type     = "${var.openvpn_instance_type}"
-  bastion_host      = "${module.bastion.public_ip}"
-  bastion_user      = "${module.bastion.user}"
-  admin_user        = "${var.openvpn_admin_user}"
-  admin_pw          = "${var.openvpn_admin_pw}"
-  dns_ips           = "${var.openvpn_dns_ips}"
-  vpn_cidr          = "${var.openvpn_cidr}"
-  sub_domain        = "${var.sub_domain}"
-  route_zone_id     = "${var.route_zone_id}"
+  name               = "${var.name}-openvpn"
+  vpc_id             = "${module.vpc.vpc_id}"
+  vpc_cidr           = "${module.vpc.vpc_cidr}"
+  public_subnet_ids  = "${module.public_subnet.subnet_ids}"
+  ssl_cert           = "${var.ssl_cert}"
+  ssl_key            = "${var.ssl_key}"
+  key_name           = "${var.key_name}"
+  key_file           = "${var.key_file}"
+  ami                = "${var.openvpn_ami}"
+  instance_type      = "${var.openvpn_instance_type}"
+  bastion_host       = "${module.bastion.public_ip}"
+  bastion_user       = "${module.bastion.user}"
+  openvpn_user       = "${var.openvpn_user}"
+  openvpn_admin_user = "${var.openvpn_admin_user}"
+  openvpn_admin_pw   = "${var.openvpn_admin_pw}"
+  vpn_cidr           = "${var.openvpn_cidr}"
+  sub_domain         = "${var.sub_domain}"
+  route_zone_id      = "${var.route_zone_id}"
 }
 
 resource "aws_network_acl" "acl" {

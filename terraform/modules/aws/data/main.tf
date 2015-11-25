@@ -13,15 +13,20 @@ variable "atlas_token" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 
-variable "consul_user_data" {}
-variable "consul_instance_type" {}
-variable "consul_ips" {}
 variable "consul_amis" {}
+variable "consul_nodes" {}
+variable "consul_instance_type" {}
+variable "consul_user_data" {}
+variable "openvpn_user" {}
+variable "openvpn_host" {}
+variable "key_file" {}
+variable "bastion_host" {}
+variable "bastion_user" {}
 
-variable "vault_user_data" {}
-variable "vault_instance_type" {}
-variable "vault_nodes" {}
 variable "vault_amis" {}
+variable "vault_nodes" {}
+variable "vault_instance_type" {}
+variable "vault_user_data" {}
 
 module "consul" {
   source = "./consul"
@@ -34,10 +39,15 @@ module "consul" {
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
-  user_data          = "${var.consul_user_data}"
-  instance_type      = "${var.consul_instance_type}"
-  static_ips         = "${var.consul_ips}"
   amis               = "${var.consul_amis}"
+  nodes              = "${var.consul_nodes}"
+  instance_type      = "${var.consul_instance_type}"
+  user_data          = "${var.consul_user_data}"
+  openvpn_user       = "${var.openvpn_user}"
+  openvpn_host       = "${var.openvpn_host}"
+  key_file           = "${var.key_file}"
+  bastion_host       = "${var.bastion_host}"
+  bastion_user       = "${var.bastion_user}"
 }
 
 module "vault" {
@@ -55,10 +65,10 @@ module "vault" {
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
-  user_data          = "${var.vault_user_data}"
-  instance_type      = "${var.vault_instance_type}"
-  nodes              = "${var.vault_nodes}"
   amis               = "${var.vault_amis}"
+  nodes              = "${var.vault_nodes}"
+  instance_type      = "${var.vault_instance_type}"
+  user_data          = "${var.vault_user_data}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
 }

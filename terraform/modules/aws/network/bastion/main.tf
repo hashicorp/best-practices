@@ -11,8 +11,8 @@ resource "aws_security_group" "bastion" {
   vpc_id      = "${var.vpc_id}"
   description = "Bastion security group"
 
+  tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
-  tags { Name = "${var.name}" }
 
   ingress {
     protocol    = -1
@@ -50,8 +50,8 @@ resource "aws_instance" "bastion" {
   key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
 
+  tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
-  tags { Name = "${var.name}" }
 }
 
 output "user"       { value = "ubuntu" }

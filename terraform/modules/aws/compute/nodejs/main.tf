@@ -13,10 +13,10 @@ variable "atlas_username" {}
 variable "atlas_environment" {}
 variable "atlas_aws_global" {}
 variable "atlas_token" {}
-variable "user_data" {}
-variable "nodes" {}
 variable "ami" {}
+variable "nodes" {}
 variable "instance_type" {}
+variable "user_data" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 variable "vault_token" { default = "" }
@@ -27,8 +27,8 @@ resource "aws_security_group" "elb" {
   vpc_id      = "${var.vpc_id}"
   description = "Security group for Nodejs ELB"
 
+  tags      { Name = "${var.name}-elb" }
   lifecycle { create_before_destroy = true }
-  tags { Name = "${var.name}-elb" }
 
   ingress {
     protocol    = "tcp"
@@ -113,6 +113,8 @@ resource "terraform_remote_state" "aws_global" {
 resource "template_file" "user_data" {
   template = "${var.user_data}"
 
+  lifecycle { create_before_destroy = true }
+
   vars {
     atlas_username    = "${var.atlas_username}"
     atlas_environment = "${var.atlas_environment}"
@@ -123,12 +125,9 @@ resource "template_file" "user_data" {
     vault_token       = "${var.vault_token}"
     vault_policy      = "${var.vault_policy}"
     aws_region        = "${var.region}"
-
     aws_access_id     = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_access_ids), index(split(",", terraform_remote_state.aws_global.output.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
     aws_secret_key    = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_secret_keys), index(split(",", terraform_remote_state.aws_global.output.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
   }
-
-  lifecycle { create_before_destroy = true }
 }
 
 module "asg" {
