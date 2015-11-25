@@ -25,6 +25,9 @@ cp $CONFIGDIR/consul_template/nodejs.hcl /etc/consul_template.d/nodejs.hcl
 cp $CONFIGDIR/consul_template/templates/vault_aws.ctmpl /opt/consul_template/vault_aws.ctmpl
 cp $CONFIGDIR/consul_template/templates/vault_generic.ctmpl /opt/consul_template/vault_generic.ctmpl
 
+# envconsul config
+cp $CONFIGDIR/envconsul/nodejs.hcl /etc/envconsul.d/nodejs.hcl
+
 # Vault Policy config
 cp $CONFIGDIR/vault/policies/nodejs.json $VAULTPOLICIES/nodejs.json
 cp $CONFIGDIR/vault/policies/aws_nodejs.json $VAULTPOLICIES/aws_nodejs.json

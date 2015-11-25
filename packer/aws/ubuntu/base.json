@@ -21,6 +21,7 @@
       "{{user `config_dir`}}/consul/*",
       "{{user `config_dir`}}/consul_template/*",
       "{{user `config_dir`}}/consul_template/templates/*",
+      "{{user `config_dir`}}/envconsul/*",
       "{{user `config_dir`}}/vault/*",
       "{{user `config_dir`}}/vault/policies/*"
     ],
@@ -75,6 +76,7 @@
         "sh /ops/{{user `scripts_dir`}}/dependencies.sh",
         "sh /ops/{{user `scripts_dir`}}/consul.sh {{user `config_dir`}} {{user `scripts_dir`}}",
         "sh /ops/{{user `scripts_dir`}}/consul_template.sh {{user `config_dir`}} {{user `scripts_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/envconsul.sh {{user `config_dir`}}",
         "sh /ops/{{user `scripts_dir`}}/dnsmasq.sh {{user `dns_listen_addr`}}",
         "sh /ops/{{user `scripts_dir`}}/cleanup.sh"
       ]
