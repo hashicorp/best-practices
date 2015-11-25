@@ -15,7 +15,7 @@ unzip envconsul.zip -d /usr/local/bin
 chmod 0755 /usr/local/bin/envconsul
 chown root:root /usr/local/bin/envconsul
 
-echo Configuring Consul Template...
+echo Configuring envconsul...
 mkdir -p $ECCONFIGDIR
 chmod 755 $ECCONFIGDIR
 
