@@ -33,6 +33,7 @@ resource "aws_security_group" "rolling" {
 }
 
 resource "aws_launch_configuration" "rolling" {
+  name_prefix     = "${var.name}"
   image_id        = "${var.ami}"
   instance_type   = "${var.instance_type}"
   key_name        = "${var.key_name}"
@@ -43,7 +44,7 @@ resource "aws_launch_configuration" "rolling" {
 }
 
 resource "aws_autoscaling_group" "rolling" {
-  name                 = "${var.name}.${var.ami}"
+  name                 = "${var.name}.${aws_launch_configuration.rolling.name}"
   launch_configuration = "${aws_launch_configuration.rolling.name}"
   desired_capacity     = "${var.nodes}"
   min_size             = "${var.nodes}"

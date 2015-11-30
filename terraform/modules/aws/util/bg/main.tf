@@ -37,6 +37,7 @@ resource "aws_security_group" "bg" {
 }
 
 resource "aws_launch_configuration" "blue" {
+  name_prefix     = "${var.name}.blue"
   image_id        = "${var.blue_ami}"
   instance_type   = "${var.blue_instance_type}"
   key_name        = "${var.key_name}"
@@ -47,7 +48,7 @@ resource "aws_launch_configuration" "blue" {
 }
 
 resource "aws_autoscaling_group" "blue" {
-  name                 = "${var.name}.blue.${var.blue_ami}"
+  name                 = "${var.name}.blue.${aws_launch_configuration.blue.name}"
   launch_configuration = "${aws_launch_configuration.blue.name}"
   desired_capacity     = "${var.blue_nodes}"
   min_size             = "${var.blue_nodes}"
@@ -67,6 +68,7 @@ resource "aws_autoscaling_group" "blue" {
 }
 
 resource "aws_launch_configuration" "green" {
+  name_prefix     = "${var.name}.green"
   image_id        = "${var.green_ami}"
   instance_type   = "${var.green_instance_type}"
   key_name        = "${var.key_name}"
@@ -77,7 +79,7 @@ resource "aws_launch_configuration" "green" {
 }
 
 resource "aws_autoscaling_group" "green" {
-  name                 = "${var.name}.green.${var.green_ami}"
+  name                 = "${var.name}.green.${aws_launch_configuration.green.name}"
   launch_configuration = "${aws_launch_configuration.green.name}"
   desired_capacity     = "${var.green_nodes}"
   min_size             = "${var.green_nodes}"
