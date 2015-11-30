@@ -16,7 +16,7 @@ variable "green_user_data" {}
 
 resource "aws_security_group" "bg" {
   vpc_id      = "${var.vpc_id}"
-  description = "Security group for ${var.name} Blue/Green Launch Configuration"
+  description = "Security group for ${var.name} Blue/Green deploy Launch Configuration"
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }

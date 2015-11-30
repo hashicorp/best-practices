@@ -1,4 +1,4 @@
-variable "name" { default = "asg" }
+variable "name" { default = "rolling" }
 variable "vpc_id" {}
 variable "vpc_cidr" {}
 variable "key_name" {}
@@ -10,9 +10,9 @@ variable "nodes" {}
 variable "instance_type" {}
 variable "user_data" {}
 
-resource "aws_security_group" "asg" {
+resource "aws_security_group" "rolling" {
   vpc_id      = "${var.vpc_id}"
-  description = "Security group for ${var.name} ASG Launch Configuration"
+  description = "Security group for ${var.name} Rolling deploy Launch Configuration"
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
@@ -32,19 +32,19 @@ resource "aws_security_group" "asg" {
   }
 }
 
-resource "aws_launch_configuration" "asg" {
+resource "aws_launch_configuration" "rolling" {
   image_id        = "${var.ami}"
   instance_type   = "${var.instance_type}"
   key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.asg.id}"]
+  security_groups = ["${aws_security_group.rolling.id}"]
   user_data       = "${var.user_data}"
 
   lifecycle { create_before_destroy = true }
 }
 
-resource "aws_autoscaling_group" "asg" {
+resource "aws_autoscaling_group" "rolling" {
   name                 = "${var.name}.${var.ami}"
-  launch_configuration = "${aws_launch_configuration.asg.name}"
+  launch_configuration = "${aws_launch_configuration.rolling.name}"
   desired_capacity     = "${var.nodes}"
   min_size             = "${var.nodes}"
   max_size             = "${var.nodes}"

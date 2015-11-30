@@ -130,8 +130,8 @@ resource "template_file" "user_data" {
   }
 }
 
-module "asg" {
-  source = "../../util/asg"
+module "rolling" {
+  source = "../../util/rolling"
 
   name               = "${var.name}"
   vpc_id             = "${var.vpc_id}"
