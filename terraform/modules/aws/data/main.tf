@@ -19,7 +19,7 @@ variable "consul_instance_type" {}
 variable "consul_user_data" {}
 variable "openvpn_user" {}
 variable "openvpn_host" {}
-variable "key_file" {}
+variable "private_key" {}
 variable "bastion_host" {}
 variable "bastion_user" {}
 
@@ -45,7 +45,7 @@ module "consul" {
   user_data          = "${var.consul_user_data}"
   openvpn_user       = "${var.openvpn_user}"
   openvpn_host       = "${var.openvpn_host}"
-  key_file           = "${var.key_file}"
+  private_key        = "${var.private_key}"
   bastion_host       = "${var.bastion_host}"
   bastion_user       = "${var.bastion_user}"
 }

@@ -12,7 +12,7 @@ variable "instance_type" {}
 variable "user_data" {}
 variable "openvpn_user" {}
 variable "openvpn_host" {}
-variable "key_file" {}
+variable "private_key" {}
 variable "bastion_host" {}
 variable "bastion_user" {}
 
@@ -73,7 +73,7 @@ resource "null_resource" "openvpn_dns" {
     connection {
       user         = "${var.openvpn_user}"
       host         = "${var.openvpn_host}"
-      key_file     = "${var.key_file}"
+      private_key  = "${var.private_key}"
       bastion_host = "${var.bastion_host}"
       bastion_user = "${var.bastion_user}"
     }

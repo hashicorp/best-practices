@@ -94,7 +94,7 @@ module "network" {
   ssl_cert          = "${var.site_ssl_cert}"
   ssl_key           = "${var.site_ssl_key}"
   key_name          = "${module.site_key.key_name}"
-  key_file          = "${var.site_private_key}"
+  private_key       = "${var.site_private_key}"
   sub_domain        = "${var.sub_domain}"
   route_zone_id     = "${terraform_remote_state.aws_global.output.zone_id}"
 
@@ -154,7 +154,7 @@ module "data" {
   consul_user_data     = "${module.scripts.ubuntu_consul_server_user_data}"
   openvpn_user         = "${var.openvpn_user}"
   openvpn_host         = "${module.network.openvpn_private_ip}"
-  key_file             = "${var.site_private_key}"
+  private_key          = "${var.site_private_key}"
   bastion_host         = "${module.network.bastion_public_ip}"
   bastion_user         = "${module.network.bastion_user}"
 
