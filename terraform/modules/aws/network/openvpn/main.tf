@@ -5,7 +5,7 @@ variable "public_subnet_ids" {}
 variable "ssl_cert" {}
 variable "ssl_key" {}
 variable "key_name" {}
-variable "key_file" {}
+variable "private_key" {}
 variable "ami" {}
 variable "instance_type" {}
 variable "bastion_host" {}
@@ -75,7 +75,7 @@ USERDATA
     connection {
       user         = "${var.openvpn_user}"
       host         = "${self.private_ip}"
-      key_file     = "${var.key_file}"
+      private_key  = "${var.private_key}"
       bastion_host = "${var.bastion_host}"
       bastion_user = "${var.bastion_user}"
     }

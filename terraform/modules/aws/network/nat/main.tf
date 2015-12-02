@@ -5,7 +5,7 @@ variable "region" {}
 variable "public_subnets" {}
 variable "public_subnet_ids" {}
 variable "key_name" {}
-variable "key_file" {}
+variable "private_key" {}
 variable "instance_type" {}
 variable "bastion_host" {}
 variable "bastion_user" {}
@@ -72,7 +72,7 @@ resource "aws_instance" "nat" {
     connection {
       user         = "ubuntu"
       host         = "${self.private_ip}"
-      key_file     = "${var.key_file}"
+      private_key  = "${var.private_key}"
       bastion_host = "${var.bastion_host}"
       bastion_user = "${var.bastion_user}"
     }

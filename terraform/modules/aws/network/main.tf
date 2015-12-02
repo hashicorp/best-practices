@@ -8,7 +8,7 @@ variable "public_subnets" {}
 variable "ssl_cert" {}
 variable "ssl_key" {}
 variable "key_name" {}
-variable "key_file" {}
+variable "private_key" {}
 variable "sub_domain" {}
 variable "route_zone_id" {}
 
@@ -59,7 +59,7 @@ module "nat" {
   public_subnets    = "${var.public_subnets}"
   public_subnet_ids = "${module.public_subnet.subnet_ids}"
   key_name          = "${var.key_name}"
-  key_file          = "${var.key_file}"
+  private_key       = "${var.private_key}"
   instance_type     = "${var.nat_instance_type}"
   bastion_host      = "${module.bastion.public_ip}"
   bastion_user      = "${module.bastion.user}"
@@ -104,7 +104,7 @@ module "openvpn" {
   ssl_cert           = "${var.ssl_cert}"
   ssl_key            = "${var.ssl_key}"
   key_name           = "${var.key_name}"
-  key_file           = "${var.key_file}"
+  private_key        = "${var.private_key}"
   ami                = "${var.openvpn_ami}"
   instance_type      = "${var.openvpn_instance_type}"
   bastion_host       = "${module.bastion.public_ip}"
