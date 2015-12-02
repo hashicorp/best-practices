@@ -70,7 +70,7 @@ There are certain resources in this project that require the use of keys and cer
 
 ### Create and Configure Artifacts
 
-Use the [New Build Configuration](https://atlas.hashicorp.com/builds/new) tool to create each new Build Configuration below. Enter the names provided **as you go through the checklist** and leave the **Automatically build on version uploads** box _unchecked_ for each.
+Use the [New Build Configuration](https://atlas.hashicorp.com/builds/new) tool to create each new Build Configuration below. Enter the names provided **as you go through the checklist** and be sure to leave the **Automatically build on version uploads** and **Connect build configuration to a GitHub repository** boxes _unchecked_ for each.
 
 After creating each Build Configuration, there is some additional configuration you'll need to do. The summary of what will need to be completed for each Build Configuration is below, the relevant values are provided **as you go through the checklist**.
 
@@ -180,7 +180,7 @@ If you want to create artifacts in other regions, complete these same steps but 
 
 ### Provision the `aws-global` Environment
 
-- [ ] Use the [Terraform Configuration Import](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-global` Environment from GitHub
+- [ ] Use the [Import Terraform Configuration from GitHub](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-global` Environment from GitHub
   - [ ] **Name the environment**: `YOUR_ATLAS_ORG/aws-global`
   - [ ] **GitHub repository**: `YOUR_GITHUB_USERNAME/best-practices`
   - [ ] **Path to directory of Terraform files**: `terraform`
@@ -214,7 +214,7 @@ If you want to create artifacts in other regions, complete these same steps but 
 
 ### Provision the `aws-us-east-1-staging` Environment
 
-- [ ] Use the [Terraform Configuration Import](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-us-east-1-staging` Environment from GitHub
+- [ ] Use the [Import Terraform Configuration from GitHub](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-us-east-1-staging` Environment from GitHub
   - [ ] **Name the environment**: `YOUR_ATLAS_ORG/aws-us-east-1-staging`
   - [ ] **GitHub repository**: `YOUR_GITHUB_USERNAME/best-practices`
   - [ ] **Path to directory of Terraform files**: `terraform`
