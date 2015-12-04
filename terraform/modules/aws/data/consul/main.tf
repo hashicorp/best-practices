@@ -1,20 +1,24 @@
-variable "name" { default = "consul" }
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "private_subnet_ids" {}
-variable "key_name" {}
-variable "atlas_username" {}
-variable "atlas_environment" {}
-variable "atlas_token" {}
-variable "amis" {}
-variable "nodes" {}
-variable "instance_type" {}
-variable "user_data" {}
-variable "openvpn_user" {}
-variable "openvpn_host" {}
-variable "private_key" {}
-variable "bastion_host" {}
-variable "bastion_user" {}
+#--------------------------------------------------------------
+# This module creates all resources necessary for Consul
+#--------------------------------------------------------------
+
+variable "name"               { default = "consul" }
+variable "vpc_id"             { }
+variable "vpc_cidr"           { }
+variable "private_subnet_ids" { }
+variable "key_name"           { }
+variable "atlas_username"     { }
+variable "atlas_environment"  { }
+variable "atlas_token"        { }
+variable "amis"               { }
+variable "nodes"              { }
+variable "instance_type"      { }
+variable "user_data"          { }
+variable "openvpn_user"       { }
+variable "openvpn_host"       { }
+variable "private_key"        { }
+variable "bastion_host"       { }
+variable "bastion_user"       { }
 
 resource "aws_security_group" "consul" {
   name        = "${var.name}"

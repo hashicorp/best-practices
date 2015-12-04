@@ -1,31 +1,35 @@
-variable "name" {}
-variable "region" {}
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "key_name" {}
-variable "azs" {}
-variable "private_subnet_ids" {}
-variable "public_subnet_ids" {}
-variable "site_ssl_cert" {}
-variable "site_ssl_key" {}
-variable "vault_ssl_cert" {}
-variable "atlas_username" {}
-variable "atlas_environment" {}
-variable "atlas_aws_global" {}
-variable "atlas_token" {}
-variable "sub_domain" {}
-variable "route_zone_id" {}
-variable "vault_token" { default = "" }
+#--------------------------------------------------------------
+# This module creates all compute resources
+#--------------------------------------------------------------
 
-variable "haproxy_amis" {}
-variable "haproxy_nodes" {}
-variable "haproxy_instance_type" {}
-variable "haproxy_user_data" {}
+variable "name"               { }
+variable "region"             { }
+variable "vpc_id"             { }
+variable "vpc_cidr"           { }
+variable "key_name"           { }
+variable "azs"                { }
+variable "private_subnet_ids" { }
+variable "public_subnet_ids"  { }
+variable "site_ssl_cert"      { }
+variable "site_ssl_key"       { }
+variable "vault_ssl_cert"     { }
+variable "atlas_username"     { }
+variable "atlas_environment"  { }
+variable "atlas_aws_global"   { }
+variable "atlas_token"        { }
+variable "sub_domain"         { }
+variable "route_zone_id"      { }
+variable "vault_token"        { default = "" }
 
-variable "nodejs_ami" {}
-variable "nodejs_nodes" {}
-variable "nodejs_instance_type" {}
-variable "nodejs_user_data" {}
+variable "haproxy_amis"          { }
+variable "haproxy_node_count"    { }
+variable "haproxy_instance_type" { }
+variable "haproxy_user_data"     { }
+
+variable "nodejs_ami"           { }
+variable "nodejs_node_count"    { }
+variable "nodejs_instance_type" { }
+variable "nodejs_user_data"     { }
 
 module "haproxy" {
   source = "./haproxy"
@@ -39,7 +43,7 @@ module "haproxy" {
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
   amis               = "${var.haproxy_amis}"
-  nodes              = "${var.haproxy_nodes}"
+  nodes              = "${var.haproxy_node_count}"
   instance_type      = "${var.haproxy_instance_type}"
   user_data          = "${var.haproxy_user_data}"
   sub_domain         = "${var.sub_domain}"
@@ -65,7 +69,7 @@ module "nodejs" {
   atlas_aws_global   = "${var.atlas_aws_global}"
   atlas_token        = "${var.atlas_token}"
   ami                = "${var.nodejs_ami}"
-  nodes              = "${var.nodejs_nodes}"
+  nodes              = "${var.nodejs_node_count}"
   instance_type      = "${var.nodejs_instance_type}"
   user_data          = "${var.nodejs_user_data}"
   sub_domain         = "${var.sub_domain}"
@@ -73,10 +77,10 @@ module "nodejs" {
   vault_token        = "${var.vault_token}"
 }
 
-output "haproxy_private_ips"     { value = "${module.haproxy.private_ips}" }
-output "haproxy_public_ips"      { value = "${module.haproxy.public_ips}" }
-output "haproxy_private_fqdn"    { value = "${module.haproxy.private_fqdn}" }
-output "haproxy_public_fqdn"     { value = "${module.haproxy.public_fqdn}" }
+output "haproxy_private_ips"  { value = "${module.haproxy.private_ips}" }
+output "haproxy_public_ips"   { value = "${module.haproxy.public_ips}" }
+output "haproxy_private_fqdn" { value = "${module.haproxy.private_fqdn}" }
+output "haproxy_public_fqdn"  { value = "${module.haproxy.public_fqdn}" }
 
 output "nodejs_zone_id"      { value = "${module.nodejs.zone_id}" }
 output "nodejs_elb_dns"      { value = "${module.nodejs.elb_dns}" }

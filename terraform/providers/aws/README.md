@@ -53,18 +53,18 @@ Set the below environment variables if you'll be using Packer or Terraform local
 
 ### Generate Keys and Certs
 
-There are certain resources in this project that require the use of keys and certs to validate identity, such as Terraform's `remote-exec` provisioners and TLS in Consul/Vault. For the sake of quicker & easier onboarding, we've created a [gen\_key.sh](../../../scripts/gen_key.sh) and [gen\_cert.sh](../../../scripts/gen_cert.sh) script that can generate these for you.
+There are certain resources in this project that require the use of keys and certs to validate identity, such as Terraform's `remote-exec` provisioners and TLS in Consul/Vault. For the sake of quicker & easier onboarding, we've created a [gen\_key.sh](../../../setup/gen_key.sh) and [gen\_cert.sh](../../../setup/gen_cert.sh) script that can generate these for you.
 
 **Note**: While using this for PoC purposes, these keys and certs should suffice. However, as you start to move your actual applications into this infrastructure, you'll likely want to replace these self-signed certs with certs that are signed by a CA and use keys that are created with your security principles in mind.
 
 - [ ] Generate `site` keys
-  - [ ] Run `sh gen_key.sh site` in [scripts](../../../scripts)
+  - [ ] Run `sh gen_key.sh site` in [setup](../../../setup)
     - If you enter the path of an existing private key as an optional second parameter, it will create a public (`.pub`) key from the existing private (`.pem`) key specified (e.g. `sh gen_key.sh site ~/.ssh/my-existing-private-key.pem`)
-    - This will generate a public (`.pub`) and private (`.pem`) key in the [scripts/.](../../../scripts) directory
+    - This will generate a public (`.pub`) and private (`.pem`) key in the [setup/.](../../../setup) directory
 - [ ] Generate `site` and `vault` certs
-  - [ ] Run `sh gen_cert.sh YOUR_DOMAIN YOUR_COMPANY` in [scripts](../../../scripts) (e.g. `sh gen_cert.sh hashicorpdemo.com HashiCorp`)
+  - [ ] Run `sh gen_cert.sh YOUR_DOMAIN YOUR_COMPANY` in [setup](../../../setup) (e.g. `sh gen_cert.sh hashicorpdemo.com HashiCorp`)
     - If you don't have a domain currently, you can make one up, or grab one from a service like [NameCheap](https://www.namecheap.com/) to do your testing on
-    - This will generate 2 certs, one named `site` (external self-signed cert for browsers) and one named `vault` (internal self-signed cert for Consul/Vault TLS), both within the [scripts/.](../../../scripts) directory
+    - This will generate 2 certs, one named `site` (external self-signed cert for browsers) and one named `vault` (internal self-signed cert for Consul/Vault TLS), both within the [setup/.](../../../setup) directory
 - [ ] Move all keys & certs created here out of the repository and into a secure location
   - No keys or certs should ever be checked into version control
 

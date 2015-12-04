@@ -1,17 +1,21 @@
-variable "name" { default = "haproxy" }
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "key_name" {}
-variable "subnet_ids" {}
-variable "atlas_username" {}
-variable "atlas_environment" {}
-variable "atlas_token" {}
-variable "amis" {}
-variable "nodes" {}
-variable "instance_type" {}
-variable "user_data" {}
-variable "sub_domain" {}
-variable "route_zone_id" {}
+#--------------------------------------------------------------
+# This module creates all resources necessary for HAProxy
+#--------------------------------------------------------------
+
+variable "name"              { default = "haproxy" }
+variable "vpc_id"            { }
+variable "vpc_cidr"          { }
+variable "key_name"          { }
+variable "subnet_ids"        { }
+variable "atlas_username"    { }
+variable "atlas_environment" { }
+variable "atlas_token"       { }
+variable "amis"              { }
+variable "nodes"             { }
+variable "instance_type"     { }
+variable "user_data"         { }
+variable "sub_domain"        { }
+variable "route_zone_id"     { }
 
 resource "aws_security_group" "haproxy" {
   name        = "${var.name}"
@@ -94,7 +98,7 @@ resource "aws_route53_record" "haproxy_private" {
   records = ["${aws_instance.haproxy.*.private_ip}"]
 }
 
-output "public_ips"     { value = "${join(",", aws_instance.haproxy.*.public_ip)}" }
-output "private_ips"    { value = "${join(",", aws_instance.haproxy.*.private_ip)}" }
-output "public_fqdn"     { value = "${aws_route53_record.haproxy_public.fqdn}" }
-output "private_fqdn"    { value = "${aws_route53_record.haproxy_private.fqdn}" }
+output "public_ips"   { value = "${join(",", aws_instance.haproxy.*.public_ip)}" }
+output "private_ips"  { value = "${join(",", aws_instance.haproxy.*.private_ip)}" }
+output "public_fqdn"  { value = "${aws_route53_record.haproxy_public.fqdn}" }
+output "private_fqdn" { value = "${aws_route53_record.haproxy_private.fqdn}" }

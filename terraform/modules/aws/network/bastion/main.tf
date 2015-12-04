@@ -1,10 +1,15 @@
-variable "name" { default = "bastion" }
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "region" {}
-variable "public_subnet_ids" {}
-variable "key_name" {}
-variable "instance_type" {}
+#--------------------------------------------------------------
+# This module creates all resources necessary for a Bastion
+# host
+#--------------------------------------------------------------
+
+variable "name"              { default = "bastion" }
+variable "vpc_id"            { }
+variable "vpc_cidr"          { }
+variable "region"            { }
+variable "public_subnet_ids" { }
+variable "key_name"          { }
+variable "instance_type"     { }
 
 resource "aws_security_group" "bastion" {
   name        = "${var.name}"

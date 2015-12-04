@@ -1,14 +1,18 @@
-variable "name" { default = "nat" }
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "region" {}
-variable "public_subnets" {}
-variable "public_subnet_ids" {}
-variable "key_name" {}
-variable "private_key" {}
-variable "instance_type" {}
-variable "bastion_host" {}
-variable "bastion_user" {}
+#--------------------------------------------------------------
+# This module creates all resources necessary for NAT
+#--------------------------------------------------------------
+
+variable "name"              { default = "nat" }
+variable "vpc_id"            { }
+variable "vpc_cidr"          { }
+variable "region"            { }
+variable "public_subnets"    { }
+variable "public_subnet_ids" { }
+variable "key_name"          { }
+variable "private_key"       { }
+variable "instance_type"     { }
+variable "bastion_host"      { }
+variable "bastion_user"      { }
 
 resource "aws_security_group" "nat" {
   name        = "${var.name}"

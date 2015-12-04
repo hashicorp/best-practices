@@ -1,25 +1,29 @@
-variable "name" {}
-variable "vpc_cidr" {}
-variable "azs" {}
-variable "region" {}
-variable "private_subnets" {}
-variable "ephemeral_subnets" {}
-variable "public_subnets" {}
-variable "ssl_cert" {}
-variable "ssl_key" {}
-variable "key_name" {}
-variable "private_key" {}
-variable "sub_domain" {}
-variable "route_zone_id" {}
+#--------------------------------------------------------------
+# This module creates all networking resources
+#--------------------------------------------------------------
 
-variable "bastion_instance_type" {}
-variable "nat_instance_type" {}
-variable "openvpn_instance_type" {}
-variable "openvpn_ami" {}
-variable "openvpn_user" {}
-variable "openvpn_admin_user" {}
-variable "openvpn_admin_pw" {}
-variable "openvpn_cidr" {}
+variable "name"              { }
+variable "vpc_cidr"          { }
+variable "azs"               { }
+variable "region"            { }
+variable "private_subnets"   { }
+variable "ephemeral_subnets" { }
+variable "public_subnets"    { }
+variable "ssl_cert"          { }
+variable "ssl_key"           { }
+variable "key_name"          { }
+variable "private_key"       { }
+variable "sub_domain"        { }
+variable "route_zone_id"     { }
+
+variable "bastion_instance_type" { }
+variable "nat_instance_type"     { }
+variable "openvpn_instance_type" { }
+variable "openvpn_ami"           { }
+variable "openvpn_user"          { }
+variable "openvpn_admin_user"    { }
+variable "openvpn_admin_pw"      { }
+variable "openvpn_cidr"          { }
 
 module "vpc" {
   source = "./vpc"
@@ -162,6 +166,6 @@ output "nat_private_ips"  { value = "${module.nat.private_ips}" }
 output "nat_public_ips"   { value = "${module.nat.public_ips}" }
 
 # OpenVPN
-output "openvpn_private_ip"   { value = "${module.openvpn.private_ip}" }
-output "openvpn_public_ip"    { value = "${module.openvpn.public_ip}" }
-output "openvpn_public_fqdn"  { value = "${module.openvpn.public_fqdn}" }
+output "openvpn_private_ip"  { value = "${module.openvpn.private_ip}" }
+output "openvpn_public_ip"   { value = "${module.openvpn.public_ip}" }
+output "openvpn_public_fqdn" { value = "${module.openvpn.public_fqdn}" }

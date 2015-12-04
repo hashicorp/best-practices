@@ -58,14 +58,14 @@ openvpn_cidr          = "172.27.139.0/24"
 #--------------------------------------------------------------
 
 # Consul
-consul_nodes          = "3"
+consul_node_count     = "3"
 consul_instance_type  = "t2.small"
 consul_latest_name    = "aws-us-east-1-ubuntu-consul"
 consul_pinned_name    = "aws-us-east-1-ubuntu-consul"
 consul_pinned_version = "latest"
 
 # Vault
-vault_nodes           = "2"
+vault_node_count      = "2"
 vault_instance_type   = "t2.micro"
 vault_latest_name     = "aws-us-east-1-ubuntu-vault"
 vault_pinned_name     = "aws-us-east-1-ubuntu-vault"
@@ -75,13 +75,13 @@ vault_pinned_version  = "latest"
 # Compute
 #--------------------------------------------------------------
 
-haproxy_nodes          = "1"
+haproxy_node_count     = "1"
 haproxy_instance_type  = "t2.micro"
 haproxy_latest_name    = "aws-us-east-1-ubuntu-haproxy"
 haproxy_pinned_name    = "aws-us-east-1-ubuntu-haproxy"
 haproxy_pinned_version = "latest"
 
-nodejs_nodes          = "2"
+nodejs_node_count     = "2"
 nodejs_instance_type  = "t2.micro"
 nodejs_latest_name    = "aws-us-east-1-ubuntu-nodejs"
 nodejs_pinned_name    = "aws-us-east-1-ubuntu-nodejs"

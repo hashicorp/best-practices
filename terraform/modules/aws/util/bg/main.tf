@@ -1,18 +1,22 @@
-variable "name" { default = "bg" }
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "key_name" {}
-variable "azs" {}
-variable "private_subnet_ids" {}
-variable "elb_id" {}
-variable "blue_ami" {}
-variable "blue_nodes" {}
-variable "blue_instance_type" {}
-variable "blue_user_data" {}
-variable "green_ami" {}
-variable "green_nodes" {}
-variable "green_instance_type" {}
-variable "green_user_data" {}
+#--------------------------------------------------------------
+# This module is used to achieve a blue/green deploy strategy
+#--------------------------------------------------------------
+
+variable "name"                { default = "bg" }
+variable "vpc_id"              { }
+variable "vpc_cidr"            { }
+variable "key_name"            { }
+variable "azs"                 { }
+variable "private_subnet_ids"  { }
+variable "elb_id"              { }
+variable "blue_ami"            { }
+variable "blue_nodes"          { }
+variable "blue_instance_type"  { }
+variable "blue_user_data"      { }
+variable "green_ami"           { }
+variable "green_nodes"         { }
+variable "green_instance_type" { }
+variable "green_user_data"     { }
 
 resource "aws_security_group" "bg" {
   vpc_id      = "${var.vpc_id}"

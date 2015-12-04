@@ -1,6 +1,10 @@
-variable "name" { default = "iam" }
-variable "users" {}
-variable "policy" {}
+#--------------------------------------------------------------
+# This module is used to create an AWS IAM group and its users
+#--------------------------------------------------------------
+
+variable "name"   { default = "iam" }
+variable "users"  { }
+variable "policy" { }
 
 resource "aws_iam_group" "mod" {
   name = "${var.name}"

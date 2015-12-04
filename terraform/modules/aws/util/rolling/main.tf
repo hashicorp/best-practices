@@ -1,14 +1,18 @@
-variable "name" { default = "rolling" }
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "key_name" {}
-variable "azs" {}
-variable "private_subnet_ids" {}
-variable "elb_id" {}
-variable "ami" {}
-variable "nodes" {}
-variable "instance_type" {}
-variable "user_data" {}
+#--------------------------------------------------------------
+# Used to achieve a rolling deploy strategy
+#--------------------------------------------------------------
+
+variable "name"               { default = "rolling" }
+variable "vpc_id"             { }
+variable "vpc_cidr"           { }
+variable "key_name"           { }
+variable "azs"                { }
+variable "private_subnet_ids" { }
+variable "elb_id"             { }
+variable "ami"                { }
+variable "nodes"              { }
+variable "instance_type"      { }
+variable "user_data"          { }
 
 resource "aws_security_group" "rolling" {
   vpc_id      = "${var.vpc_id}"

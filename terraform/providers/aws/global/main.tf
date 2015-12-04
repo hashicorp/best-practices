@@ -1,10 +1,10 @@
-variable "domain" {}
-variable "atlas_username" {}
-variable "atlas_environment" {}
-variable "name" {}
-variable "region" {}
-variable "iam_admins" {}
-variable "iam_vault_envs" {}
+variable "domain"            { }
+variable "atlas_username"    { }
+variable "atlas_environment" { }
+variable "name"              { }
+variable "region"            { }
+variable "iam_admins"        { }
+variable "iam_vault_envs"    { }
 
 provider "aws" {
   region = "${var.region}"
@@ -123,4 +123,4 @@ output "staging_endpoint" { value = "${module.staging_website.endpoint}" }
 output "staging_fqdn"     { value = "${module.staging_website.fqdn}" }
 output "staging_zone_id"  { value = "${module.staging_website.hosted_zone_id}" }
 
-output "zone_id"          { value = "${aws_route53_zone.zone.zone_id}" }
+output "zone_id" { value = "${aws_route53_zone.zone.zone_id}" }
