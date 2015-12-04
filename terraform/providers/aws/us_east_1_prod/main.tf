@@ -62,23 +62,19 @@ atlas {
   name = "${var.atlas_username}/${var.atlas_environment}"
 }
 
+resource "aws_key_pair" "site_key" {
+  key_name   = "${var.name}"
+  public_key = "${var.site_public_key}"
+
+  lifecycle { create_before_destroy = true }
+}
+
 resource "terraform_remote_state" "aws_global" {
   backend = "atlas"
 
   config {
     name = "${var.atlas_username}/${var.atlas_aws_global}"
   }
-}
-
-module "site_key" {
-  source = "../../../modules/aws/util/keys"
-
-  name       = "${var.name}"
-  public_key = "${var.site_public_key}"
-}
-
-module "scripts" {
-  source = "../../../modules/scripts"
 }
 
 module "network" {
@@ -93,7 +89,7 @@ module "network" {
   public_subnets    = "${var.public_subnets}"
   ssl_cert          = "${var.site_ssl_cert}"
   ssl_key           = "${var.site_ssl_key}"
-  key_name          = "${module.site_key.key_name}"
+  key_name          = "${aws_key_pair.site_key.key_name}"
   private_key       = "${var.site_private_key}"
   sub_domain        = "${var.sub_domain}"
   route_zone_id     = "${terraform_remote_state.aws_global.output.zone_id}"
@@ -130,6 +126,10 @@ module "artifact_vault" {
   pinned_version = "${var.vault_pinned_version}"
 }
 
+module "scripts" {
+  source = "../../../modules/scripts"
+}
+
 module "data" {
   source = "../../../modules/aws/data"
 
@@ -141,7 +141,7 @@ module "data" {
   public_subnet_ids  = "${module.network.public_subnet_ids}"
   ssl_cert           = "${var.vault_ssl_cert}"
   ssl_key            = "${var.vault_ssl_key}"
-  key_name           = "${module.site_key.key_name}"
+  key_name           = "${aws_key_pair.site_key.key_name}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
@@ -193,7 +193,7 @@ module "compute" {
   region             = "${var.region}"
   vpc_id             = "${module.network.vpc_id}"
   vpc_cidr           = "${var.vpc_cidr}"
-  key_name           = "${module.site_key.key_name}"
+  key_name           = "${aws_key_pair.site_key.key_name}"
   azs                = "${var.azs}"
   private_subnet_ids = "${module.network.private_subnet_ids}"
   public_subnet_ids  = "${module.network.public_subnet_ids}"
