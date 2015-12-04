@@ -1,58 +1,58 @@
-variable "name" {}
-variable "artifact_type" {}
-variable "region" {}
-variable "sub_domain" {}
-variable "atlas_environment" {}
-variable "atlas_aws_global" {}
-variable "atlas_token" {}
-variable "atlas_username" {}
-variable "site_public_key" {}
-variable "site_private_key" {}
-variable "site_ssl_cert" {}
-variable "site_ssl_key" {}
-variable "vault_ssl_cert" {}
-variable "vault_ssl_key" {}
-variable "vault_token" { default = "" }
+variable "name"              { }
+variable "artifact_type"     { }
+variable "region"            { }
+variable "sub_domain"        { }
+variable "atlas_environment" { }
+variable "atlas_aws_global"  { }
+variable "atlas_token"       { }
+variable "atlas_username"    { }
+variable "site_public_key"   { }
+variable "site_private_key"  { }
+variable "site_ssl_cert"     { }
+variable "site_ssl_key"      { }
+variable "vault_ssl_cert"    { }
+variable "vault_ssl_key"     { }
+variable "vault_token"       { default = "" }
 
-variable "vpc_cidr" {}
-variable "azs" {}
-variable "private_subnets" {}
-variable "ephemeral_subnets" {}
-variable "public_subnets" {}
+variable "vpc_cidr"          { }
+variable "azs"               { }
+variable "private_subnets"   { }
+variable "ephemeral_subnets" { }
+variable "public_subnets"    { }
 
-variable "bastion_instance_type" {}
-variable "nat_instance_type" {}
+variable "bastion_instance_type" { }
+variable "nat_instance_type"     { }
 
-variable "openvpn_instance_type" {}
-variable "openvpn_ami" {}
-variable "openvpn_user" {}
-variable "openvpn_admin_user" {}
-variable "openvpn_admin_pw" {}
-variable "openvpn_cidr" {}
+variable "openvpn_instance_type" { }
+variable "openvpn_ami"           { }
+variable "openvpn_user"          { }
+variable "openvpn_admin_user"    { }
+variable "openvpn_admin_pw"      { }
+variable "openvpn_cidr"          { }
 
-variable "consul_nodes" {}
-variable "consul_instance_type" {}
-variable "consul_latest_name" {}
-variable "consul_pinned_name" {}
-variable "consul_pinned_version" {}
+variable "consul_node_count"     { }
+variable "consul_instance_type"  { }
+variable "consul_latest_name"    { }
+variable "consul_pinned_name"    { }
+variable "consul_pinned_version" { }
 
-variable "vault_nodes" {}
-variable "vault_instance_type" {}
-variable "vault_latest_name" {}
-variable "vault_pinned_name" {}
-variable "vault_pinned_version" {}
+variable "vault_node_count"     { }
+variable "vault_instance_type"  { }
+variable "vault_latest_name"    { }
+variable "vault_pinned_name"    { }
+variable "vault_pinned_version" { }
 
-variable "haproxy_nodes" {}
-variable "haproxy_instance_type" {}
-variable "haproxy_latest_name" {}
-variable "haproxy_pinned_name" {}
-variable "haproxy_pinned_version" {}
+variable "haproxy_node_count"     { }
+variable "haproxy_instance_type"  { }
+variable "haproxy_latest_name"    { }
+variable "haproxy_pinned_name"    { }
+variable "haproxy_pinned_version" { }
 
-variable "nodejs_nodes" {}
-variable "nodejs_instance_type" {}
-variable "nodejs_latest_name" {}
-variable "nodejs_pinned_name" {}
-variable "nodejs_pinned_version" {}
+variable "nodejs_node_count"     { }
+variable "nodejs_instance_type"  { }
+variable "nodejs_latest_name"    { }
+variable "nodejs_pinned_name"    { }
+variable "nodejs_pinned_version" { }
 
 provider "aws" {
   region = "${var.region}"
@@ -71,7 +71,7 @@ resource "terraform_remote_state" "aws_global" {
 }
 
 module "site_key" {
-  source = "../../../modules/keys"
+  source = "../../../modules/aws/util/keys"
 
   name       = "${var.name}"
   public_key = "${var.site_public_key}"
@@ -149,7 +149,7 @@ module "data" {
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
 
   consul_amis          = "${module.artifact_consul.latest},${module.artifact_consul.latest},${module.artifact_consul.latest}"
-  consul_nodes         = "${var.consul_nodes}"
+  consul_node_count    = "${var.consul_node_count}"
   consul_instance_type = "${var.consul_instance_type}"
   consul_user_data     = "${module.scripts.ubuntu_consul_server_user_data}"
   openvpn_user         = "${var.openvpn_user}"
@@ -159,7 +159,7 @@ module "data" {
   bastion_user         = "${module.network.bastion_user}"
 
   vault_amis          = "${module.artifact_vault.latest},${module.artifact_vault.latest}"
-  vault_nodes         = "${var.vault_nodes}"
+  vault_node_count    = "${var.vault_node_count}"
   vault_instance_type = "${var.vault_instance_type}"
   vault_user_data     = "${module.scripts.ubuntu_vault_user_data}"
 }
@@ -209,12 +209,12 @@ module "compute" {
   vault_token        = "${var.vault_token}"
 
   haproxy_amis          = "${module.artifact_haproxy.latest}"
-  haproxy_nodes         = "${var.haproxy_nodes}"
+  haproxy_node_count    = "${var.haproxy_node_count}"
   haproxy_instance_type = "${var.haproxy_instance_type}"
   haproxy_user_data     = "${module.scripts.ubuntu_consul_client_user_data}"
 
   nodejs_ami           = "${module.artifact_nodejs.latest}"
-  nodejs_nodes         = "${var.nodejs_nodes}"
+  nodejs_node_count    = "${var.nodejs_node_count}"
   nodejs_instance_type = "${var.nodejs_instance_type}"
   nodejs_user_data     = "${module.scripts.ubuntu_nodejs_user_data}"
 }

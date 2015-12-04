@@ -1,8 +1,13 @@
-variable "name" { default = "private" }
-variable "vpc_id" {}
-variable "cidrs" {}
-variable "azs" {}
-variable "nat_instance_ids" {}
+#--------------------------------------------------------------
+# This module creates all resources necessary for a private
+# subnet
+#--------------------------------------------------------------
+
+variable "name"             { default = "private" }
+variable "vpc_id"           { }
+variable "cidrs"            { }
+variable "azs"              { }
+variable "nat_instance_ids" { }
 
 resource "aws_subnet" "private" {
   vpc_id            = "${var.vpc_id}"

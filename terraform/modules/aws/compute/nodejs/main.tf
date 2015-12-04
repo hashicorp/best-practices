@@ -1,26 +1,31 @@
-variable "name" { default = "nodejs" }
-variable "region" {}
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "key_name" {}
-variable "azs" {}
-variable "private_subnet_ids" {}
-variable "public_subnet_ids" {}
-variable "site_ssl_cert" {}
-variable "site_ssl_key" {}
-variable "vault_ssl_cert" {}
-variable "atlas_username" {}
-variable "atlas_environment" {}
-variable "atlas_aws_global" {}
-variable "atlas_token" {}
-variable "ami" {}
-variable "nodes" {}
-variable "instance_type" {}
-variable "user_data" {}
-variable "sub_domain" {}
-variable "route_zone_id" {}
-variable "vault_token" { default = "" }
-variable "vault_policy" { default = "nodejs" }
+#--------------------------------------------------------------
+# This module creates all resources necessary for the
+# Node.js application
+#--------------------------------------------------------------
+
+variable "name"               { default = "nodejs" }
+variable "region"             { }
+variable "vpc_id"             { }
+variable "vpc_cidr"           { }
+variable "key_name"           { }
+variable "azs"                { }
+variable "private_subnet_ids" { }
+variable "public_subnet_ids"  { }
+variable "site_ssl_cert"      { }
+variable "site_ssl_key"       { }
+variable "vault_ssl_cert"     { }
+variable "atlas_username"     { }
+variable "atlas_environment"  { }
+variable "atlas_aws_global"   { }
+variable "atlas_token"        { }
+variable "ami"                { }
+variable "nodes"              { }
+variable "instance_type"      { }
+variable "user_data"          { }
+variable "sub_domain"         { }
+variable "route_zone_id"      { }
+variable "vault_token"        { default = "" }
+variable "vault_policy"       { default = "nodejs" }
 
 resource "aws_security_group" "elb" {
   name        = "${var.name}.elb"
@@ -158,6 +163,6 @@ resource "aws_route53_record" "nodejs" {
   }
 }
 
-output "zone_id"     { value = "${aws_elb.nodejs.zone_id}" }
-output "elb_dns"     { value = "${aws_elb.nodejs.dns_name}" }
+output "zone_id"      { value = "${aws_elb.nodejs.zone_id}" }
+output "elb_dns"      { value = "${aws_elb.nodejs.dns_name}" }
 output "private_fqdn" { value = "${aws_route53_record.nodejs.fqdn}" }

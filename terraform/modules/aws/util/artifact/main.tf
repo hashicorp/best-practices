@@ -1,8 +1,13 @@
-variable "type" { default = "amazon.ami" }
-variable "region" {}
-variable "atlas_username" {}
-variable "latest_name" {}
-variable "pinned_name" {}
+#--------------------------------------------------------------
+# This module is used to for creating all Atlas
+# "latest" and "pinned" artifacts
+#--------------------------------------------------------------
+
+variable "type"           { default = "amazon.ami" }
+variable "region"         { }
+variable "atlas_username" { }
+variable "latest_name"    { }
+variable "pinned_name"    { }
 variable "pinned_version" { default = "latest" }
 
 resource "atlas_artifact" "latest" {

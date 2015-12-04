@@ -1,8 +1,12 @@
-variable "fqdn" {}
-variable "sub_domain" {}
-variable "route_zone_id" {}
-variable "index_page" { default = "index.html" }
-variable "error_page" { default = "error.html" }
+#--------------------------------------------------------------
+# This module is used to create an S3 bucket website
+#--------------------------------------------------------------
+
+variable "fqdn"          { }
+variable "sub_domain"    { }
+variable "route_zone_id" { }
+variable "index_page"    { default = "index.html" }
+variable "error_page"    { default = "error.html" }
 
 resource "aws_s3_bucket" "website" {
   bucket = "${var.fqdn}"

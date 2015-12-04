@@ -1,21 +1,25 @@
-variable "name" { default = "vault" }
-variable "region" {}
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "private_subnet_ids" {}
-variable "public_subnet_ids" {}
-variable "ssl_cert" {}
-variable "ssl_key" {}
-variable "key_name" {}
-variable "atlas_username" {}
-variable "atlas_environment" {}
-variable "atlas_token" {}
-variable "amis" {}
-variable "nodes" {}
-variable "instance_type" {}
-variable "user_data" {}
-variable "sub_domain" {}
-variable "route_zone_id" {}
+#--------------------------------------------------------------
+# This module creates all resources necessary for Vault
+#--------------------------------------------------------------
+
+variable "name"               { default = "vault" }
+variable "region"             { }
+variable "vpc_id"             { }
+variable "vpc_cidr"           { }
+variable "private_subnet_ids" { }
+variable "public_subnet_ids"  { }
+variable "ssl_cert"           { }
+variable "ssl_key"            { }
+variable "key_name"           { }
+variable "atlas_username"     { }
+variable "atlas_environment"  { }
+variable "atlas_token"        { }
+variable "amis"               { }
+variable "nodes"              { }
+variable "instance_type"      { }
+variable "user_data"          { }
+variable "sub_domain"         { }
+variable "route_zone_id"      { }
 
 resource "aws_security_group" "vault" {
   name        = "${var.name}"
@@ -155,6 +159,6 @@ resource "aws_route53_record" "vault" {
   records = ["${aws_elb.vault.dns_name}"]
 }
 
-output "private_ips" { value = "${join(",", aws_instance.vault.*.private_ip)}" }
-output "elb_dns"     { value = "${aws_elb.vault.dns_name}" }
+output "private_ips"  { value = "${join(",", aws_instance.vault.*.private_ip)}" }
+output "elb_dns"      { value = "${aws_elb.vault.dns_name}" }
 output "private_fqdn" { value = "${aws_route53_record.vault.fqdn}" }

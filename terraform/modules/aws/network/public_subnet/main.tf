@@ -1,7 +1,12 @@
-variable "name" { default = "public" }
-variable "vpc_id" {}
-variable "cidrs" {}
-variable "azs" {}
+#--------------------------------------------------------------
+# This module creates all resources necessary for a public
+# subnet
+#--------------------------------------------------------------
+
+variable "name"   { default = "public" }
+variable "vpc_id" { }
+variable "cidrs"  { }
+variable "azs"    { }
 
 resource "aws_internet_gateway" "public" {
   vpc_id = "${var.vpc_id}"
