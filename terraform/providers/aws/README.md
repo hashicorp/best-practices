@@ -70,7 +70,7 @@ There are certain resources in this project that require the use of keys and cer
 
 ### Create and Configure Artifacts
 
-Use the [New Build Configuration](https://atlas.hashicorp.com/builds/new) tool to create each new Build Configuration below. Enter the names provided **as you go through the checklist** and leave the **Automatically build on version uploads** box _unchecked_ for each.
+Use the [New Build Configuration](https://atlas.hashicorp.com/builds/new) tool to create each new Build Configuration below. Enter the names provided **as you go through the checklist** and be sure to leave the **Automatically build on version uploads** and **Connect build configuration to a GitHub repository** boxes _unchecked_ for each.
 
 After creating each Build Configuration, there is some additional configuration you'll need to do. The summary of what will need to be completed for each Build Configuration is below, the relevant values are provided **as you go through the checklist**.
 
@@ -88,10 +88,6 @@ After creating each Build Configuration, there is some additional configuration 
 - Select the `best-practices` GitHub repository you just forked
 - Enter `packer` for **Packer Directory**
 - Enter the appropriate **Packer template** _(provided below)_ and click **Associate**
-
-##### Trigger Packer Template Ingress
-
-Once you have configured your Build Configuration(s), commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`). This will trigger Atlas to ingress the modified Packer template(s) from GitHub.
 
 ##### Queue Build
 
@@ -180,7 +176,7 @@ If you want to create artifacts in other regions, complete these same steps but 
 
 ### Provision the `aws-global` Environment
 
-- [ ] Use the [Terraform Configuration Import](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-global` Environment from GitHub
+- [ ] Use the [Import Terraform Configuration from GitHub](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-global` Environment from GitHub
   - [ ] **Name the environment**: `YOUR_ATLAS_ORG/aws-global`
   - [ ] **GitHub repository**: `YOUR_GITHUB_USERNAME/best-practices`
   - [ ] **Path to directory of Terraform files**: `terraform`
@@ -209,30 +205,29 @@ If you want to create artifacts in other regions, complete these same steps but 
     - This is defaulted to a user named `global-admin`
     - Be sure that you don't use a name that already exists in IAM for this AWS account or you will see conflict errors
     - If you don't want any admin users to be created, just leave this blank
-- [ ] Commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`) so Atlas ingresses the Terraform templates from GitHub
-- [ ] In "Changes": click **Queue plan** then **Confirm & Apply** to provision the `aws-global` environment
+- [ ] In "Changes": click **Queue plan** if one has not already been queued, then **Confirm & Apply** to provision the `aws-global` environment
 
-### Provision the `aws-us-east-1-staging` Environment
+### Provision the `aws-us-east-1-prod` Environment
 
-- [ ] Use the [Terraform Configuration Import](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-us-east-1-staging` Environment from GitHub
-  - [ ] **Name the environment**: `YOUR_ATLAS_ORG/aws-us-east-1-staging`
+- [ ] Use the [Import Terraform Configuration from GitHub](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-us-east-1-prod` Environment from GitHub
+  - [ ] **Name the environment**: `YOUR_ATLAS_ORG/aws-us-east-1-prod`
   - [ ] **GitHub repository**: `YOUR_GITHUB_USERNAME/best-practices`
   - [ ] **Path to directory of Terraform files**: `terraform`
 - [ ] [`terraform push`](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#deploy-with-terraform) your environment to Atlas to set the Terraform variables, the GitHub Ingress does not currently pull in variables
   - [ ] [Set local environment variables](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#set-local-environment-variables)
-  - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`aws_us_east_1_staging` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/aws_us_east_1_staging): `cd terraform/providers/aws/aws_us_east_1_staging/.`
-  - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/aws-us-east-1-staging`
+  - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`aws_us_east_1_prod` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/aws_us_east_1_prod): `cd terraform/providers/aws/aws_us_east_1_prod/.`
+  - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/aws-us-east-1-prod`
   - [ ] Get latest modules: `terraform get`
-  - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-us-east-1-staging -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
+  - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-us-east-1-prod -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
     - The plan in Atlas **will** fail, this is okay
-- [ ] Navigate to the `aws-us-east-1-staging` [environment](https://atlas.hashicorp.com/environments)
+- [ ] Navigate to the `aws-us-east-1-prod` [environment](https://atlas.hashicorp.com/environments)
 - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
 - [ ] In "Variables": add the below Environment Variables with appropriate values
   - [ ] `ATLAS_USERNAME`
   - [ ] `AWS_ACCESS_KEY_ID`
   - [ ] `AWS_SECRET_ACCESS_KEY`
   - [ ] `AWS_DEFAULT_REGION`: `us-east-1`
-  - [ ] `TF_ATLAS_DIR`: `providers/aws/us_east_1_staging`
+  - [ ] `TF_ATLAS_DIR`: `providers/aws/us_east_1_prod`
     - Atlas uses the `TF_ATLAS_DIR` variable to identify where it should run Terraform commands within the repo
 - [ ] In "Variables": update all Terraform Variables containing the value `REPLACE_IN_ATLAS`, you will use the contents of the keys and certs created in [Generate Keys and Certs](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#generate-keys-and-certs) as values for most of these variables
   - [ ] Update `atlas_token` with your Atlas token
@@ -243,12 +238,11 @@ If you want to create artifacts in other regions, complete these same steps but 
   - [ ] Update `site_ssl_key` with the contents of `site.key`
   - [ ] Update `vault_ssl_cert` with the contents of `vault.crt`
   - [ ] Update `vault_ssl_key` with the contents of `vault.key`
-- [ ] Commit to the `master` branch in your repository (`git commit --allow-empty -m "Force a change in Atlas"`) so Atlas ingresses the Terraform templates from GitHub
-- [ ] In "Changes": click **Queue plan** then **Confirm & Apply** to provision the `aws-us-east-1-staging` environment
+- [ ] In "Changes": click **Queue plan** if one has not already been queued, then **Confirm & Apply** to provision the `aws-us-east-1-prod` environment
   - **Note**: You'll likely see an error related to the OpenVPN AMI during the apply, you'll need to follow the link to the AWS Marketplace provided and complete the steps to opt-in to the OpenVPN AMI for the apply to complete successfully
   - On a successful apply, there will be instructions output in a green font that will tell you how to interact with your new infrastructure
 
-This [same process](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#provision-the-aws-us-east-1-staging-environment) can be repeated for the `aws-us-east-1-prod` environment as well as any other regions you would like to deploy infrastructure into. If you are deploying into a new region, be sure you have Artifacts created for it by following the [Multi-Region steps below](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#multi-region).
+This [same process](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#provision-the-aws-us-east-1-staging-environment) can be repeated for the `aws-us-east-1-staging` environment as well as any other regions you would like to deploy infrastructure into. If you are deploying into a new region, be sure you have Artifacts created for it by following the [Multi-Region steps below](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#multi-region).
 
 ### Setup Vault
 
@@ -285,9 +279,9 @@ A HA Vault should have already been provisioned, but you'll need to initialize a
 
 After Vault is initialized and unsealed, update the below variable(s) and apply the changes. Next time you deploy your application, you should see the Vault/Consul Template integration working in your Node.js website!
 
-- [ ] In "Variables" of the `aws-us-east-1-staging` environment: Update `vault_token` with the `root-token`
-- [ ] Commit a new change (`git commit --allow-empty -m "Force a change in Atlas"`) to your [`demo-app-nodejs` repo](https://github.com/hashicorp/demo-app-nodejs), this should trigger a new "plan" in `aws-us-east-1-staging` after a new artifact is built
-- [ ] In "Changes" of the the `aws-us-east-1-staging` environment: Queue a new plan and apply the changes to deploy the new application to see the Vault/Consul Template integration at work
+- [ ] In "Variables" of the `aws-us-east-1-prod` environment: Update `vault_token` with the `root-token`
+- [ ] Commit a new change (`git commit --allow-empty -m "Force a change in Atlas"`) to your [`demo-app-nodejs` repo](https://github.com/hashicorp/demo-app-nodejs), this should trigger a new "plan" in `aws-us-east-1-prod` after a new artifact is built
+- [ ] In "Changes" of the the `aws-us-east-1-prod` environment: Queue a new plan and apply the changes to deploy the new application to see the Vault/Consul Template integration at work
 
 You'll eventually want to [configure Vault](https://vaultproject.io/docs/index.html) specific to your needs and setup appropriate ACLs.
 
@@ -346,7 +340,7 @@ Once the updates to [base.json](../../../packer/aws/ubuntu/base.json) have been 
 
 To deploy these new artifacts...
 
-- Copy the [us\_east\_1\_staging](us_east_1_staging) and [us\_east\_1\_prod](us_east_1_prod) directories into new folders named `us_west_2_staging` and `us_west_2_prod`
+- Copy the [us\_east\_1\_prod](us_east_1_prod) and [us\_east\_1\_prod](us_east_1_prod) directories into new folders named `us_west_2_prod` and `us_west_2_prod`
 
 In each of the new "us\_west\_2" `terraform.tfvars` files...
 
@@ -355,7 +349,7 @@ In each of the new "us\_west\_2" `terraform.tfvars` files...
   - Go to the [OpenVPN Amazon EC2 Appliance (AMI) Quick Start Quide](https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/) to find an OpenVPN AMI for any region
 - You may need to update the `azs` variable depending on what the subnets in that region support
 
-Finally, push these new environments to `master` and follow the [same steps](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#provision-the-us-east-1-staging-infrastructure-with-terraform-in-atlas) you completed to deploy your environments in `us-east-1`.
+Finally, push these new environments to `master` and follow the [same steps](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#provision-the-us-east-1-prod-infrastructure-with-terraform-in-atlas) you completed to deploy your environments in `us-east-1`.
 
 ### Terraform Destroy
 
