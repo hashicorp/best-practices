@@ -126,8 +126,8 @@ module "artifact_vault" {
   pinned_version = "${var.vault_pinned_version}"
 }
 
-module "scripts" {
-  source = "../../../modules/scripts"
+module "templates" {
+  source = "../../../modules/templates"
 }
 
 module "data" {
@@ -151,7 +151,7 @@ module "data" {
   consul_amis          = "${module.artifact_consul.latest},${module.artifact_consul.latest},${module.artifact_consul.latest}"
   consul_node_count    = "${var.consul_node_count}"
   consul_instance_type = "${var.consul_instance_type}"
-  consul_user_data     = "${module.scripts.ubuntu_consul_server_user_data}"
+  consul_user_data     = "${module.templates.ubuntu_consul_server_user_data}"
   openvpn_user         = "${var.openvpn_user}"
   openvpn_host         = "${module.network.openvpn_private_ip}"
   private_key          = "${var.site_private_key}"
@@ -161,7 +161,7 @@ module "data" {
   vault_amis          = "${module.artifact_vault.latest},${module.artifact_vault.latest}"
   vault_node_count    = "${var.vault_node_count}"
   vault_instance_type = "${var.vault_instance_type}"
-  vault_user_data     = "${module.scripts.ubuntu_vault_user_data}"
+  vault_user_data     = "${module.templates.ubuntu_vault_user_data}"
 }
 
 module "artifact_haproxy" {
@@ -211,12 +211,12 @@ module "compute" {
   haproxy_amis          = "${module.artifact_haproxy.latest}"
   haproxy_node_count    = "${var.haproxy_node_count}"
   haproxy_instance_type = "${var.haproxy_instance_type}"
-  haproxy_user_data     = "${module.scripts.ubuntu_consul_client_user_data}"
+  haproxy_user_data     = "${module.templates.ubuntu_consul_client_user_data}"
 
   nodejs_ami           = "${module.artifact_nodejs.latest}"
   nodejs_node_count    = "${var.nodejs_node_count}"
   nodejs_instance_type = "${var.nodejs_instance_type}"
-  nodejs_user_data     = "${module.scripts.ubuntu_nodejs_user_data}"
+  nodejs_user_data     = "${module.templates.ubuntu_nodejs_user_data}"
 }
 
 module "website" {
