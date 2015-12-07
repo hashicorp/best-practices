@@ -33,7 +33,7 @@ module "vpc" {
 }
 
 module "public_subnet" {
-  source = "./public_subnet"
+  source = "./public"
 
   name   = "${var.name}-public"
   vpc_id = "${module.vpc.vpc_id}"
@@ -70,7 +70,7 @@ module "nat" {
 }
 
 module "private_subnet" {
-  source = "./private_subnet"
+  source = "./private"
 
   name   = "${var.name}-private"
   vpc_id = "${module.vpc.vpc_id}"
