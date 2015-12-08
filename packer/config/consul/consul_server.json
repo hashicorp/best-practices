@@ -5,11 +5,13 @@
   "ui_dir": "/opt/consul/ui",
   "client_addr": "0.0.0.0",
   "bind_addr": "0.0.0.0",
+  "advertise_addr": "0.0.0.0",
   "atlas_join": true,
   "atlas_infrastructure": "{{ atlas_username }}/{{ atlas_environment }}",
   "atlas_token": "{{ atlas_token }}",
   "bootstrap_expect": {{ consul_server_count }},
   "datacenter": "{{ datacenter }}",
   "node_name": "{{ node_name }}",
-  "skip_leave_on_interrupt": true
+  "skip_leave_on_interrupt": true,
+  "leave_on_terminate": false
 }
