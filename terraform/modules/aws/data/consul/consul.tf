@@ -73,8 +73,6 @@ resource "aws_instance" "consul" {
 }
 
 resource "null_resource" "openvpn_dns" {
-  depends_on = ["aws_instance.consul"]
-
   provisioner "remote-exec" {
     connection {
       user         = "${var.openvpn_user}"
