@@ -4,7 +4,6 @@
   "ui_dir": "/opt/consul/ui",
   "client_addr": "0.0.0.0",
   "bind_addr": "0.0.0.0",
-  "advertise_addr": "0.0.0.0",
   "atlas_join": true,
   "atlas_infrastructure": "{{ atlas_username }}/{{ atlas_environment }}",
   "atlas_token": "{{ atlas_token }}",
