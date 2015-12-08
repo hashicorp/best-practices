@@ -33,7 +33,7 @@ module "vpc" {
 }
 
 module "public_subnet" {
-  source = "./public"
+  source = "./public_subnet"
 
   name   = "${var.name}-public"
   vpc_id = "${module.vpc.vpc_id}"
@@ -70,7 +70,7 @@ module "nat" {
 }
 
 module "private_subnet" {
-  source = "./private"
+  source = "./private_subnet"
 
   name   = "${var.name}-private"
   vpc_id = "${module.vpc.vpc_id}"
@@ -88,7 +88,7 @@ module "private_subnet" {
 # in a relatively short period of time, the stale ARP cache entry will still be there,
 # so traffic will just fail to reach the new node.
 module "ephemeral_subnets" {
-  source = "./private"
+  source = "./private_subnet"
 
   name   = "${var.name}-ephemeral"
   vpc_id = "${module.vpc.vpc_id}"
