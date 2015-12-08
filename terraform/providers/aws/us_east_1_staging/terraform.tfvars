@@ -21,6 +21,12 @@ atlas_environment = "aws-us-east-1-staging"
 atlas_aws_global  = "aws-global"
 atlas_token       = "REPLACE_IN_ATLAS"
 atlas_username    = "REPLACE_IN_ATLAS"
+site_public_key   = "REPLACE_IN_ATLAS"
+site_private_key  = "REPLACE_IN_ATLAS"
+site_ssl_cert     = "REPLACE_IN_ATLAS"
+site_ssl_key      = "REPLACE_IN_ATLAS"
+vault_ssl_cert    = "REPLACE_IN_ATLAS"
+vault_ssl_key     = "REPLACE_IN_ATLAS"
 vault_token       = "REPLACE_IN_ATLAS" # No need to update until Vault is configured
 
 #--------------------------------------------------------------
