@@ -222,22 +222,22 @@ If you want to create artifacts in other regions, complete these same steps but 
     - The plan in Atlas **will** fail, this is okay
 - [ ] Navigate to the `aws-us-east-1-prod` [environment](https://atlas.hashicorp.com/environments)
 - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
-- [ ] In "Variables": add the below Environment Variables with appropriate values
+- [ ] In "Variables": add the below "Environment Variables" with appropriate values, you will use the contents of the keys and certs created in [Generate Keys and Certs](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#generate-keys-and-certs) as values for the environment variables prepended with `TF_VAR_`
   - [ ] `ATLAS_USERNAME`
   - [ ] `AWS_ACCESS_KEY_ID`
   - [ ] `AWS_SECRET_ACCESS_KEY`
   - [ ] `AWS_DEFAULT_REGION`: `us-east-1`
   - [ ] `TF_ATLAS_DIR`: `providers/aws/us_east_1_prod`
+  - [ ] `TF_VAR_site_public_key`: contents of `site.pub`
+  - [ ] `TF_VAR_site_private_key`: contents of `site.pem`
+  - [ ] `TF_VAR_site_ssl_cert`: contents of `site.crt`
+  - [ ] `TF_VAR_site_ssl_key`: contents of `site.key`
+  - [ ] `TF_VAR_vault_ssl_cert`: contents of `vault.crt`
+  - [ ] `TF_VAR_vault_ssl_key`: contents of `vault.key`
     - Atlas uses the `TF_ATLAS_DIR` variable to identify where it should run Terraform commands within the repo
-- [ ] In "Variables": update all Terraform Variables containing the value `REPLACE_IN_ATLAS`, you will use the contents of the keys and certs created in [Generate Keys and Certs](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#generate-keys-and-certs) as values for most of these variables
+- [ ] In "Variables": update all "Terraform Variables" containing the value `REPLACE_IN_ATLAS`
   - [ ] Update `atlas_token` with your Atlas token
   - [ ] Update `atlas_username` with your Atlas username
-  - [ ] Update `site_public_key` with the contents of `site.pub`
-  - [ ] Update `site_private_key` with the contents of `site.pem`
-  - [ ] Update `site_ssl_cert` with the contents of `site.crt`
-  - [ ] Update `site_ssl_key` with the contents of `site.key`
-  - [ ] Update `vault_ssl_cert` with the contents of `vault.crt`
-  - [ ] Update `vault_ssl_key` with the contents of `vault.key`
 - [ ] In "Changes": click **Queue plan** if one has not already been queued, then **Confirm & Apply** to provision the `aws-us-east-1-prod` environment
   - **Note**: You'll likely see an error related to the OpenVPN AMI during the apply, you'll need to follow the link to the AWS Marketplace provided and complete the steps to opt-in to the OpenVPN AMI for the apply to complete successfully
   - On a successful apply, there will be instructions output in a green font that will tell you how to interact with your new infrastructure
