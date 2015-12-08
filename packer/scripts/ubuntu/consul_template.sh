@@ -3,9 +3,10 @@ set -e
 
 cd /tmp
 
+CTVERSION=0.11.1
 CONFIGDIR=/ops/$1
 SCRIPTSDIR=/ops/$2
-CTDOWNLOAD=https://releases.hashicorp.com/consul-template/0.11.1/consul-template_0.11.1_linux_amd64.zip
+CTDOWNLOAD=https://releases.hashicorp.com/consul-template/${CTVERSION}/consul-template_${CTVERSION}_linux_amd64.zip
 CTCONFIGDIR=/etc/consul_template.d
 CTDIR=/opt/consul_template
 

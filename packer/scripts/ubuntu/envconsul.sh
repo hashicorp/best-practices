@@ -3,8 +3,9 @@ set -e
 
 cd /tmp
 
+ECVERSION=0.6.0
 CONFIGDIR=/ops/$1
-ECDOWNLOAD=https://github.com/hashicorp/envconsul/releases/download/v0.6.0/envconsul_0.6.0_linux_amd64.zip
+ECDOWNLOAD=https://releases.hashicorp.com/envconsul/${ECVERSION}/envconsul_${ECVERSION}_linux_amd64.zip
 ECCONFIGDIR=/etc/envconsul.d
 
 echo Fetching envconsul...
