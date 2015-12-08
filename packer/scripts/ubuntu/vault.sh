@@ -3,9 +3,10 @@ set -e
 
 cd /tmp
 
+VAULTVERSION=0.4.0-rc2
 CONFIGDIR=/ops/$1
 SCRIPTSDIR=/ops/$2
-VAULTDOWNLOAD=https://releases.hashicorp.com/vault/0.4.0-rc1/vault_0.4.0-rc1_linux_amd64.zip
+VAULTDOWNLOAD=https://releases.hashicorp.com/vault/${VAULTVERSION}/vault_${VAULTVERSION}_linux_amd64.zip
 VAULTCONFIGDIR=/etc/vault.d
 VAULTDIR=/opt/vault
 VAULTPOLICIES=$VAULTDIR/policies

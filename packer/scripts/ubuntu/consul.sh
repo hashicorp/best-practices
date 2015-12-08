@@ -3,10 +3,11 @@ set -e
 
 cd /tmp
 
+CONSULVERSION=0.6.0
 CONFIGDIR=/ops/$1
 SCRIPTSDIR=/ops/$2
-CONSULDOWNLOAD=https://releases.hashicorp.com/consul/0.6.0-rc1/consul_0.6.0-rc1_linux_amd64.zip
-CONSULWEBUI=https://releases.hashicorp.com/consul/0.6.0-rc1/consul_0.6.0-rc1_web_ui.zip
+CONSULDOWNLOAD=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip
+CONSULWEBUI=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_web_ui.zip
 CONSULCONFIGDIR=/etc/consul.d
 CONSULDIR=/opt/consul
 
