@@ -88,7 +88,7 @@ module "private_subnet" {
 # in a relatively short period of time, the stale ARP cache entry will still be there,
 # so traffic will just fail to reach the new node.
 module "ephemeral_subnets" {
-  source = "./private_subnet"
+  source = "./private"
 
   name   = "${var.name}-ephemeral"
   vpc_id = "${module.vpc.vpc_id}"
