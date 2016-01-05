@@ -252,10 +252,6 @@ A HA Vault should have already been provisioned, but you'll need to initialize a
 
     `$ vault init | tee /tmp/vault.init > /dev/null`
 
-- [ ] Initialize Vault
-
-    `$ vault init | tee /tmp/vault.init > /dev/null`
-
 - [ ] Retrieve the unseal keys and root token from `/tmp/vault.init` and store these in a safe place
 - [ ] Shred keys and token once they are stored in a safe place
 
