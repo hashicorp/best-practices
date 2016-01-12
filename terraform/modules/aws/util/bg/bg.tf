@@ -52,15 +52,15 @@ resource "aws_launch_configuration" "blue" {
 }
 
 resource "aws_autoscaling_group" "blue" {
-  name                 = "${var.name}.blue.${aws_launch_configuration.blue.name}"
-  launch_configuration = "${aws_launch_configuration.blue.name}"
-  desired_capacity     = "${var.blue_nodes}"
-  min_size             = "${var.blue_nodes}"
-  max_size             = "${var.blue_nodes}"
-  min_elb_capacity     = "${var.blue_nodes}"
-  availability_zones   = ["${split(",", var.azs)}"]
-  vpc_zone_identifier  = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers       = ["${var.elb_id}"]
+  name                  = "${var.name}.blue.${aws_launch_configuration.blue.name}"
+  launch_configuration  = "${aws_launch_configuration.blue.name}"
+  desired_capacity      = "${var.blue_nodes}"
+  min_size              = "${var.blue_nodes}"
+  max_size              = "${var.blue_nodes}"
+  wait_for_elb_capacity = "${var.blue_nodes}"
+  availability_zones    = ["${split(",", var.azs)}"]
+  vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
+  load_balancers        = ["${var.elb_id}"]
 
   lifecycle { create_before_destroy = true }
 
@@ -83,15 +83,15 @@ resource "aws_launch_configuration" "green" {
 }
 
 resource "aws_autoscaling_group" "green" {
-  name                 = "${var.name}.green.${aws_launch_configuration.green.name}"
-  launch_configuration = "${aws_launch_configuration.green.name}"
-  desired_capacity     = "${var.green_nodes}"
-  min_size             = "${var.green_nodes}"
-  max_size             = "${var.green_nodes}"
-  min_elb_capacity     = "${var.green_nodes}"
-  availability_zones   = ["${split(",", var.azs)}"]
-  vpc_zone_identifier  = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers       = ["${var.elb_id}"]
+  name                  = "${var.name}.green.${aws_launch_configuration.green.name}"
+  launch_configuration  = "${aws_launch_configuration.green.name}"
+  desired_capacity      = "${var.green_nodes}"
+  min_size              = "${var.green_nodes}"
+  max_size              = "${var.green_nodes}"
+  wait_for_elb_capacity = "${var.green_nodes}"
+  availability_zones    = ["${split(",", var.azs)}"]
+  vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
+  load_balancers        = ["${var.elb_id}"]
 
   lifecycle { create_before_destroy = true }
 

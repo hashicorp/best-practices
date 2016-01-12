@@ -48,15 +48,15 @@ resource "aws_launch_configuration" "rolling" {
 }
 
 resource "aws_autoscaling_group" "rolling" {
-  name                 = "${var.name}.${aws_launch_configuration.rolling.name}"
-  launch_configuration = "${aws_launch_configuration.rolling.name}"
-  desired_capacity     = "${var.nodes}"
-  min_size             = "${var.nodes}"
-  max_size             = "${var.nodes}"
-  min_elb_capacity     = "${var.nodes}"
-  availability_zones   = ["${split(",", var.azs)}"]
-  vpc_zone_identifier  = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers       = ["${var.elb_id}"]
+  name                  = "${var.name}.${aws_launch_configuration.rolling.name}"
+  launch_configuration  = "${aws_launch_configuration.rolling.name}"
+  desired_capacity      = "${var.nodes}"
+  min_size              = "${var.nodes}"
+  max_size              = "${var.nodes}"
+  wait_for_elb_capacity = "${var.nodes}"
+  availability_zones    = ["${split(",", var.azs)}"]
+  vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
+  load_balancers        = ["${var.elb_id}"]
 
   lifecycle { create_before_destroy = true }
 
