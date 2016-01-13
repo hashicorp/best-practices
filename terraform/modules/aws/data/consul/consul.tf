@@ -68,20 +68,23 @@ resource "aws_instance" "consul" {
 
   vpc_security_group_ids = ["${aws_security_group.consul.id}"]
 
-  tags      { Name = "${var.name}.${count.index+1}" }
-  lifecycle { create_before_destroy = true }
+  tags { Name = "${var.name}.${count.index+1}" }
 }
 
 resource "null_resource" "openvpn_dns" {
-  provisioner "remote-exec" {
-    connection {
-      user         = "${var.openvpn_user}"
-      host         = "${var.openvpn_host}"
-      private_key  = "${var.private_key}"
-      bastion_host = "${var.bastion_host}"
-      bastion_user = "${var.bastion_user}"
-    }
+  triggers {
+    consul_private_ips = "${join(",", aws_instance.consul.*.private_ip)}"
+  }
 
+  connection {
+    user         = "${var.openvpn_user}"
+    host         = "${var.openvpn_host}"
+    private_key  = "${var.private_key}"
+    bastion_host = "${var.bastion_host}"
+    bastion_user = "${var.bastion_user}"
+  }
+
+  provisioner "remote-exec" {
     inline = [
       # Turn on custom DNS
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.client.routing.reroute_dns -v custom ConfigPut",

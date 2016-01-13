@@ -26,10 +26,13 @@ variable "haproxy_node_count"    { }
 variable "haproxy_instance_type" { }
 variable "haproxy_user_data"     { }
 
-variable "nodejs_ami"           { }
-variable "nodejs_node_count"    { }
-variable "nodejs_instance_type" { }
-variable "nodejs_user_data"     { }
+variable "nodejs_blue_ami"            { }
+variable "nodejs_blue_node_count"     { }
+variable "nodejs_blue_instance_type"  { }
+variable "nodejs_green_ami"           { }
+variable "nodejs_green_node_count"    { }
+variable "nodejs_green_instance_type" { }
+variable "nodejs_user_data"           { }
 
 module "haproxy" {
   source = "./haproxy"
@@ -53,28 +56,31 @@ module "haproxy" {
 module "nodejs" {
   source = "./nodejs"
 
-  name               = "${var.name}-nodejs"
-  region             = "${var.region}"
-  vpc_id             = "${var.vpc_id}"
-  vpc_cidr           = "${var.vpc_cidr}"
-  key_name           = "${var.key_name}"
-  azs                = "${var.azs}"
-  private_subnet_ids = "${var.private_subnet_ids}"
-  public_subnet_ids  = "${var.public_subnet_ids}"
-  site_ssl_cert      = "${var.site_ssl_cert}"
-  site_ssl_key       = "${var.site_ssl_key}"
-  vault_ssl_cert     = "${var.vault_ssl_cert}"
-  atlas_username     = "${var.atlas_username}"
-  atlas_environment  = "${var.atlas_environment}"
-  atlas_aws_global   = "${var.atlas_aws_global}"
-  atlas_token        = "${var.atlas_token}"
-  ami                = "${var.nodejs_ami}"
-  nodes              = "${var.nodejs_node_count}"
-  instance_type      = "${var.nodejs_instance_type}"
-  user_data          = "${var.nodejs_user_data}"
-  sub_domain         = "${var.sub_domain}"
-  route_zone_id      = "${var.route_zone_id}"
-  vault_token        = "${var.vault_token}"
+  name                = "${var.name}-nodejs"
+  region              = "${var.region}"
+  vpc_id              = "${var.vpc_id}"
+  vpc_cidr            = "${var.vpc_cidr}"
+  key_name            = "${var.key_name}"
+  azs                 = "${var.azs}"
+  private_subnet_ids  = "${var.private_subnet_ids}"
+  public_subnet_ids   = "${var.public_subnet_ids}"
+  site_ssl_cert       = "${var.site_ssl_cert}"
+  site_ssl_key        = "${var.site_ssl_key}"
+  vault_ssl_cert      = "${var.vault_ssl_cert}"
+  atlas_username      = "${var.atlas_username}"
+  atlas_environment   = "${var.atlas_environment}"
+  atlas_aws_global    = "${var.atlas_aws_global}"
+  atlas_token         = "${var.atlas_token}"
+  blue_ami            = "${var.nodejs_blue_ami}"
+  blue_nodes          = "${var.nodejs_blue_node_count}"
+  blue_instance_type  = "${var.nodejs_blue_instance_type}"
+  green_ami           = "${var.nodejs_green_ami}"
+  green_nodes         = "${var.nodejs_green_node_count}"
+  green_instance_type = "${var.nodejs_green_instance_type}"
+  user_data           = "${var.nodejs_user_data}"
+  sub_domain          = "${var.sub_domain}"
+  route_zone_id       = "${var.route_zone_id}"
+  vault_token         = "${var.vault_token}"
 }
 
 output "haproxy_private_ips"  { value = "${module.haproxy.private_ips}" }

@@ -3,7 +3,7 @@ set -e
 
 cd /tmp
 
-VAULTVERSION=0.4.0-rc2
+VAULTVERSION=0.4.0
 CONFIGDIR=/ops/$1
 SCRIPTSDIR=/ops/$2
 VAULTDOWNLOAD=https://releases.hashicorp.com/vault/${VAULTVERSION}/vault_${VAULTVERSION}_linux_amd64.zip

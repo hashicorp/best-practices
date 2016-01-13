@@ -2,7 +2,7 @@
 # This module is used to achieve a blue/green deploy strategy
 #--------------------------------------------------------------
 
-variable "name"                { default = "bg" }
+variable "name"                { default = "deploy" }
 variable "vpc_id"              { }
 variable "vpc_cidr"            { }
 variable "key_name"            { }
@@ -18,7 +18,7 @@ variable "green_nodes"         { }
 variable "green_instance_type" { }
 variable "green_user_data"     { }
 
-resource "aws_security_group" "bg" {
+resource "aws_security_group" "deploy" {
   vpc_id      = "${var.vpc_id}"
   description = "Security group for ${var.name} Blue/Green deploy Launch Configuration"
 
@@ -45,22 +45,22 @@ resource "aws_launch_configuration" "blue" {
   image_id        = "${var.blue_ami}"
   instance_type   = "${var.blue_instance_type}"
   key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.bg.id}"]
+  security_groups = ["${aws_security_group.deploy.id}"]
   user_data       = "${var.blue_user_data}"
 
   lifecycle { create_before_destroy = true }
 }
 
 resource "aws_autoscaling_group" "blue" {
-  name                 = "${var.name}.blue.${aws_launch_configuration.blue.name}"
-  launch_configuration = "${aws_launch_configuration.blue.name}"
-  desired_capacity     = "${var.blue_nodes}"
-  min_size             = "${var.blue_nodes}"
-  max_size             = "${var.blue_nodes}"
-  min_elb_capacity     = "${var.blue_nodes}"
-  availability_zones   = ["${split(",", var.azs)}"]
-  vpc_zone_identifier  = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers       = ["${var.elb_id}"]
+  name                  = "${var.name}.blue.${aws_launch_configuration.blue.name}"
+  launch_configuration  = "${aws_launch_configuration.blue.name}"
+  desired_capacity      = "${var.blue_nodes}"
+  min_size              = "${var.blue_nodes}"
+  max_size              = "${var.blue_nodes}"
+  wait_for_elb_capacity = "${var.blue_nodes}"
+  availability_zones    = ["${split(",", var.azs)}"]
+  vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
+  load_balancers        = ["${var.elb_id}"]
 
   lifecycle { create_before_destroy = true }
 
@@ -76,22 +76,22 @@ resource "aws_launch_configuration" "green" {
   image_id        = "${var.green_ami}"
   instance_type   = "${var.green_instance_type}"
   key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.bg.id}"]
+  security_groups = ["${aws_security_group.deploy.id}"]
   user_data       = "${var.green_user_data}"
 
   lifecycle { create_before_destroy = true }
 }
 
 resource "aws_autoscaling_group" "green" {
-  name                 = "${var.name}.green.${aws_launch_configuration.green.name}"
-  launch_configuration = "${aws_launch_configuration.green.name}"
-  desired_capacity     = "${var.green_nodes}"
-  min_size             = "${var.green_nodes}"
-  max_size             = "${var.green_nodes}"
-  min_elb_capacity     = "${var.green_nodes}"
-  availability_zones   = ["${split(",", var.azs)}"]
-  vpc_zone_identifier  = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers       = ["${var.elb_id}"]
+  name                  = "${var.name}.green.${aws_launch_configuration.green.name}"
+  launch_configuration  = "${aws_launch_configuration.green.name}"
+  desired_capacity      = "${var.green_nodes}"
+  min_size              = "${var.green_nodes}"
+  max_size              = "${var.green_nodes}"
+  wait_for_elb_capacity = "${var.green_nodes}"
+  availability_zones    = ["${split(",", var.azs)}"]
+  vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
+  load_balancers        = ["${var.elb_id}"]
 
   lifecycle { create_before_destroy = true }
 

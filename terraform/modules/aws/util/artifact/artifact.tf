@@ -1,38 +1,21 @@
 #--------------------------------------------------------------
-# This module is used to for creating all Atlas
-# "latest" and "pinned" artifacts
+# This module is used to for creating Atlas artifacts
 #--------------------------------------------------------------
 
-variable "type"           { default = "amazon.ami" }
-variable "region"         { }
-variable "atlas_username" { }
-variable "latest_name"    { }
-variable "pinned_name"    { }
-variable "pinned_version" { default = "latest" }
+variable "type"             { default = "amazon.ami" }
+variable "region"           { }
+variable "atlas_username"   { }
+variable "artifact_name"    { }
+variable "artifact_version" { default = "latest" }
 
-resource "atlas_artifact" "latest" {
-  name     = "${var.atlas_username}/${var.latest_name}"
-  type     = "${var.type}"
-  version  = "latest"
-
-  lifecycle { create_before_destroy = true }
-
-  metadata {
-    region = "${var.region}"
-  }
-}
-
-resource "atlas_artifact" "pinned" {
-  name     = "${var.atlas_username}/${var.pinned_name}"
-  type     = "${var.type}"
-  version  = "${var.pinned_version}"
+resource "atlas_artifact" "artifact" {
+  name    = "${var.atlas_username}/${var.artifact_name}"
+  type    = "${var.type}"
+  count   = "${length(split(",", var.artifact_version))}"
+  version = "${element(split(",", var.artifact_version), count.index)}"
 
   lifecycle { create_before_destroy = true }
-
-  metadata {
-    region = "${var.region}"
-  }
+  metadata  { region = "${var.region}" }
 }
 
-output "latest" { value = "${atlas_artifact.latest.metadata_full.ami_id}" }
-output "pinned" { value = "${atlas_artifact.pinned.metadata_full.ami_id}" }
+output "amis" { value = "${join(",", atlas_artifact.artifact.*.metadata_full.ami_id)}" }

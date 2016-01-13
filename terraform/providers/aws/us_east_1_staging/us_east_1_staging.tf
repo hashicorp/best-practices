@@ -30,29 +30,27 @@ variable "openvpn_admin_user"    { }
 variable "openvpn_admin_pw"      { }
 variable "openvpn_cidr"          { }
 
-variable "consul_node_count"     { }
-variable "consul_instance_type"  { }
-variable "consul_latest_name"    { }
-variable "consul_pinned_name"    { }
-variable "consul_pinned_version" { }
+variable "consul_node_count"    { }
+variable "consul_instance_type" { }
+variable "consul_artifact_name" { }
+variable "consul_artifacts"     { }
 
-variable "vault_node_count"     { }
-variable "vault_instance_type"  { }
-variable "vault_latest_name"    { }
-variable "vault_pinned_name"    { }
-variable "vault_pinned_version" { }
+variable "vault_node_count"    { }
+variable "vault_instance_type" { }
+variable "vault_artifact_name" { }
+variable "vault_artifacts"     { }
 
-variable "haproxy_node_count"     { }
-variable "haproxy_instance_type"  { }
-variable "haproxy_latest_name"    { }
-variable "haproxy_pinned_name"    { }
-variable "haproxy_pinned_version" { }
+variable "haproxy_node_count"    { }
+variable "haproxy_instance_type" { }
+variable "haproxy_artifact_name" { }
+variable "haproxy_artifacts"     { }
 
-variable "nodejs_node_count"     { }
-variable "nodejs_instance_type"  { }
-variable "nodejs_latest_name"    { }
-variable "nodejs_pinned_name"    { }
-variable "nodejs_pinned_version" { }
+variable "nodejs_blue_node_count"    { }
+variable "nodejs_blue_instance_type" { }
+variable "nodejs_green_node_count"    { }
+variable "nodejs_green_instance_type" { }
+variable "nodejs_artifact_name" { }
+variable "nodejs_artifacts"     { }
 
 provider "aws" {
   region = "${var.region}"
@@ -107,23 +105,21 @@ module "network" {
 module "artifact_consul" {
   source = "../../../modules/aws/util/artifact"
 
-  type           = "${var.artifact_type}"
-  region         = "${var.region}"
-  atlas_username = "${var.atlas_username}"
-  latest_name    = "${var.consul_latest_name}"
-  pinned_name    = "${var.consul_pinned_name}"
-  pinned_version = "${var.consul_pinned_version}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.consul_artifact_name}"
+  artifact_version = "${var.consul_artifacts}"
 }
 
 module "artifact_vault" {
   source = "../../../modules/aws/util/artifact"
 
-  type           = "${var.artifact_type}"
-  region         = "${var.region}"
-  atlas_username = "${var.atlas_username}"
-  latest_name    = "${var.vault_latest_name}"
-  pinned_name    = "${var.vault_pinned_name}"
-  pinned_version = "${var.vault_pinned_version}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.vault_artifact_name}"
+  artifact_version = "${var.vault_artifacts}"
 }
 
 module "templates" {
@@ -148,7 +144,7 @@ module "data" {
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
 
-  consul_amis          = "${module.artifact_consul.latest},${module.artifact_consul.latest},${module.artifact_consul.latest}"
+  consul_amis          = "${module.artifact_consul.amis}"
   consul_node_count    = "${var.consul_node_count}"
   consul_instance_type = "${var.consul_instance_type}"
   consul_user_data     = "${module.templates.ubuntu_consul_server_user_data}"
@@ -158,7 +154,7 @@ module "data" {
   bastion_host         = "${module.network.bastion_public_ip}"
   bastion_user         = "${module.network.bastion_user}"
 
-  vault_amis          = "${module.artifact_vault.latest},${module.artifact_vault.latest}"
+  vault_amis          = "${module.artifact_vault.amis}"
   vault_node_count    = "${var.vault_node_count}"
   vault_instance_type = "${var.vault_instance_type}"
   vault_user_data     = "${module.templates.ubuntu_vault_user_data}"
@@ -167,23 +163,21 @@ module "data" {
 module "artifact_haproxy" {
   source = "../../../modules/aws/util/artifact"
 
-  type           = "${var.artifact_type}"
-  region         = "${var.region}"
-  atlas_username = "${var.atlas_username}"
-  latest_name    = "${var.haproxy_latest_name}"
-  pinned_name    = "${var.haproxy_pinned_name}"
-  pinned_version = "${var.haproxy_pinned_version}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.haproxy_artifact_name}"
+  artifact_version = "${var.haproxy_artifacts}"
 }
 
 module "artifact_nodejs" {
   source = "../../../modules/aws/util/artifact"
 
-  type           = "${var.artifact_type}"
-  region         = "${var.region}"
-  atlas_username = "${var.atlas_username}"
-  latest_name    = "${var.nodejs_latest_name}"
-  pinned_name    = "${var.nodejs_pinned_name}"
-  pinned_version = "${var.nodejs_pinned_version}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.nodejs_artifact_name}"
+  artifact_version = "${var.nodejs_artifacts}"
 }
 
 module "compute" {
@@ -208,15 +202,18 @@ module "compute" {
   route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
   vault_token        = "${var.vault_token}"
 
-  haproxy_amis          = "${module.artifact_haproxy.latest}"
+  haproxy_amis          = "${module.artifact_haproxy.amis}"
   haproxy_node_count    = "${var.haproxy_node_count}"
   haproxy_instance_type = "${var.haproxy_instance_type}"
   haproxy_user_data     = "${module.templates.ubuntu_consul_client_user_data}"
 
-  nodejs_ami           = "${module.artifact_nodejs.latest}"
-  nodejs_node_count    = "${var.nodejs_node_count}"
-  nodejs_instance_type = "${var.nodejs_instance_type}"
-  nodejs_user_data     = "${module.templates.ubuntu_nodejs_user_data}"
+  nodejs_blue_ami            = "${element(split(",", module.artifact_nodejs.amis), 0)}"
+  nodejs_blue_node_count     = "${var.nodejs_blue_node_count}"
+  nodejs_blue_instance_type  = "${var.nodejs_blue_instance_type}"
+  nodejs_green_ami           = "${element(split(",", module.artifact_nodejs.amis), 1)}"
+  nodejs_green_node_count    = "${var.nodejs_green_node_count}"
+  nodejs_green_instance_type = "${var.nodejs_green_instance_type}"
+  nodejs_user_data           = "${module.templates.ubuntu_nodejs_user_data}"
 }
 
 module "website" {
