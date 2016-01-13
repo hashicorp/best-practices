@@ -52,7 +52,7 @@ resource "aws_launch_configuration" "blue" {
 }
 
 resource "aws_autoscaling_group" "blue" {
-  name                  = "${var.name}.blue.${aws_launch_configuration.blue.name}"
+  name                  = "${aws_launch_configuration.blue.name}"
   launch_configuration  = "${aws_launch_configuration.blue.name}"
   desired_capacity      = "${var.blue_nodes}"
   min_size              = "${var.blue_nodes}"
@@ -83,7 +83,7 @@ resource "aws_launch_configuration" "green" {
 }
 
 resource "aws_autoscaling_group" "green" {
-  name                  = "${var.name}.green.${aws_launch_configuration.green.name}"
+  name                  = "${aws_launch_configuration.green.name}"
   launch_configuration  = "${aws_launch_configuration.green.name}"
   desired_capacity      = "${var.green_nodes}"
   min_size              = "${var.green_nodes}"
