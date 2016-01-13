@@ -41,7 +41,7 @@ resource "aws_security_group" "deploy" {
 }
 
 resource "aws_launch_configuration" "blue" {
-  name_prefix     = "${var.name}.blue"
+  name_prefix     = "${var.name}.blue."
   image_id        = "${var.blue_ami}"
   instance_type   = "${var.blue_instance_type}"
   key_name        = "${var.key_name}"
@@ -72,7 +72,7 @@ resource "aws_autoscaling_group" "blue" {
 }
 
 resource "aws_launch_configuration" "green" {
-  name_prefix     = "${var.name}.green"
+  name_prefix     = "${var.name}.green."
   image_id        = "${var.green_ami}"
   instance_type   = "${var.green_instance_type}"
   key_name        = "${var.key_name}"
