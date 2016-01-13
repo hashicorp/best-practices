@@ -2,7 +2,7 @@
 # This module is used to achieve a blue/green deploy strategy
 #--------------------------------------------------------------
 
-variable "name"                { default = "bg" }
+variable "name"                { default = "deploy" }
 variable "vpc_id"              { }
 variable "vpc_cidr"            { }
 variable "key_name"            { }
@@ -18,7 +18,7 @@ variable "green_nodes"         { }
 variable "green_instance_type" { }
 variable "green_user_data"     { }
 
-resource "aws_security_group" "bg" {
+resource "aws_security_group" "deploy" {
   vpc_id      = "${var.vpc_id}"
   description = "Security group for ${var.name} Blue/Green deploy Launch Configuration"
 
@@ -45,7 +45,7 @@ resource "aws_launch_configuration" "blue" {
   image_id        = "${var.blue_ami}"
   instance_type   = "${var.blue_instance_type}"
   key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.bg.id}"]
+  security_groups = ["${aws_security_group.deploy.id}"]
   user_data       = "${var.blue_user_data}"
 
   lifecycle { create_before_destroy = true }
@@ -76,7 +76,7 @@ resource "aws_launch_configuration" "green" {
   image_id        = "${var.green_ami}"
   instance_type   = "${var.green_instance_type}"
   key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.bg.id}"]
+  security_groups = ["${aws_security_group.deploy.id}"]
   user_data       = "${var.green_user_data}"
 
   lifecycle { create_before_destroy = true }

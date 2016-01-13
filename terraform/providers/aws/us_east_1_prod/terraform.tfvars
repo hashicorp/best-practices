@@ -58,27 +58,29 @@ openvpn_cidr          = "172.27.139.0/24"
 #--------------------------------------------------------------
 
 # Consul
-consul_node_count        = "3"
-consul_instance_type     = "t2.small"
-consul_artifact_name     = "aws-us-east-1-ubuntu-consul"
-consul_artifact_versions = "latest,latest,latest"
+consul_node_count    = "3"
+consul_instance_type = "t2.small"
+consul_artifact_name = "aws-us-east-1-ubuntu-consul"
+consul_artifacts     = "latest,latest,latest" # Comma separated list of artifact version numbers, list length must match node count
 
 # Vault
-vault_node_count        = "2"
-vault_instance_type     = "t2.micro"
-vault_artifact_name     = "aws-us-east-1-ubuntu-vault"
-vault_artifact_versions = "latest,latest"
+vault_node_count    = "2"
+vault_instance_type = "t2.micro"
+vault_artifact_name = "aws-us-east-1-ubuntu-vault"
+vault_artifacts     = "latest,latest" # Comma separated list of artifact version numbers, list length must match node count
 
 #--------------------------------------------------------------
 # Compute
 #--------------------------------------------------------------
 
-haproxy_node_count        = "1"
-haproxy_instance_type     = "t2.micro"
-haproxy_artifact_name     = "aws-us-east-1-ubuntu-haproxy"
-haproxy_artifact_versions = "latest"
+haproxy_node_count    = "1"
+haproxy_instance_type = "t2.micro"
+haproxy_artifact_name = "aws-us-east-1-ubuntu-haproxy"
+haproxy_artifacts     = "latest" # Comma separated list of artifact version numbers, list length must match node count
 
-nodejs_node_count        = "2"
-nodejs_instance_type     = "t2.micro"
-nodejs_artifact_name     = "aws-us-east-1-ubuntu-nodejs"
-nodejs_artifact_versions = "latest"
+nodejs_blue_node_count     = "2"
+nodejs_blue_instance_type  = "t2.micro"
+nodejs_green_node_count    = "0"
+nodejs_green_instance_type = "t2.micro"
+nodejs_artifact_name       = "aws-us-east-1-ubuntu-nodejs"
+nodejs_artifacts           = "latest,latest" # Comma separated "blue,green" artifact version numbers, list length must be 2

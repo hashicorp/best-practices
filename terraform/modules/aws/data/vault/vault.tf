@@ -70,8 +70,7 @@ resource "aws_instance" "vault" {
 
   vpc_security_group_ids = ["${aws_security_group.vault.id}"]
 
-  tags      { Name = "${var.name}.${count.index+1}" }
-  lifecycle { create_before_destroy = true }
+  tags { Name = "${var.name}.${count.index+1}" }
 }
 
 resource "aws_security_group" "elb" {

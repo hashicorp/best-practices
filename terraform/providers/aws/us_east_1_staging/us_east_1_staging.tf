@@ -30,25 +30,27 @@ variable "openvpn_admin_user"    { }
 variable "openvpn_admin_pw"      { }
 variable "openvpn_cidr"          { }
 
-variable "consul_node_count"        { }
-variable "consul_instance_type"     { }
-variable "consul_artifact_name"     { }
-variable "consul_artifact_versions" { }
+variable "consul_node_count"    { }
+variable "consul_instance_type" { }
+variable "consul_artifact_name" { }
+variable "consul_artifacts"     { }
 
-variable "vault_node_count"        { }
-variable "vault_instance_type"     { }
-variable "vault_artifact_name"     { }
-variable "vault_artifact_versions" { }
+variable "vault_node_count"    { }
+variable "vault_instance_type" { }
+variable "vault_artifact_name" { }
+variable "vault_artifacts"     { }
 
-variable "haproxy_node_count"        { }
-variable "haproxy_instance_type"     { }
-variable "haproxy_artifact_name"     { }
-variable "haproxy_artifact_versions" { }
+variable "haproxy_node_count"    { }
+variable "haproxy_instance_type" { }
+variable "haproxy_artifact_name" { }
+variable "haproxy_artifacts"     { }
 
-variable "nodejs_node_count"        { }
-variable "nodejs_instance_type"     { }
-variable "nodejs_artifact_name"     { }
-variable "nodejs_artifact_versions" { }
+variable "nodejs_blue_node_count"    { }
+variable "nodejs_blue_instance_type" { }
+variable "nodejs_green_node_count"    { }
+variable "nodejs_green_instance_type" { }
+variable "nodejs_artifact_name" { }
+variable "nodejs_artifacts"     { }
 
 provider "aws" {
   region = "${var.region}"
@@ -103,21 +105,21 @@ module "network" {
 module "artifact_consul" {
   source = "../../../modules/aws/util/artifact"
 
-  type              = "${var.artifact_type}"
-  region            = "${var.region}"
-  atlas_username    = "${var.atlas_username}"
-  artifact_name     = "${var.consul_artifact_name}"
-  artifact_versions = "${var.consul_artifact_versions}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.consul_artifact_name}"
+  artifact_version = "${var.consul_artifacts}"
 }
 
 module "artifact_vault" {
   source = "../../../modules/aws/util/artifact"
 
-  type              = "${var.artifact_type}"
-  region            = "${var.region}"
-  atlas_username    = "${var.atlas_username}"
-  artifact_name     = "${var.vault_artifact_name}"
-  artifact_versions = "${var.vault_artifact_versions}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.vault_artifact_name}"
+  artifact_version = "${var.vault_artifacts}"
 }
 
 module "templates" {
@@ -161,21 +163,21 @@ module "data" {
 module "artifact_haproxy" {
   source = "../../../modules/aws/util/artifact"
 
-  type              = "${var.artifact_type}"
-  region            = "${var.region}"
-  atlas_username    = "${var.atlas_username}"
-  artifact_name     = "${var.haproxy_artifact_name}"
-  artifact_versions = "${var.haproxy_artifact_versions}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.haproxy_artifact_name}"
+  artifact_version = "${var.haproxy_artifacts}"
 }
 
 module "artifact_nodejs" {
   source = "../../../modules/aws/util/artifact"
 
-  type              = "${var.artifact_type}"
-  region            = "${var.region}"
-  atlas_username    = "${var.atlas_username}"
-  artifact_name     = "${var.nodejs_artifact_name}"
-  artifact_versions = "${var.nodejs_artifact_versions}"
+  type             = "${var.artifact_type}"
+  region           = "${var.region}"
+  atlas_username   = "${var.atlas_username}"
+  artifact_name    = "${var.nodejs_artifact_name}"
+  artifact_version = "${var.nodejs_artifacts}"
 }
 
 module "compute" {
@@ -205,10 +207,13 @@ module "compute" {
   haproxy_instance_type = "${var.haproxy_instance_type}"
   haproxy_user_data     = "${module.templates.ubuntu_consul_client_user_data}"
 
-  nodejs_ami           = "${element(split(",", module.artifact_nodejs.amis), 0)}"
-  nodejs_node_count    = "${var.nodejs_node_count}"
-  nodejs_instance_type = "${var.nodejs_instance_type}"
-  nodejs_user_data     = "${module.templates.ubuntu_nodejs_user_data}"
+  nodejs_blue_ami            = "${element(split(",", module.artifact_nodejs.amis), 0)}"
+  nodejs_blue_node_count     = "${var.nodejs_blue_node_count}"
+  nodejs_blue_instance_type  = "${var.nodejs_blue_instance_type}"
+  nodejs_green_ami           = "${element(split(",", module.artifact_nodejs.amis), 1)}"
+  nodejs_green_node_count    = "${var.nodejs_green_node_count}"
+  nodejs_green_instance_type = "${var.nodejs_green_instance_type}"
+  nodejs_user_data           = "${module.templates.ubuntu_nodejs_user_data}"
 }
 
 module "website" {
