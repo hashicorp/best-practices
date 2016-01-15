@@ -97,9 +97,9 @@ You do **NOT** want to queue builds for `aws-us-east-1-ubuntu-nodejs` because th
 
 #### Base Artifact
 
-- [ ] Create `aws-ubuntu-base` Artifact
-  - [ ] [Create New Build Configuration](https://atlas.hashicorp.com/builds/new) for `aws-ubuntu-base`
-    - **Name**: `aws-ubuntu-base`
+- [ ] Create `aws-us-east-1-ubuntu-base` Artifact
+  - [ ] [Create New Build Configuration](https://atlas.hashicorp.com/builds/new) for `aws-us-east-1-ubuntu-base`
+    - **Name**: `aws-us-east-1-ubuntu-base`
   - [ ] In "Variables": [Add Environment Variables](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#add-environment-variables) mentioned above
   - [ ] In "Integrations": [Setup GitHub Integration](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#integrate-with-github) for the `best-practices` repo
     - **Packer directory**: `packer`
@@ -137,7 +137,7 @@ For child Build Configurations, there is one additional step you need to take. I
   - [ ] In "Integrations": [Setup GitHub Integration](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#integrate-with-github) for the `best-practices` repo
     - **Packer directory**: `packer`
     - **Packer template**: `aws/ubuntu/haproxy.json`
-- [ ] Update `aws-us-east-1-ubuntu-nodejs` Build Configuration
+- [ ] Create `aws-us-east-1-ubuntu-nodejs` Build Configuration
   - [ ] [Create New Build Configuration](https://atlas.hashicorp.com/builds/new) for `aws-us-east-1-ubuntu-nodejs`
     - **Name**: `aws-us-east-1-ubuntu-nodejs`
   - [ ] In "Settings": Set **Inject artifact ID during build** to `aws-us-east-1-ubuntu-base`
