@@ -48,8 +48,11 @@ Set the below environment variables if you'll be using Packer or Terraform local
     $ export AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
     $ export AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
     $ export AWS_DEFAULT_REGION=us-east-1
-    $ export ATLAS_USERNAME=YOUR_ATLAS_USERNAME
+    $ export ATLAS_USERNAME=YOUR_ORGANIZATION_NAME
     $ export ATLAS_TOKEN=YOUR_ATLAS_TOKEN
+
+> Note: The environment variable `ATLAS_USERNAME` can be set to your individual username or your 
+organization name in Atlas. Typically, this should be set to your organization name - e.g. _hashicorp_.
 
 ### Generate Keys and Certs
 
