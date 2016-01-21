@@ -3,11 +3,11 @@
 # subnet
 #--------------------------------------------------------------
 
-variable "name"             { default = "private" }
-variable "vpc_id"           { }
-variable "cidrs"            { }
-variable "azs"              { }
-variable "nat_instance_ids" { }
+variable "name"            { default = "private"}
+variable "vpc_id"          { }
+variable "cidrs"           { }
+variable "azs"             { }
+variable "nat_gateway_ids" { }
 
 resource "aws_subnet" "private" {
   vpc_id            = "${var.vpc_id}"
@@ -24,8 +24,8 @@ resource "aws_route_table" "private" {
   count  = "${length(split(",", var.cidrs))}"
 
   route {
-    cidr_block  = "0.0.0.0/0"
-    instance_id = "${element(split(",", var.nat_instance_ids), count.index)}"
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = "${element(split(",", var.nat_gateway_ids), count.index)}"
   }
 
   tags      { Name = "${var.name}.${element(split(",", var.azs), count.index)}" }

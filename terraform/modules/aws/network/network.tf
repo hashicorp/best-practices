@@ -17,7 +17,6 @@ variable "sub_domain"        { }
 variable "route_zone_id"     { }
 
 variable "bastion_instance_type" { }
-variable "nat_instance_type"     { }
 variable "openvpn_instance_type" { }
 variable "openvpn_ami"           { }
 variable "openvpn_user"          { }
@@ -57,16 +56,7 @@ module "nat" {
   source = "./nat"
 
   name              = "${var.name}-nat"
-  vpc_id            = "${module.vpc.vpc_id}"
-  vpc_cidr          = "${module.vpc.vpc_cidr}"
-  region            = "${var.region}"
-  public_subnets    = "${var.public_subnets}"
   public_subnet_ids = "${module.public_subnet.subnet_ids}"
-  key_name          = "${var.key_name}"
-  private_key       = "${var.private_key}"
-  instance_type     = "${var.nat_instance_type}"
-  bastion_host      = "${module.bastion.public_ip}"
-  bastion_user      = "${module.bastion.user}"
 }
 
 module "private_subnet" {
@@ -77,7 +67,7 @@ module "private_subnet" {
   cidrs  = "${var.private_subnets}"
   azs    = "${var.azs}"
 
-  nat_instance_ids = "${module.nat.instance_ids}"
+  nat_gateway_ids = "${module.nat.gateway_ids}"
 }
 
 # The reason for this is that ephemeral nodes (nodes that are recycled often like ASG nodes),
@@ -95,7 +85,7 @@ module "ephemeral_subnets" {
   cidrs  = "${var.ephemeral_subnets}"
   azs    = "${var.azs}"
 
-  nat_instance_ids = "${module.nat.instance_ids}"
+  nat_gateway_ids = "${module.nat.gateway_ids}"
 }
 
 module "openvpn" {
@@ -129,7 +119,7 @@ resource "aws_network_acl" "acl" {
     protocol   = "-1"
     rule_no    = 100
     action     = "allow"
-    cidr_block =  "0.0.0.0/0"
+    cidr_block = "0.0.0.0/0"
     from_port  = 0
     to_port    = 0
   }
@@ -138,7 +128,7 @@ resource "aws_network_acl" "acl" {
     protocol   = "-1"
     rule_no    = 100
     action     = "allow"
-    cidr_block =  "0.0.0.0/0"
+    cidr_block = "0.0.0.0/0"
     from_port  = 0
     to_port    = 0
   }
@@ -161,9 +151,7 @@ output "bastion_private_ip" { value = "${module.bastion.private_ip}" }
 output "bastion_public_ip"  { value = "${module.bastion.public_ip}" }
 
 # NAT
-output "nat_instance_ids" { value = "${module.nat.instance_ids}" }
-output "nat_private_ips"  { value = "${module.nat.private_ips}" }
-output "nat_public_ips"   { value = "${module.nat.public_ips}" }
+output "nat_gateway_ids" { value = "${module.nat.gateway_ids}" }
 
 # OpenVPN
 output "openvpn_private_ip"  { value = "${module.openvpn.private_ip}" }
