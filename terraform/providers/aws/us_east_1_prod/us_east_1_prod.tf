@@ -72,6 +72,8 @@ resource "terraform_remote_state" "aws_global" {
   config {
     name = "${var.atlas_username}/${var.atlas_aws_global}"
   }
+
+  lifecycle { create_before_destroy = true }
 }
 
 module "network" {
