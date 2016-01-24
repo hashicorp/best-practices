@@ -51,7 +51,7 @@ Set the below environment variables if you'll be using Packer or Terraform local
     $ export ATLAS_USERNAME=YOUR_ORGANIZATION_NAME
     $ export ATLAS_TOKEN=YOUR_ATLAS_TOKEN
 
-> Note: The environment variable `ATLAS_USERNAME` can be set to your individual username or your 
+> Note: The environment variable `ATLAS_USERNAME` can be set to your individual username or your
 organization name in Atlas. Typically, this should be set to your organization name - e.g. _hashicorp_.
 
 ### Generate Keys and Certs
@@ -208,6 +208,7 @@ If you want to create artifacts in other regions, complete these same steps but 
     - This is defaulted to a user named `global-admin`
     - Be sure that you don't use a name that already exists in IAM for this AWS account or you will see conflict errors
     - If you don't want any admin users to be created, just leave this blank
+- [ ] In "Integrations": under "GitHub Integration" click **Update GitHub settings** to pull the latest configuration from master
 - [ ] In "Changes": click **Queue plan** if one has not already been queued, then **Confirm & Apply** to provision the `aws-global` environment
 
 ### Provision the `aws-us-east-1-prod` Environment
@@ -241,6 +242,7 @@ If you want to create artifacts in other regions, complete these same steps but 
   - [ ] Update `site_ssl_key` with the contents of `site.key`
   - [ ] Update `vault_ssl_cert` with the contents of `vault.crt`
   - [ ] Update `vault_ssl_key` with the contents of `vault.key`
+- [ ] In "Integrations": under "GitHub Integration" click **Update GitHub settings** to pull the latest configuration from master
 - [ ] In "Changes": click **Queue plan** if one has not already been queued, then **Confirm & Apply** to provision the `aws-us-east-1-prod` environment
   - **Note**: You'll likely see an error related to the OpenVPN AMI during the apply, you'll need to follow the link to the AWS Marketplace provided and complete the steps to opt-in to the OpenVPN AMI for the apply to complete successfully
   - On a successful apply, there will be instructions output in a green font that will tell you how to interact with your new infrastructure
