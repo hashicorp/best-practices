@@ -21,7 +21,6 @@ variable "ephemeral_subnets" { }
 variable "public_subnets"    { }
 
 variable "bastion_instance_type" { }
-variable "nat_instance_type"     { }
 
 variable "openvpn_instance_type" { }
 variable "openvpn_ami"           { }
@@ -93,7 +92,6 @@ module "network" {
   route_zone_id     = "${terraform_remote_state.aws_global.output.zone_id}"
 
   bastion_instance_type = "${var.bastion_instance_type}"
-  nat_instance_type     = "${var.nat_instance_type}"
   openvpn_instance_type = "${var.openvpn_instance_type}"
   openvpn_ami           = "${var.openvpn_ami}"
   openvpn_user          = "${var.openvpn_user}"
