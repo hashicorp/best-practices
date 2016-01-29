@@ -188,8 +188,10 @@ If you want to create artifacts in other regions, complete these same steps but 
   - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`global` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/global): `cd terraform/providers/aws/global/.`
   - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/aws-global`
   - [ ] Get latest modules: `terraform get`
-  - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-global -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
-    - The plan in Atlas **will** fail, this is okay
+  - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-global -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME" ../../../../terraform/`
+    - The path `../../../../terraform/` must be provided so that the Terraform command and project
+      files are referenced correctly.
+    - The first plan in Atlas **will** fail, this is okay. We'll correct this in the steps below.
 - [ ] Navigate to the `aws-global` [environment](https://atlas.hashicorp.com/environments)
 - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
 - [ ] In "Variables": add the below Environment Variables with appropriate values
@@ -222,8 +224,10 @@ If you want to create artifacts in other regions, complete these same steps but 
   - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`us_east_1_prod` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/us_east_1_prod): `cd terraform/providers/aws/us_east_1_prod/.`
   - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/aws-us-east-1-prod`
   - [ ] Get latest modules: `terraform get`
-  - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-us-east-1-prod -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
-    - The plan in Atlas **will** fail, this is okay
+  - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-us-east-1-prod -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME" ../../../../terraform/`
+    - The path `../../../../terraform/` must be provided so that the Terraform command and project
+      files are referenced correctly.
+    - The first plan in Atlas **will** fail, this is okay. We'll correct this in the steps below.
 - [ ] Navigate to the `aws-us-east-1-prod` [environment](https://atlas.hashicorp.com/environments)
 - [ ] In "Settings": check **Plan on artifact uploads** and click **Save**
 - [ ] In "Variables": add the below Environment Variables with appropriate values
