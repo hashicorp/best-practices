@@ -56,6 +56,7 @@ module "nat" {
   source = "./nat"
 
   name              = "${var.name}-nat"
+  azs               = "${var.azs}"
   public_subnet_ids = "${module.public_subnet.subnet_ids}"
 }
 
@@ -67,7 +68,7 @@ module "private_subnet" {
   cidrs  = "${var.private_subnets}"
   azs    = "${var.azs}"
 
-  nat_gateway_ids = "${module.nat.gateway_ids}"
+  nat_gateway_ids = "${module.nat.nat_gateway_ids}"
 }
 
 # The reason for this is that ephemeral nodes (nodes that are recycled often like ASG nodes),
@@ -85,7 +86,7 @@ module "ephemeral_subnets" {
   cidrs  = "${var.ephemeral_subnets}"
   azs    = "${var.azs}"
 
-  nat_gateway_ids = "${module.nat.gateway_ids}"
+  nat_gateway_ids = "${module.nat.nat_gateway_ids}"
 }
 
 module "openvpn" {
@@ -151,7 +152,7 @@ output "bastion_private_ip" { value = "${module.bastion.private_ip}" }
 output "bastion_public_ip"  { value = "${module.bastion.public_ip}" }
 
 # NAT
-output "nat_gateway_ids" { value = "${module.nat.gateway_ids}" }
+output "nat_gateway_ids" { value = "${module.nat.nat_gateway_ids}" }
 
 # OpenVPN
 output "openvpn_private_ip"  { value = "${module.openvpn.private_ip}" }
