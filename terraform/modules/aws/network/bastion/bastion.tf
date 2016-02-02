@@ -49,11 +49,12 @@ module "ami" {
 }
 
 resource "aws_instance" "bastion" {
-  ami                    = "${module.ami.ami_id}"
-  instance_type          = "${var.instance_type}"
-  subnet_id              = "${element(split(",", var.public_subnet_ids), count.index)}"
-  key_name               = "${var.key_name}"
-  vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
+  ami                         = "${module.ami.ami_id}"
+  instance_type               = "${var.instance_type}"
+  subnet_id                   = "${element(split(",", var.public_subnet_ids), count.index)}"
+  key_name                    = "${var.key_name}"
+  vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
+  associate_public_ip_address = true
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
