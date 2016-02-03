@@ -219,7 +219,7 @@ If you want to create artifacts in other regions, complete these same steps but 
   - [ ] **Path to directory of Terraform files**: `terraform`
 - [ ] [`terraform push`](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#deploy-with-terraform) your environment to Atlas to set the Terraform variables, the GitHub Ingress does not currently pull in variables
   - [ ] [Set local environment variables](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#set-local-environment-variables)
-  - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`aws_us_east_1_prod` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/aws_us_east_1_prod): `cd terraform/providers/aws/aws_us_east_1_prod/.`
+  - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`us_east_1_prod` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/us_east_1_prod): `cd terraform/providers/aws/us_east_1_prod/.`
   - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/aws-us-east-1-prod`
   - [ ] Get latest modules: `terraform get`
   - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/aws-us-east-1-prod -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
