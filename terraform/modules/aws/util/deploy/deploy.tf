@@ -8,11 +8,12 @@ variable "vpc_cidr"            { }
 variable "key_name"            { }
 variable "azs"                 { }
 variable "private_subnet_ids"  { }
-variable "elb_id"              { }
+variable "blue_elb_id"         { }
 variable "blue_ami"            { }
 variable "blue_nodes"          { }
 variable "blue_instance_type"  { }
 variable "blue_user_data"      { }
+variable "green_elb_id"        { }
 variable "green_ami"           { }
 variable "green_nodes"         { }
 variable "green_instance_type" { }
@@ -60,7 +61,7 @@ resource "aws_autoscaling_group" "blue" {
   wait_for_elb_capacity = "${var.blue_nodes}"
   availability_zones    = ["${split(",", var.azs)}"]
   vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers        = ["${var.elb_id}"]
+  load_balancers        = ["${var.blue_elb_id}"]
 
   lifecycle { create_before_destroy = true }
 
@@ -91,7 +92,7 @@ resource "aws_autoscaling_group" "green" {
   wait_for_elb_capacity = "${var.green_nodes}"
   availability_zones    = ["${split(",", var.azs)}"]
   vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers        = ["${var.elb_id}"]
+  load_balancers        = ["${var.green_elb_id}"]
 
   lifecycle { create_before_destroy = true }
 

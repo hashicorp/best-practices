@@ -44,12 +44,14 @@ variable "haproxy_instance_type" { }
 variable "haproxy_artifact_name" { }
 variable "haproxy_artifacts"     { }
 
-variable "nodejs_blue_node_count"    { }
-variable "nodejs_blue_instance_type" { }
+variable "nodejs_blue_node_count"     { }
+variable "nodejs_blue_instance_type"  { }
+variable "nodejs_blue_weight"         { }
 variable "nodejs_green_node_count"    { }
 variable "nodejs_green_instance_type" { }
-variable "nodejs_artifact_name" { }
-variable "nodejs_artifacts"     { }
+variable "nodejs_green_weight"        { }
+variable "nodejs_artifact_name"       { }
+variable "nodejs_artifacts"           { }
 
 provider "aws" {
   region = "${var.region}"
@@ -210,9 +212,11 @@ module "compute" {
   nodejs_blue_ami            = "${element(split(",", module.artifact_nodejs.amis), 0)}"
   nodejs_blue_node_count     = "${var.nodejs_blue_node_count}"
   nodejs_blue_instance_type  = "${var.nodejs_blue_instance_type}"
+  nodejs_blue_weight         = "${var.nodejs_blue_weight}"
   nodejs_green_ami           = "${element(split(",", module.artifact_nodejs.amis), 1)}"
   nodejs_green_node_count    = "${var.nodejs_green_node_count}"
   nodejs_green_instance_type = "${var.nodejs_green_instance_type}"
+  nodejs_green_weight        = "${var.nodejs_green_weight}"
   nodejs_user_data           = "${module.templates.ubuntu_nodejs_user_data}"
 }
 
@@ -238,8 +242,11 @@ Visit the static website hosted on S3:
           ${module.website.endpoint}
 
 Visit the Node.js website:
-  Node.js: ${module.compute.nodejs_private_fqdn}
-           ${module.compute.nodejs_elb_dns}
+  Node.js (blue): ${module.compute.nodejs_blue_private_fqdn}
+                  ${module.compute.nodejs_blue_elb_dns}
+
+  Node.js (green): ${module.compute.nodejs_green_private_fqdn}
+                   ${module.compute.nodejs_green_elb_dns}
 
   HAProxy: ${module.compute.haproxy_public_fqdn}
            ${join("\n           ", formatlist("http://%s/", split(",", module.compute.haproxy_public_ips)))}

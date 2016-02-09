@@ -29,9 +29,11 @@ variable "haproxy_user_data"     { }
 variable "nodejs_blue_ami"            { }
 variable "nodejs_blue_node_count"     { }
 variable "nodejs_blue_instance_type"  { }
+variable "nodejs_blue_weight"         { }
 variable "nodejs_green_ami"           { }
 variable "nodejs_green_node_count"    { }
 variable "nodejs_green_instance_type" { }
+variable "nodejs_green_weight"        { }
 variable "nodejs_user_data"           { }
 
 module "haproxy" {
@@ -71,12 +73,14 @@ module "nodejs" {
   atlas_environment   = "${var.atlas_environment}"
   atlas_aws_global    = "${var.atlas_aws_global}"
   atlas_token         = "${var.atlas_token}"
+  blue_weight         = "${var.nodejs_blue_weight}"
   blue_ami            = "${var.nodejs_blue_ami}"
   blue_nodes          = "${var.nodejs_blue_node_count}"
   blue_instance_type  = "${var.nodejs_blue_instance_type}"
   green_ami           = "${var.nodejs_green_ami}"
   green_nodes         = "${var.nodejs_green_node_count}"
   green_instance_type = "${var.nodejs_green_instance_type}"
+  green_weight        = "${var.nodejs_green_weight}"
   user_data           = "${var.nodejs_user_data}"
   sub_domain          = "${var.sub_domain}"
   route_zone_id       = "${var.route_zone_id}"
@@ -88,6 +92,9 @@ output "haproxy_public_ips"   { value = "${module.haproxy.public_ips}" }
 output "haproxy_private_fqdn" { value = "${module.haproxy.private_fqdn}" }
 output "haproxy_public_fqdn"  { value = "${module.haproxy.public_fqdn}" }
 
-output "nodejs_zone_id"      { value = "${module.nodejs.zone_id}" }
-output "nodejs_elb_dns"      { value = "${module.nodejs.elb_dns}" }
-output "nodejs_private_fqdn" { value = "${module.nodejs.private_fqdn}" }
+output "nodejs_blue_elb_zone_id"   { value = "${module.nodejs.blue_elb_zone_id}" }
+output "nodejs_blue_private_fqdn"  { value = "${module.nodejs.blue_private_fqdn}" }
+output "nodejs_blue_elb_dns"       { value = "${module.nodejs.blue_elb_dns}" }
+output "nodejs_green_elb_zone_id"  { value = "${module.nodejs.green_elb_zone_id}" }
+output "nodejs_green_private_fqdn" { value = "${module.nodejs.green_private_fqdn}" }
+output "nodejs_green_elb_dns"      { value = "${module.nodejs.green_elb_dns}" }

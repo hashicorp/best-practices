@@ -21,9 +21,11 @@ variable "atlas_token"         { }
 variable "blue_ami"            { }
 variable "blue_nodes"          { }
 variable "blue_instance_type"  { }
+variable "blue_weight"         { }
 variable "green_ami"           { }
 variable "green_nodes"         { }
 variable "green_instance_type" { }
+variable "green_weight"        { }
 variable "user_data"           { }
 variable "sub_domain"          { }
 variable "route_zone_id"       { }
@@ -76,8 +78,42 @@ EOF
   }
 }
 
-resource "aws_elb" "nodejs" {
-  name                        = "${var.name}"
+resource "aws_elb" "blue" {
+  name                        = "${var.name}-blue"
+  connection_draining         = true
+  connection_draining_timeout = 400
+
+  subnets         = ["${split(",", var.public_subnet_ids)}"]
+  security_groups = ["${aws_security_group.elb.id}"]
+
+  lifecycle { create_before_destroy = true }
+
+  listener {
+    lb_port           = 80
+    lb_protocol       = "http"
+    instance_port     = 8888
+    instance_protocol = "http"
+  }
+
+  listener {
+    lb_port            = 443
+    lb_protocol        = "https"
+    instance_port      = 8888
+    instance_protocol  = "http"
+    ssl_certificate_id = "${aws_iam_server_certificate.nodejs.arn}"
+  }
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+    timeout             = 10
+    interval            = 15
+    target              = "HTTP:8888/"
+  }
+}
+
+resource "aws_elb" "green" {
+  name                        = "${var.name}-green"
   connection_draining         = true
   connection_draining_timeout = 400
 
@@ -130,6 +166,7 @@ resource "template_file" "blue_user_data" {
     atlas_environment = "${var.atlas_environment}"
     atlas_token       = "${var.atlas_token}"
     node_name         = "${var.name}"
+    deploy            = "blue"
     site_ssl_cert     = "${var.site_ssl_cert}"
     vault_ssl_cert    = "${var.vault_ssl_cert}"
     vault_token       = "${var.vault_token}"
@@ -150,6 +187,7 @@ resource "template_file" "green_user_data" {
     atlas_environment = "${var.atlas_environment}"
     atlas_token       = "${var.atlas_token}"
     node_name         = "${var.name}"
+    deploy            = "green"
     site_ssl_cert     = "${var.site_ssl_cert}"
     vault_ssl_cert    = "${var.vault_ssl_cert}"
     vault_token       = "${var.vault_token}"
@@ -169,29 +207,49 @@ module "deploy" {
   key_name            = "${var.key_name}"
   azs                 = "${var.azs}"
   private_subnet_ids  = "${var.private_subnet_ids}"
-  elb_id              = "${aws_elb.nodejs.id}"
+  blue_elb_id         = "${aws_elb.blue.id}"
   blue_ami            = "${var.blue_ami}"
   blue_nodes          = "${var.blue_nodes}"
   blue_instance_type  = "${var.blue_instance_type}"
   blue_user_data      = "${template_file.blue_user_data.rendered}"
+  green_elb_id        = "${aws_elb.green.id}"
   green_ami           = "${var.green_ami}"
   green_nodes         = "${var.green_nodes}"
   green_instance_type = "${var.green_instance_type}"
   green_user_data     = "${template_file.green_user_data.rendered}"
 }
 
-resource "aws_route53_record" "nodejs" {
-  zone_id = "${var.route_zone_id}"
-  name    = "nodejs.${var.sub_domain}"
-  type    = "A"
+resource "aws_route53_record" "blue" {
+  zone_id        = "${var.route_zone_id}"
+  name           = "nodejs.${var.sub_domain}"
+  type           = "A"
+  weight         = "${var.blue_weight}"
+  set_identifier = "blue"
 
   alias {
-    name                   = "${aws_elb.nodejs.dns_name}"
-    zone_id                = "${aws_elb.nodejs.zone_id}"
+    name                   = "${aws_elb.blue.dns_name}"
+    zone_id                = "${aws_elb.blue.zone_id}"
     evaluate_target_health = true
   }
 }
 
-output "zone_id"      { value = "${aws_elb.nodejs.zone_id}" }
-output "elb_dns"      { value = "${aws_elb.nodejs.dns_name}" }
-output "private_fqdn" { value = "${aws_route53_record.nodejs.fqdn}" }
+resource "aws_route53_record" "green" {
+  zone_id        = "${var.route_zone_id}"
+  name           = "nodejs.${var.sub_domain}"
+  type           = "A"
+  weight         = "${var.green_weight}"
+  set_identifier = "green"
+
+  alias {
+    name                   = "${aws_elb.green.dns_name}"
+    zone_id                = "${aws_elb.green.zone_id}"
+    evaluate_target_health = true
+  }
+}
+
+output "blue_elb_zone_id"   { value = "${aws_elb.blue.zone_id}" }
+output "blue_private_fqdn"  { value = "${aws_route53_record.blue.fqdn}" }
+output "blue_elb_dns"       { value = "${aws_elb.blue.dns_name}" }
+output "green_elb_zone_id"  { value = "${aws_elb.green.zone_id}" }
+output "green_private_fqdn" { value = "${aws_route53_record.green.fqdn}" }
+output "green_elb_dns"      { value = "${aws_elb.green.dns_name}" }
