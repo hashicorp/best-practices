@@ -24,7 +24,6 @@ variable "vault_token"        { default = "" }
 variable "haproxy_amis"          { }
 variable "haproxy_node_count"    { }
 variable "haproxy_instance_type" { }
-variable "haproxy_user_data"     { }
 
 variable "nodejs_blue_ami"            { }
 variable "nodejs_blue_node_count"     { }
@@ -34,7 +33,6 @@ variable "nodejs_green_ami"           { }
 variable "nodejs_green_node_count"    { }
 variable "nodejs_green_instance_type" { }
 variable "nodejs_green_weight"        { }
-variable "nodejs_user_data"           { }
 
 module "haproxy" {
   source = "./haproxy"
@@ -50,7 +48,6 @@ module "haproxy" {
   amis               = "${var.haproxy_amis}"
   nodes              = "${var.haproxy_node_count}"
   instance_type      = "${var.haproxy_instance_type}"
-  user_data          = "${var.haproxy_user_data}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
 }
@@ -81,7 +78,6 @@ module "nodejs" {
   green_nodes         = "${var.nodejs_green_node_count}"
   green_instance_type = "${var.nodejs_green_instance_type}"
   green_weight        = "${var.nodejs_green_weight}"
-  user_data           = "${var.nodejs_user_data}"
   sub_domain          = "${var.sub_domain}"
   route_zone_id       = "${var.route_zone_id}"
   vault_token         = "${var.vault_token}"

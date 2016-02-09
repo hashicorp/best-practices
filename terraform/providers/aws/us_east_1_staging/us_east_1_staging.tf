@@ -124,10 +124,6 @@ module "artifact_vault" {
   artifact_version = "${var.vault_artifacts}"
 }
 
-module "templates" {
-  source = "../../../modules/templates"
-}
-
 module "data" {
   source = "../../../modules/aws/data"
 
@@ -149,7 +145,6 @@ module "data" {
   consul_amis          = "${module.artifact_consul.amis}"
   consul_node_count    = "${var.consul_node_count}"
   consul_instance_type = "${var.consul_instance_type}"
-  consul_user_data     = "${module.templates.ubuntu_consul_server_user_data}"
   openvpn_user         = "${var.openvpn_user}"
   openvpn_host         = "${module.network.openvpn_private_ip}"
   private_key          = "${var.site_private_key}"
@@ -159,7 +154,6 @@ module "data" {
   vault_amis          = "${module.artifact_vault.amis}"
   vault_node_count    = "${var.vault_node_count}"
   vault_instance_type = "${var.vault_instance_type}"
-  vault_user_data     = "${module.templates.ubuntu_vault_user_data}"
 }
 
 module "artifact_haproxy" {
@@ -207,7 +201,6 @@ module "compute" {
   haproxy_amis          = "${module.artifact_haproxy.amis}"
   haproxy_node_count    = "${var.haproxy_node_count}"
   haproxy_instance_type = "${var.haproxy_instance_type}"
-  haproxy_user_data     = "${module.templates.ubuntu_consul_client_user_data}"
 
   nodejs_blue_ami            = "${element(split(",", module.artifact_nodejs.amis), 0)}"
   nodejs_blue_node_count     = "${var.nodejs_blue_node_count}"
@@ -217,7 +210,6 @@ module "compute" {
   nodejs_green_node_count    = "${var.nodejs_green_node_count}"
   nodejs_green_instance_type = "${var.nodejs_green_instance_type}"
   nodejs_green_weight        = "${var.nodejs_green_weight}"
-  nodejs_user_data           = "${module.templates.ubuntu_nodejs_user_data}"
 }
 
 module "website" {

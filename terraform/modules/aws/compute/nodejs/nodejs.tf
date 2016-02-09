@@ -26,7 +26,6 @@ variable "green_ami"           { }
 variable "green_nodes"         { }
 variable "green_instance_type" { }
 variable "green_weight"        { }
-variable "user_data"           { }
 variable "sub_domain"          { }
 variable "route_zone_id"       { }
 variable "vault_token"         { default = "" }
@@ -157,7 +156,7 @@ resource "terraform_remote_state" "aws_global" {
 }
 
 resource "template_file" "blue_user_data" {
-  template = "${var.user_data}"
+  template = "${path.module}/nodejs.sh.tpl"
 
   lifecycle { create_before_destroy = true }
 
@@ -178,7 +177,7 @@ resource "template_file" "blue_user_data" {
 }
 
 resource "template_file" "green_user_data" {
-  template = "${var.user_data}"
+  template = "${path.module}/nodejs.sh.tpl"
 
   lifecycle { create_before_destroy = true }
 

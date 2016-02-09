@@ -13,7 +13,6 @@ variable "atlas_token"        { }
 variable "amis"               { }
 variable "nodes"              { }
 variable "instance_type"      { }
-variable "user_data"          { }
 variable "openvpn_user"       { }
 variable "openvpn_host"       { }
 variable "private_key"        { }
@@ -45,7 +44,7 @@ resource "aws_security_group" "consul" {
 
 resource "template_file" "user_data" {
   count    = "${var.nodes}"
-  template = "${var.user_data}"
+  template = "${path.module}/consul.sh.tpl"
 
   lifecycle { create_before_destroy = true }
 
