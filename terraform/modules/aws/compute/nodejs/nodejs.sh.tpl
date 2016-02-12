@@ -39,6 +39,7 @@ sed -i -- "s/{{ atlas_environment }}/${atlas_environment}/g" /etc/consul.d/base.
 sed -i -- "s/{{ atlas_token }}/${atlas_token}/g" /etc/consul.d/base.json
 sed -i -- "s/{{ datacenter }}/${atlas_environment}/g" /etc/consul.d/base.json
 sed -i -- "s/{{ node_name }}/$NAME/g" /etc/consul.d/base.json
+sed -i -- "s/{{ deploy }}/${deploy}/g" /etc/consul.d/nodejs.json
 
 service consul restart
 

@@ -2,7 +2,7 @@
   "service": {
     "name": "web",
     "port": 8888,
-    "tags": ["nodejs"],
+    "tags": ["nodejs", "{{ deploy }}"],
     "check": {
       "id": "nodejs",
       "name": "Running on port 8888",
