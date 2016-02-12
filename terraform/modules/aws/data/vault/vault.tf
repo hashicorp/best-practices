@@ -43,9 +43,13 @@ resource "aws_security_group" "vault" {
   }
 }
 
+module "templates" {
+  source = "../../../templates"
+}
+
 resource "template_file" "user_data" {
   count    = "${var.nodes}"
-  template = "${path.module}/vault.sh.tpl"
+  template = "${module.templates.vault_user_data}"
 
   lifecycle { create_before_destroy = true }
 
