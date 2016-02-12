@@ -1,6 +1,7 @@
 {
   "service": {
     "name": "vault",
-    "port": 8200
+    "port": 8200,
+    "tags": ["{{ node_name }}"]
   }
 }
