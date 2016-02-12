@@ -51,6 +51,7 @@ module "iam_vault" {
         "iam:ListGroupsForUser",
         "iam:ListUserPolicies",
         "iam:ListAccessKeys",
+        "iam:ListAttachedUserPolicies",
         "iam:DeleteAccessKey",
         "iam:DeleteUserPolicy",
         "iam:RemoveUserFromGroup",
