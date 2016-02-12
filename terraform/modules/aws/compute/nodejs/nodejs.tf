@@ -155,12 +155,12 @@ resource "terraform_remote_state" "aws_global" {
   lifecycle { create_before_destroy = true }
 }
 
-module "templates" {
+module "nodejs_template" {
   source = "../../../templates"
 }
 
 resource "template_file" "blue_user_data" {
-  template = "${module.templates.nodejs_user_data}"
+  template = "${module.nodejs_template.nodejs_user_data}"
 
   lifecycle { create_before_destroy = true }
 

@@ -42,13 +42,13 @@ resource "aws_security_group" "consul" {
   }
 }
 
-module "templates" {
+module "consul_template" {
   source = "../../../templates"
 }
 
 resource "template_file" "user_data" {
   count    = "${var.nodes}"
-  template = "${module.templates.consul_user_data}"
+  template = "${module.consul_template.consul_user_data}"
 
   lifecycle { create_before_destroy = true }
 

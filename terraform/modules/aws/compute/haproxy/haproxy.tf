@@ -53,12 +53,12 @@ resource "aws_security_group" "haproxy" {
   }
 }
 
-module "templates" {
+module "haproxy_template" {
   source = "../../../templates"
 }
 
 resource "template_file" "user_data" {
-  template = "${module.templates.haproxy_user_data}"
+  template = "${module.haproxy_template.haproxy_user_data}"
   count    = "${var.nodes}"
 
   lifecycle { create_before_destroy = true }
