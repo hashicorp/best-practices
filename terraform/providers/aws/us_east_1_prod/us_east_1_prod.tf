@@ -62,7 +62,7 @@ atlas {
 }
 
 resource "aws_key_pair" "site_key" {
-  key_name   = "${var.name}"
+  key_name   = "${var.atlas_environment}"
   public_key = "${var.site_public_key}"
 
   lifecycle { create_before_destroy = true }
