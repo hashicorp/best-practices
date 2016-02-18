@@ -73,6 +73,7 @@ resource "aws_instance" "consul" {
 resource "null_resource" "openvpn_dns" {
   triggers {
     consul_private_ips = "${join(",", aws_instance.consul.*.private_ip)}"
+    openvpn_host       = "${var.openvpn_host}"
   }
 
   connection {
