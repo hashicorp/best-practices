@@ -17,7 +17,6 @@ variable "atlas_token"        { }
 variable "amis"               { }
 variable "nodes"              { }
 variable "instance_type"      { }
-variable "user_data"          { }
 variable "sub_domain"         { }
 variable "route_zone_id"      { }
 
@@ -46,7 +45,7 @@ resource "aws_security_group" "vault" {
 
 resource "template_file" "user_data" {
   count    = "${var.nodes}"
-  template = "${var.user_data}"
+  template = "${path.module}/vault.sh.tpl"
 
   lifecycle { create_before_destroy = true }
 

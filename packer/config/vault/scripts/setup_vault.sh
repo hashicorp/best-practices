@@ -28,8 +28,12 @@ if [ ! $(cget root-token) ]; then
   export ROOT_TOKEN=$(cat /tmp/vault.init | grep '^Initial' | awk '{print $4}')
   curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/root-token -d $ROOT_TOKEN
 
-  # Remove master keys from disk
+  echo "Remove master keys from disk"
   shred /tmp/vault.init
+
+  echo "Setup Vault demo"
+  curl -fX PUT 127.0.0.1:8500/v1/kv/service/nodejs/show_vault -d "true"
+  curl -fX PUT 127.0.0.1:8500/v1/kv/service/nodejs/vault_files -d "aws.html,generic.html"
 else
   echo "Vault has already been initialized, skipping."
 fi

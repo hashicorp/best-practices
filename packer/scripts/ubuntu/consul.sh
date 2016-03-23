@@ -3,7 +3,7 @@ set -e
 
 cd /tmp
 
-CONSULVERSION=0.6.1
+CONSULVERSION=0.6.3
 CONFIGDIR=/ops/$1
 SCRIPTSDIR=/ops/$2
 CONSULDOWNLOAD=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip

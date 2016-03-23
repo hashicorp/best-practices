@@ -20,7 +20,6 @@ variable "route_zone_id"      { }
 variable "consul_amis"          { }
 variable "consul_node_count"    { }
 variable "consul_instance_type" { }
-variable "consul_user_data"     { }
 variable "openvpn_user"         { }
 variable "openvpn_host"         { }
 variable "private_key"          { }
@@ -30,7 +29,6 @@ variable "bastion_user"         { }
 variable "vault_amis"          { }
 variable "vault_node_count"    { }
 variable "vault_instance_type" { }
-variable "vault_user_data"     { }
 
 module "consul" {
   source = "./consul"
@@ -46,7 +44,6 @@ module "consul" {
   amis               = "${var.consul_amis}"
   nodes              = "${var.consul_node_count}"
   instance_type      = "${var.consul_instance_type}"
-  user_data          = "${var.consul_user_data}"
   openvpn_user       = "${var.openvpn_user}"
   openvpn_host       = "${var.openvpn_host}"
   private_key        = "${var.private_key}"
@@ -72,7 +69,6 @@ module "vault" {
   amis               = "${var.vault_amis}"
   nodes              = "${var.vault_node_count}"
   instance_type      = "${var.vault_instance_type}"
-  user_data          = "${var.vault_user_data}"
   sub_domain         = "${var.sub_domain}"
   route_zone_id      = "${var.route_zone_id}"
 }
