@@ -1,14 +1,15 @@
 {
   "variables": {
-    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
-    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-    "aws_region":     "{{env `AWS_DEFAULT_REGION`}}",
-    "base_ami":       "{{env `ATLAS_BASE_ARTIFACT_AMAZON_IMAGE_ID`}}",
-    "atlas_username": "{{env `ATLAS_USERNAME`}}",
-    "name":           "aws-{{env `AWS_DEFAULT_REGION`}}-ubuntu-haproxy",
-    "ssh_username":   "ubuntu",
-    "scripts_dir":    "scripts/ubuntu",
-    "config_dir":     "config"
+    "gce_project_id":   "{{env `GCE_PROJECT_ID`}}",
+    "gce_zone":         "{{env `GCE_DEFAULT_ZONE`}}",
+    "gce_source_image": "{{env `GCE_SOURCE_IMAGE`}}",
+    "gce_account_file": "{{env `GOOGLE_CREDENTIALS`}}",
+    "atlas_username":   "{{env `ATLAS_USERNAME`}}",
+    "name":             "gce-{{env `GCE_DEFAULT_ZONE`}}-ubuntu-haproxy",
+    "ssh_username":     "ubuntu",
+    "scripts_dir":      "scripts/ubuntu",
+    "config_dir":       "config",
+    "dns_listen_addr":  "127.0.0.1"
   },
   "push": {
     "name": "{{user `atlas_username`}}/{{user `name`}}",
@@ -25,22 +26,19 @@
   },
   "builders": [
     {
-      "type":            "amazon-ebs",
-      "access_key":      "{{user `aws_access_key`}}",
-      "secret_key":      "{{user `aws_secret_key`}}",
-      "region":          "{{user `aws_region`}}",
-      "vpc_id":          "",
-      "subnet_id":       "",
-      "source_ami":      "{{user `base_ami`}}",
-      "instance_type":   "c3.large",
-      "ssh_username":    "{{user `ssh_username`}}",
-      "ssh_timeout":     "10m",
-      "ami_name":        "{{user `name`}} {{timestamp}}",
-      "ami_description": "{{user `name`}} AMI",
-      "run_tags":        { "ami-create": "{{user `name`}}" },
-      "tags":            { "ami": "{{user `name`}}" },
-      "ssh_private_ip":  false,
-      "associate_public_ip_address": true
+      "type":              "googlecompute",
+      "account_file":      "{{user `gce_account_file`}}",
+      "project_id":        "{{user `gce_project_id`}}",
+      "zone":              "{{user `gce_zone`}}",
+      "source_image":      "{{user `gce_source_image`}}",
+      "network":           "default",
+      "ssh_username":      "{{user `ssh_username`}}",
+      "image_name":        "packer-{{user `name`}}-{{timestamp}}",
+      "image_description": "packer-{{user `name`}}-image",
+      "use_internal_ip":   false,
+      "tags":              [
+        "{{user `name`}}"
+      ]
     }
   ],
   "provisioners": [
@@ -77,7 +75,7 @@
     {
       "type": "atlas",
       "artifact": "{{user `atlas_username`}}/{{user `name`}}",
-      "artifact_type": "amazon.image",
+      "artifact_type": "google.image",
       "metadata": {
         "created_at": "{{timestamp}}"
       }
