@@ -1,0 +1,85 @@
+{
+  "variables": {
+    "aws_access_key":  "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key":  "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region":      "{{env `AWS_DEFAULT_REGION`}}",
+    "base_ami":        "{{env `ATLAS_BASE_ARTIFACT_AMAZON_IMAGE_ID`}}",
+    "atlas_username":  "{{env `ATLAS_USERNAME`}}",
+    "name":            "aws-{{env `AWS_DEFAULT_REGION`}}-ubuntu-consul",
+    "ssh_username":    "ubuntu",
+    "scripts_dir":     "scripts/ubuntu",
+    "config_dir":      "config",
+    "dns_listen_addr": "0.0.0.0"
+  },
+  "push": {
+    "name": "{{user `atlas_username`}}/{{user `name`}}",
+    "base_dir": "../../.",
+    "include": [
+      "{{user `scripts_dir`}}/*",
+      "{{user `config_dir`}}/*",
+      "{{user `config_dir`}}/consul/*"
+    ],
+    "vcs": false
+  },
+  "builders": [
+    {
+      "type":            "amazon-ebs",
+      "access_key":      "{{user `aws_access_key`}}",
+      "secret_key":      "{{user `aws_secret_key`}}",
+      "region":          "{{user `aws_region`}}",
+      "vpc_id":          "",
+      "subnet_id":       "",
+      "source_ami":      "{{user `base_ami`}}",
+      "instance_type":   "c3.large",
+      "ssh_username":    "{{user `ssh_username`}}",
+      "ssh_timeout":     "10m",
+      "ami_name":        "{{user `name`}} {{timestamp}}",
+      "ami_description": "{{user `name`}} AMI",
+      "run_tags":        { "ami-create": "{{user `name`}}" },
+      "tags":            { "ami": "{{user `name`}}" },
+      "ssh_private_ip":  false,
+      "associate_public_ip_address": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "mkdir -p /ops/{{user `scripts_dir`}}",
+        "chmod a+w /ops/{{user `scripts_dir`}}",
+        "mkdir -p /ops/{{user `config_dir`}}",
+        "chmod a+w /ops/{{user `config_dir`}}"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{user `scripts_dir`}}/.",
+      "destination": "/ops/{{user `scripts_dir`}}"
+    },
+    {
+      "type": "file",
+      "source": "{{user `config_dir`}}/.",
+      "destination": "/ops/{{user `config_dir`}}"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "cp /ops/{{user `config_dir`}}/consul/consul_server.json /etc/consul.d/base.json",
+        "sh /ops/{{user `scripts_dir`}}/dnsmasq.sh {{user `dns_listen_addr`}}",
+        "sh /ops/{{user `scripts_dir`}}/cleanup.sh"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "atlas",
+      "artifact": "{{user `atlas_username`}}/{{user `name`}}",
+      "artifact_type": "amazon.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    }
+  ]
+}

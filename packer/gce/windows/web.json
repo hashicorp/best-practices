@@ -1,0 +1,86 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_KEY`}}",
+    "atlas_username": "{{env `ATLAS_USERNAME`}}",
+    "base_ami":       "{{env `ATLAS_BASE_ARTIFACT_AMAZON_AMI_ID`}}",
+    "name":           "aws-windows-web",
+    "region":         "us-east-1",
+    "vpc_id":         "",
+    "subnet_id":      "",
+    "instance_type":  "t2.micro",
+    "winrm_username": "Administrator",
+    "user_data_file": "packer/scripts/windows/config/ec2_user_data.conf",
+    "scripts_dir":    "packer/scripts/windows",
+    "slug_app_dir":   "app/"
+  },
+  "push": {
+    "name": "{{user `atlas_username`}}/{{user `name`}}",
+    "base_dir": "../../../.",
+    "include": [
+      "{{user `scripts_dir`}}/*"
+    ],
+    "vcs": false
+  },
+  "builders": [
+    {
+      "type":            "amazon-ebs",
+      "access_key":      "{{user `aws_access_key`}}",
+      "secret_key":      "{{user `aws_secret_key`}}",
+      "region":          "{{user `region`}}",
+      "vpc_id":          "{{user `vpc_id`}}",
+      "subnet_id":       "{{user `subnet_id`}}",
+      "source_ami":      "{{user `base_ami`}}",
+      "instance_type":   "{{user `instance_type`}}",
+      "communicator":    "winrm",
+      "winrm_username":  "{{user `winrm_username`}}",
+      "winrm_timeout":   "30m",
+      "user_data_file":  "{{user `user_data_file`}}",
+      "ami_name":        "{{user `name`}} {{timestamp}}",
+      "ami_description": "{{user `name`}} AMI",
+      "run_tags": { "ami-create": "{{user `name`}}" },
+      "tags": { "ami": "{{user `name`}}" },
+      "associate_public_ip_address": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{user `scripts_dir`}}/set_ec2_config.ps1"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "New-Item C:\\{{user `name`}} -type Directory"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{user `slug_app_dir`}}",
+      "destination": "C:\\{{user `name`}}"
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "Import-Module WebAdministration",
+        "Clear-ItemProperty \"IIS:\\Sites\\Default Web Site\" -Name bindings",
+        "Remove-Website -Name \"Default Web Site\"",
+        "New-Item \"IIS:\\AppPools\\{{user `name`}} AppPool\"",
+        "New-Item IIS:\\Sites\\{{user `name`}} -physicalPath C:\\{{user `name`}} -bindings @{protocol=\"http\";bindingInformation=\":80:\"}",
+        "Set-ItemProperty IIS:\\Sites\\{{user `name`}} -name applicationPool -value \"{{user `name`}} AppPool\""
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "atlas",
+      "artifact": "{{user `atlas_username`}}/{{user `name`}}",
+      "artifact_type": "amazon.ami",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    }
+  ]
+}
