@@ -1,0 +1,105 @@
+{
+  "variables": {
+    "aws_access_key":    "{{env `AWS_ACCESS_KEY`}}",
+    "aws_secret_key":    "{{env `AWS_SECRET_KEY`}}",
+    "atlas_username":    "{{env `ATLAS_USERNAME`}}",
+    "name":              "aws-windows-base",
+    "region":            "us-east-1",
+    "vpc_id":            "",
+    "subnet_id":         "",
+    "source_ami":        "ami-cd9339a6",
+    "instance_type":     "t2.micro",
+    "winrm_username":    "Administrator",
+    "user_data_file":    "packer/scripts/windows/config/ec2_user_data.conf",
+    "scripts_dir":       "packer/scripts/windows",
+    "consul_config_dir": "C:\\etc\\consul.d"
+  },
+  "push": {
+    "name": "{{user `atlas_username`}}/{{user `name`}}",
+    "base_dir": "../../../.",
+    "include": [
+      "{{user `user_data_file`}}",
+      "{{user `scripts_dir`}}/*"
+    ],
+    "vcs": false
+  },
+  "builders": [
+    {
+      "type":            "amazon-ebs",
+      "access_key":      "{{user `aws_access_key`}}",
+      "secret_key":      "{{user `aws_secret_key`}}",
+      "region":          "{{user `region`}}",
+      "vpc_id":          "{{user `vpc_id`}}",
+      "subnet_id":       "{{user `subnet_id`}}",
+      "source_ami":      "{{user `source_ami`}}",
+      "instance_type":   "{{user `instance_type`}}",
+      "communicator":    "winrm",
+      "winrm_username":  "{{user `winrm_username`}}",
+      "winrm_timeout":   "60m",
+      "user_data_file":  "{{user `user_data_file`}}",
+      "ami_name":        "{{user `name`}} {{timestamp}}",
+      "ami_description": "{{user `name`}} AMI",
+      "run_tags": { "ami-create": "{{user `name`}}" },
+      "tags": { "ami": "{{user `name`}}" },
+      "associate_public_ip_address": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{user `scripts_dir`}}/install_web_server.ps1",
+        "{{user `scripts_dir`}}/install_windows_updates.ps1"
+      ]
+    },
+    {
+      "type": "windows-restart",
+      "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
+      "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Waiting for restart'; start-sleep 600} else {Write-Output 'Restart complete'}}\""
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{user `scripts_dir`}}/install_windows_updates.ps1"
+      ]
+    },
+    {
+      "type": "windows-restart",
+      "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
+      "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Waiting for restart'; start-sleep 600} else {Write-Output 'Restart complete'}}\""
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{user `scripts_dir`}}/set_ec2_config.ps1"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "New-Item -Path {{user `consul_config_dir`}} -ItemType Directory -Force"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{user `scripts_dir`}}/consul_client.json",
+      "destination": "{{user `consul_config_dir`}}\\config.json"
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{user `scripts_dir`}}/install_consul.ps1"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "atlas",
+      "artifact": "{{user `atlas_username`}}/{{user `name`}}",
+      "artifact_type": "amazon.ami",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    }
+  ]
+}
