@@ -40,7 +40,7 @@
       "tags":              [
         "{{user `name`}}"
       ]
-    },
+    }
   ],
   "provisioners": [
     {

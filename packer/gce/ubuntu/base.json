@@ -29,25 +29,6 @@
   },
   "builders": [
     {
-      "name":            "aws-us-east-1-ubuntu-base",
-      "type":            "amazon-ebs",
-      "access_key":      "{{user `aws_access_key`}}",
-      "secret_key":      "{{user `aws_secret_key`}}",
-      "region":          "us-east-1",
-      "vpc_id":          "",
-      "subnet_id":       "",
-      "source_ami":      "{{user `us_east_1_ami`}}",
-      "instance_type":   "c3.large",
-      "ssh_username":    "{{user `ssh_username`}}",
-      "ssh_timeout":     "10m",
-      "ami_name":        "{{user `us_east_1_name`}} {{timestamp}}",
-      "ami_description": "{{user `us_east_1_name`}} AMI",
-      "run_tags":        { "ami-create": "{{user `us_east_1_name`}}" },
-      "tags":            { "ami": "{{user `us_east_1_name`}}" },
-      "ssh_private_ip":  false,
-      "associate_public_ip_address": true
-    },
-    {
       "name":              "gce-ubuntu-base",
       "type":              "googlecompute",
       "account_file":      "{{user `gce_account_file`}}",
