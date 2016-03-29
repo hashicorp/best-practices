@@ -1,14 +1,14 @@
 {
   "variables": {
-    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
-    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-    "aws_region":     "{{env `AWS_DEFAULT_REGION`}}",
-    "base_ami":       "{{env `ATLAS_BASE_ARTIFACT_AMAZON_IMAGE_ID`}}",
-    "atlas_username": "{{env `ATLAS_USERNAME`}}",
-    "name":           "aws-{{env `AWS_DEFAULT_REGION`}}-ubuntu-nodejs",
-    "ssh_username":   "ubuntu",
-    "scripts_dir":    "scripts/ubuntu",
-    "config_dir":     "config",
+    "gce_project_id":   "{{env `GCE_PROJECT_ID`}}",
+    "gce_zone":         "{{env `GCE_DEFAULT_ZONE`}}",
+    "gce_source_image": "{{env `GCE_SOURCE_IMAGE`}}",
+    "gce_account_file": "{{env `GOOGLE_CREDENTIALS`}}",
+    "atlas_username":   "{{env `ATLAS_USERNAME`}}",
+    "name":             "gce-{{env `GCE_DEFAULT_ZONE`}}-ubuntu-nodejs",
+    "ssh_username":     "ubuntu",
+    "scripts_dir":      "scripts/ubuntu",
+    "config_dir":       "config",
     "host_app_dir":   "/application",
     "slug_app_dir":   "app/"
   },
