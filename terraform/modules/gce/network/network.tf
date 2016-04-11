@@ -3,8 +3,6 @@
 #--------------------------------------------------------------
 
 variable "name"              { }
-variable "vpc_cidr"          { }
-variable "azs"               { }
 variable "region"            { }
 variable "private_subnets"   { }
 variable "ephemeral_subnets" { }
@@ -24,32 +22,30 @@ variable "openvpn_admin_user"    { }
 variable "openvpn_admin_pw"      { }
 variable "openvpn_cidr"          { }
 
-module "vpc" {
-  source = "./vpc"
+module "network" {
+  source = "./network"
 
-  name = "${var.name}-vpc"
-  cidr = "${var.vpc_cidr}"
+  name = "${var.name}-network"
 }
 
 module "public_subnet" {
   source = "./public_subnet"
 
-  name   = "${var.name}-public"
-  vpc_id = "${module.vpc.vpc_id}"
-  cidrs  = "${var.public_subnets}"
-  azs    = "${var.azs}"
+  name            = "${var.name}-public"
+  network         = "${module.network.network_uri}"
+  ip_cidr_range   = "${var.public_subnets}"
+  region          = "${var.region}"
 }
 
 module "bastion" {
   source = "./bastion"
 
   name              = "${var.name}-bastion"
-  vpc_id            = "${module.vpc.vpc_id}"
-  vpc_cidr          = "${module.vpc.vpc_cidr}"
-  region            = "${var.region}"
-  public_subnet_ids = "${module.public_subnet.subnet_ids}"
+  network           = "${module.network.name}"
+  zone              = "${var.zone}"
+  public_subnet     = "${module.public_subnet.name}"
   key_name          = "${var.key_name}"
-  instance_type     = "${var.bastion_instance_type}"
+  machine_type      = "${var.bastion_machine_type}"
 }
 
 module "nat" {
@@ -63,12 +59,10 @@ module "nat" {
 module "private_subnet" {
   source = "./private_subnet"
 
-  name   = "${var.name}-private"
-  vpc_id = "${module.vpc.vpc_id}"
-  cidrs  = "${var.private_subnets}"
-  azs    = "${var.azs}"
-
-  nat_gateway_ids = "${module.nat.nat_gateway_ids}"
+  name               = "${var.name}-private"
+  network            = "${module.network.name}"
+  ip_cidr_range      = "${var.private_subnets}"
+  region             = "${var.region}"
 }
 
 # The reason for this is that ephemeral nodes (nodes that are recycled often like ASG nodes),
@@ -137,9 +131,10 @@ resource "aws_network_acl" "acl" {
   tags { Name = "${var.name}-all" }
 }
 
-# VPC
-output "vpc_id"   { value = "${module.vpc.vpc_id}" }
-output "vpc_cidr" { value = "${module.vpc.vpc_cidr}" }
+# Network
+output "network_name"   { value = "${module.network.name}" }
+output "network_cidr"   { value = "${module.network.ipv4_range}" }
+
 
 # Subnets
 output "public_subnet_ids"    { value = "${module.public_subnet.subnet_ids}" }

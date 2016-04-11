@@ -3,41 +3,18 @@
 # subnet
 #--------------------------------------------------------------
 
-variable "name"            { default = "private"}
-variable "vpc_id"          { }
-variable "cidrs"           { }
-variable "azs"             { }
-variable "nat_gateway_ids" { }
+variable "name"           { default = "private" }
+variable "network"        { }
+variable "ip_cidr_range"  { }
+variable "region"         { }
 
-resource "aws_subnet" "private" {
-  vpc_id            = "${var.vpc_id}"
-  cidr_block        = "${element(split(",", var.cidrs), count.index)}"
-  availability_zone = "${element(split(",", var.azs), count.index)}"
-  count             = "${length(split(",", var.cidrs))}"
-
-  tags      { Name = "${var.name}.${element(split(",", var.azs), count.index)}" }
-  lifecycle { create_before_destroy = true }
-}
-
-resource "aws_route_table" "private" {
-  vpc_id = "${var.vpc_id}"
-  count  = "${length(split(",", var.cidrs))}"
-
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = "${element(split(",", var.nat_gateway_ids), count.index)}"
-  }
-
-  tags      { Name = "${var.name}.${element(split(",", var.azs), count.index)}" }
-  lifecycle { create_before_destroy = true }
-}
-
-resource "aws_route_table_association" "private" {
-  count          = "${length(split(",", var.cidrs))}"
-  subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
-  route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
+resource "google_compute_subnetwork" "private" {
+  name              = "${var.name}"
+  ip_cidr_range     = "${var.ip_cidr_range}"
+  region            = "${var.region}"
 
   lifecycle { create_before_destroy = true }
 }
 
-output "subnet_ids" { value = "${join(",", aws_subnet.private.*.id)}" }
+output "subnet_ip_cidr" { value = "${google_compute_subnetwork.private.ip_cidr_range}" }
+output "subnet_gateway" { value = "${google_compute_subnetwork.private.gateway_address}" }
