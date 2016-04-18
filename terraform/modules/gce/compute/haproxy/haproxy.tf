@@ -3,53 +3,37 @@
 #--------------------------------------------------------------
 
 variable "name"              { default = "haproxy" }
-variable "vpc_id"            { }
-variable "vpc_cidr"          { }
+variable "network"           { }
 variable "key_name"          { }
-variable "subnet_ids"        { }
+variable "public_subnet"     { }
 variable "atlas_username"    { }
 variable "atlas_environment" { }
 variable "atlas_token"       { }
-variable "amis"              { }
+variable "image_url"         { }
 variable "nodes"             { }
-variable "instance_type"     { }
+variable "machine_type"      { default = "g1-small"}
 variable "sub_domain"        { }
-variable "route_zone_id"     { }
+variable "managed_zone"      { }
+variable "zone"              { }
 
-resource "aws_security_group" "haproxy" {
+resource "google_compute_firewall" "haproxy" {
   name        = "${var.name}"
-  vpc_id      = "${var.vpc_id}"
+  network     = "${var.network}"
   description = "HAProxy security group"
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
 
-  ingress {
+  allow {
     protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
-    cidr_blocks = ["0.0.0.0/0"]
+    ports       = ["80","443"]
+    //TODO Add target and source tags
   }
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["${var.vpc_cidr}"]
-  }
-
-  egress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
+  allow {
+    protocol    = "icmp"
+    source_tags = ["private_subnet"]
+    //TODO add tags to subnets
   }
 }
 
@@ -67,37 +51,36 @@ resource "template_file" "user_data" {
   }
 }
 
-resource "aws_instance" "haproxy" {
-  ami           = "${element(split(",", var.amis), count.index)}"
-  count         = "${var.nodes}"
-  instance_type = "${var.instance_type}"
-  key_name      = "${var.key_name}"
-  subnet_id     = "${element(split(",", var.subnet_ids), count.index)}"
-  user_data     = "${element(template_file.user_data.*.rendered, count.index)}"
+resource "google_compute_instance" "haproxy" {
+  name                        = "${var.name}"
+  count                       = "${var.nodes}"
+  machine_type                = "${var.machine_type}"
+  zone                        = "${var.zone}"
+  metadata_startup_script     = "${element(template_file.user_data.*.rendered, count.index)}"
+  can_ip_forward              = "true"
 
-  vpc_security_group_ids = ["${aws_security_group.haproxy.id}"]
+  disk {
+    image = "${var.image_url}"
+  }
+
+  network_interface {
+    subnetwork = "${module.public_subnet.name}"
+    access_config {
+    }
+    // GCE is currently limited to one interface per setup.
+    // https://www.terraform.io/docs/providers/google/r/compute_instance.html#network_interface
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
 }
 
-resource "aws_route53_record" "haproxy_public" {
-  zone_id = "${var.route_zone_id}"
-  name    = "haproxy.${var.sub_domain}"
-  type    = "A"
-  ttl     = "300"
-  records = ["${aws_instance.haproxy.*.public_ip}"]
+resource "google_dns_record_set" "haproxy_public" {
+  managed_zone = "${var.managed_zone}"
+  name         = "haproxy.${var.sub_domain}"
+  type         = "A"
+  ttl          = "300"
+  rrdata       = ["${google_compute_instance.haproxy.*.network_interface.*.access_config.assigned_nat_ip}"]
 }
 
-resource "aws_route53_record" "haproxy_private" {
-  zone_id = "${var.route_zone_id}"
-  name    = "private.haproxy.${var.sub_domain}"
-  type    = "A"
-  ttl     = "300"
-  records = ["${aws_instance.haproxy.*.private_ip}"]
-}
-
-output "public_ips"   { value = "${join(",", aws_instance.haproxy.*.public_ip)}" }
-output "private_ips"  { value = "${join(",", aws_instance.haproxy.*.private_ip)}" }
-output "public_fqdn"  { value = "${aws_route53_record.haproxy_public.fqdn}" }
-output "private_fqdn" { value = "${aws_route53_record.haproxy_private.fqdn}" }
+output "public_ips"   { value = "${join(",", google_compute_instance.haproxy.*.network_interface.*.access_config.assigned_nat_ip)}" }
+output "public_fqdn"  { value = "${google_dns_record_set.haproxy_public.name}" }
