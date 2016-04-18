@@ -10,3 +10,9 @@ logs
 *.key
 *.pub
 *.pem
+
+packer/auth.json
+
+packer/HashiCorp Test-4963ee84c309.json
+
+packer/variables.json

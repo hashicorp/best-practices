@@ -26,20 +26,19 @@ resource "google_compute_firewall" "bastion" {
 
   allow {
     protocol    = "tcp"
-    ports = ["22"]
+    ports       = ["22"]
   }
 }
 
 resource "google_compute_instance" "bastion" {
-  image                         = "${var.image}"
-  machine_type = "${var.machine_type}"
-  zone = "${var.zone}"
+  machine_type  = "${var.machine_type}"
+  zone          = "${var.zone}"
 
   disk {
-    image = "ubuntu-1404-trusty-v20160314"
+    image = "${var.image}"
   }
 
-  network {
+  network_interface {
     subnetwork = "${module.public_subnet.name}"
     access_config {
     }
