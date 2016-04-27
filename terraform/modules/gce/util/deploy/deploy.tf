@@ -3,11 +3,10 @@
 #--------------------------------------------------------------
 
 variable "name"                { default = "deploy" }
-variable "vpc_id"              { }
-variable "vpc_cidr"            { }
+variable "network"              { }
 variable "key_name"            { }
-variable "azs"                 { }
-variable "private_subnet_ids"  { }
+variable "zone"                 { }
+variable "public_subnet"       { }
 variable "blue_elb_id"         { }
 variable "blue_ami"            { }
 variable "blue_nodes"          { }
@@ -19,25 +18,17 @@ variable "green_nodes"         { }
 variable "green_instance_type" { }
 variable "green_user_data"     { }
 
-resource "aws_security_group" "deploy" {
-  vpc_id      = "${var.vpc_id}"
-  description = "Security group for ${var.name} Blue/Green deploy Launch Configuration"
+resource "google_compute_firewall" "deploy" {
+  name        = "${var.name}"
+  network     = "${var.network}"
+  description = "Firewall rule for ${var.name} Blue/Green deploy Launch Configuration"
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
 
-  ingress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["${var.vpc_cidr}"]
-  }
-
-  egress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
+  allow {
+    protocol    = "icmp"
+    //TODO Add target and source tags
   }
 }
 

@@ -13,7 +13,6 @@ While this repository is designed with Atlas in mind, the principles can be appl
 - Network
   - Public subnets
   - Private subnets
-  - NAT
   - Bastion host
 - Data
   - Consul cluster
@@ -37,6 +36,7 @@ Take all instructions from [Setup](https://github.com/hashicorp/best-practices/b
   - A service account will allow you to access other Google Cloud Platform resources from within GCE
   - If needed, you can create multiple service accounts and scope access to a specific service
   - Some commands will need to be run specifically **on** instances within GCE. It will be noted when this is required
+
   <!---- Remove when packer is fixed https://github.com/hashicorp/roadmap/issues/1533 --->
 - [ ] [Create an Atlas account](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#create-atlas-account)
   - [ ] If you're working with a HashiCorp SE, add them to the "owners" team in your organization
@@ -80,7 +80,7 @@ There are certain resources in this project that require the use of keys and cer
 
 ### Create and Configure Artifacts
 
-Due the above mentioned conflict with [GCE authentication and Packer](https://github.com/mitchellh/packer/issues/2970), artifacts will need to be built locally. Ideally, this should be a machine in GCE (to access service account authorizations), but can be any a properly authenticated machine with [`packer`](https://packer.io).
+Due the above mentioned conflict with [GCE authentication and Packer](https://github.com/mitchellh/packer/issues/2970), artifacts will need to be built locally. Ideally, this should be a machine in GCE (to access service account authorizations), but can be any properly authenticated machine with [`packer`](https://packer.io).
 
 ##### Create the Base Artifact
 The artifacts in this repository are designed to pull from a common base. Before any subsequent artifacts can be created, this base artifact must be built. It will then be inherited for later builds.
@@ -234,8 +234,6 @@ If you don't have a change to make, you can force an application ingress into At
 
     $ git commit --allow-empty -m "Force a change in Atlas"
 
-If you want to create artifacts in other zones, complete these same steps but select a Build Template from the region you'd like.
-
 ### Provision the `gce-global` Environment
 
 - [ ] Use the [Import Terraform Configuration from GitHub](https://atlas.hashicorp.com/configurations/import) tool to import the `gce-global` Environment from GitHub
@@ -244,7 +242,7 @@ If you want to create artifacts in other zones, complete these same steps but se
   - [ ] **Path to directory of Terraform files**: `terraform`
 - [ ] [`terraform push`](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#deploy-with-terraform) your environment to Atlas to set the Terraform variables, the GitHub Ingress does not currently pull in variables
   - [ ] [Set local environment variables](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/gce/README.md#set-local-environment-variables)
-  - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`global` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/gce/global): `cd terraform/providers/gce/global/.`
+  - [ ] From the [root directory](https://github.com/hashicorp/best-practices), navigate to the [`global` folder](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/gce/global): `cd terraform/providers/gce/global/`.
   - [ ] Configure & pull remote state: `terraform remote config -backend-config name=$ATLAS_USERNAME/gce-global`
   - [ ] Get latest modules: `terraform get`
   - [ ] Push to Atlas: `terraform push -name $ATLAS_USERNAME/gce-global -var "atlas_token=$ATLAS_TOKEN" -var "atlas_username=$ATLAS_USERNAME"`
@@ -303,7 +301,7 @@ If you want to create artifacts in other zones, complete these same steps but se
 - [ ] In "Changes": click **Queue plan** if one has not already been queued, then **Confirm & Apply** to provision the `prod` environment
   - On a successful apply, there will be instructions output in a green font that will tell you how to interact with your new infrastructure
 
-This [same process](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/gce/README.md#provision-the-aws-us-east-1-staging-environment) can be repeated for the `staging` environment as well as any other groups you would like to deploy infrastructure into. If you are deploying into a new group, be sure you have Artifacts created for it by following the [Multi-Region steps below](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#multi-region).
+This [same process](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/gce/README.md#provision-the-aws-us-east-1-staging-environment) can be repeated for the `staging` environment as well as any other groups you would like to deploy infrastructure into.
 
 ### Setup Vault
 

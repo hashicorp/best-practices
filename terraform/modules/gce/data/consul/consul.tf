@@ -3,42 +3,32 @@
 #--------------------------------------------------------------
 
 variable "name"               { default = "consul" }
-variable "vpc_id"             { }
-variable "vpc_cidr"           { }
-variable "private_subnet_ids" { }
+variable "network"            { }
+variable "zone"               { default = "us-central1-c" }
+variable "public_subnet"      { }
 variable "key_name"           { }
 variable "atlas_username"     { }
 variable "atlas_environment"  { }
 variable "atlas_token"        { }
-variable "amis"               { }
+variable "image"              { default = "ubuntu-1404-trusty-v20160406" }
 variable "nodes"              { }
-variable "instance_type"      { }
+variable "machine_type"       { default = "n1-standard-1" }
 variable "openvpn_user"       { }
 variable "openvpn_host"       { }
 variable "private_key"        { }
 variable "bastion_host"       { }
 variable "bastion_user"       { }
 
-resource "aws_security_group" "consul" {
+resource "google_compute_firewall" "consul" {
   name        = "${var.name}"
-  vpc_id      = "${var.vpc_id}"
-  description = "Security group for Consul"
+  network      = "${var.network}"
+  description = "Firewall rule for Consul"
 
   tags      { Name = "${var.name}" }
   lifecycle { create_before_destroy = true }
 
-  ingress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["${var.vpc_cidr}"]
-  }
-
-  egress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
+  allow {
+    protocol    = "icmp"
   }
 }
 
@@ -57,22 +47,30 @@ resource "template_file" "user_data" {
   }
 }
 
-resource "aws_instance" "consul" {
-  count         = "${var.nodes}"
-  ami           = "${element(split(",", var.amis), count.index)}"
-  instance_type = "${var.instance_type}"
-  key_name      = "${var.key_name}"
-  subnet_id     = "${element(split(",", var.private_subnet_ids), count.index)}"
-  user_data     = "${element(template_file.user_data.*.rendered, count.index)}"
-
-  vpc_security_group_ids = ["${aws_security_group.consul.id}"]
+resource "google_compute_instance" "consul" {
+  count                   = "${var.nodes}"
+  machine_type            = "${var.machine_type}"
+  zone                    = "${var.zone}"
+  key_name                = "${var.key_name}"
+  metadata_startup_script = "${element(template_file.user_data.*.rendered, count.index)}"
 
   tags { Name = "${var.name}.${count.index+1}" }
+
+  disk {
+    image = "${var.image}"
+  }
+
+  network_interface {
+    subnetwork = "${module.public_subnet.name}"
+    access_config {
+    }
+  }
+
 }
 
 resource "null_resource" "openvpn_dns" {
   triggers {
-    consul_private_ips = "${join(",", aws_instance.consul.*.private_ip)}"
+    consul_private_ips = "${join(",", google_compute_instance.consul.*.network_interface.*.access_config.assigned_nat_ip)}"
     openvpn_host       = "${var.openvpn_host}"
   }
 
@@ -97,4 +95,4 @@ resource "null_resource" "openvpn_dns" {
   }
 }
 
-output "private_ips" { value = "${join(",", aws_instance.consul.*.private_ip)}" }
+output "private_ips" { value = "${join(",", google_compute_instance.haproxy.*.network_interface.*.access_config.assigned_nat_ip)}" }
