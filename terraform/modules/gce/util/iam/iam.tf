@@ -2,7 +2,10 @@
 # This module is used to create an AWS IAM group and its users
 #--------------------------------------------------------------
 
-variable "name"   { default = "iam" }
+//This module is not used until Google Compute Engine IAM is ready
+
+
+/*variable "name"   { default = "iam" }
 variable "users"  { }
 variable "policy" { }
 
@@ -35,3 +38,4 @@ resource "aws_iam_group_membership" "membership" {
 output "users"       { value = "${join(",", aws_iam_access_key.key.*.user)}" }
 output "access_ids"  { value = "${join(",", aws_iam_access_key.key.*.id)}" }
 output "secret_keys" { value = "${join(",", aws_iam_access_key.key.*.secret)}" }
+*/
