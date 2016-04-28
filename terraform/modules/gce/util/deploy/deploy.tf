@@ -3,19 +3,16 @@
 #--------------------------------------------------------------
 
 variable "name"                { default = "deploy" }
-variable "network"              { }
+variable "subnetwork"          { }
 variable "key_name"            { }
-variable "zone"                 { }
-variable "public_subnet"       { }
-variable "blue_elb_id"         { }
-variable "blue_ami"            { }
+variable "zone"                { default = "us-central1-c" }
+variable "blue_image"          { default = "ubuntu-1404-trusty-v20160406" }
 variable "blue_nodes"          { }
-variable "blue_instance_type"  { }
+variable "blue_machine_type"   { default = "g1-small" }
 variable "blue_user_data"      { }
-variable "green_elb_id"        { }
-variable "green_ami"           { }
+variable "green_image"         { default = "ubuntu-1404-trusty-v20160406" }
 variable "green_nodes"         { }
-variable "green_instance_type" { }
+variable "green_machine_type"  { default = "g1-small" }
 variable "green_user_data"     { }
 
 resource "google_compute_firewall" "deploy" {
@@ -32,64 +29,94 @@ resource "google_compute_firewall" "deploy" {
   }
 }
 
-resource "aws_launch_configuration" "blue" {
-  name_prefix     = "${var.name}.blue."
-  image_id        = "${var.blue_ami}"
-  instance_type   = "${var.blue_instance_type}"
+resource "google_compute_instance_template" "blue" {
+  name            = "${var.name}-blue"
+  image           = "${var.blue_image}"
+  machine_type   = "${var.blue_machine_type}"
   key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.deploy.id}"]
-  user_data       = "${var.blue_user_data}"
+
+  disk {
+    source_image = "${var.blue_image}"
+    boot = true
+  }
+
+  network_interface {
+    subnetwork = "${var.subnetwork}"
+  }
+
+  metadata {
+    startup_script = "${var.blue_user_data}"
+  }
 
   lifecycle { create_before_destroy = true }
 }
 
-resource "aws_autoscaling_group" "blue" {
-  name                  = "${aws_launch_configuration.blue.name}"
-  launch_configuration  = "${aws_launch_configuration.blue.name}"
-  desired_capacity      = "${var.blue_nodes}"
-  min_size              = "${var.blue_nodes}"
-  max_size              = "${var.blue_nodes}"
-  wait_for_elb_capacity = "${var.blue_nodes}"
-  availability_zones    = ["${split(",", var.azs)}"]
-  vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers        = ["${var.blue_elb_id}"]
+resource "google_compute_group_manager" "blue" {
+  name                  = "${var.name}-blue-group"
+  base_instance_name    = "${google_compute_instance_template.blue.name}"
+  instance_template     = "${google_compute_instance_template.blue.self_link}"
+  zone                  = "${var.zone}"
+  description           = "Managed group for blue instaces"
+//TODO: Add target pools
 
   lifecycle { create_before_destroy = true }
 
-  tag {
-    key   = "Name"
-    value = "${var.name}.blue"
-    propagate_at_launch = true
+}
+
+resource "google_compute_autoscaler" "blue" {
+  name    = "blue"
+  zone    = "${var.zone}"
+  target  = "${google_compute_group_manager.blue.self_link}"
+
+  autocaling_policy {
+    max_replicas      = "${var.blue_nodes}"
+    min_replicas      = "${var.blue_nodes}"
+    cooldown_prediod  = 60
   }
 }
 
-resource "aws_launch_configuration" "green" {
-  name_prefix     = "${var.name}.green."
-  image_id        = "${var.green_ami}"
-  instance_type   = "${var.green_instance_type}"
+resource "google_compute_instance" "green" {
+  name            = "${var.name}-green"
+  image           = "${var.green_image}"
+  machine_type    = "${var.green_machine_type}"
   key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.deploy.id}"]
-  user_data       = "${var.green_user_data}"
+
+  disk {
+    source_image = "${var.green_image}"
+    boot = true
+  }
+
+  network_interface {
+    subnetwork = "${var.subnetwork}"
+  }
+
+  metadata {
+    startup_script = "${var.green_user_data}"
+  }
 
   lifecycle { create_before_destroy = true }
 }
 
-resource "aws_autoscaling_group" "green" {
-  name                  = "${aws_launch_configuration.green.name}"
-  launch_configuration  = "${aws_launch_configuration.green.name}"
-  desired_capacity      = "${var.green_nodes}"
-  min_size              = "${var.green_nodes}"
-  max_size              = "${var.green_nodes}"
-  wait_for_elb_capacity = "${var.green_nodes}"
-  availability_zones    = ["${split(",", var.azs)}"]
-  vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
-  load_balancers        = ["${var.green_elb_id}"]
+resource "google_compute_group_manager" "green" {
+  name                  = "${var.name}-green-group"
+  base_instance_name    = "${google_compute_instance_template.green.name}"
+  instance_template     = "${google_compute_instance_template.green.self_link}"
+  zone                  = "${var.zone}"
+  description           = "Managed group for green instaces"
+//TODO: Add target pools
 
   lifecycle { create_before_destroy = true }
 
-  tag {
-    key   = "Name"
-    value = "${var.name}.green"
-    propagate_at_launch = true
+}
+
+resource "google_compute_autoscaler" "green" {
+  name    = "green"
+  zone    = "${var.zone}"
+  target  = "${google_compute_group_manager.green.self_link}"
+
+  autocaling_policy {
+    max_replicas      = "${var.green_nodes}"
+    min_replicas      = "${var.green_nodes}"
+    cooldown_prediod  = 60
   }
 }
