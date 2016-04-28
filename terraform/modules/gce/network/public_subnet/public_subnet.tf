@@ -11,6 +11,7 @@ variable "region"         { }
 resource "google_compute_subnetwork" "public" {
   name              = "${var.name}"
   ip_cidr_range     = "${var.ip_cidr_range}"
+  network           = "${var.network}"
   region            = "${var.region}"
 
   lifecycle { create_before_destroy = true }

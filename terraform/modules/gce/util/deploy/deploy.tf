@@ -4,7 +4,6 @@
 
 variable "name"                { default = "deploy" }
 variable "subnetwork"          { }
-variable "key_name"            { }
 variable "zone"                { default = "us-central1-c" }
 variable "blue_image"          { default = "ubuntu-1404-trusty-v20160406" }
 variable "blue_nodes"          { }
@@ -33,7 +32,6 @@ resource "google_compute_instance_template" "blue" {
   name            = "${var.name}-blue"
   image           = "${var.blue_image}"
   machine_type   = "${var.blue_machine_type}"
-  key_name        = "${var.key_name}"
 
   disk {
     source_image = "${var.blue_image}"
@@ -79,7 +77,6 @@ resource "google_compute_instance" "green" {
   name            = "${var.name}-green"
   image           = "${var.green_image}"
   machine_type    = "${var.green_machine_type}"
-  key_name        = "${var.key_name}"
 
   disk {
     source_image = "${var.green_image}"
