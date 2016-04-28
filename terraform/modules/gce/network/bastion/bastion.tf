@@ -7,7 +7,6 @@ variable "name"               { default = "bastion" }
 variable "network"            { }
 variable "zone"               { }
 variable "public_subnet"      { }
-variable "key_name"           { }
 variable "image"              { default = "ubuntu-1404-trusty-v20160314"}
 variable "machine_type"       { }
 
