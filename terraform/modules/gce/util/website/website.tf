@@ -21,7 +21,7 @@ resource "google_storage_bucket" "website" {
 
 resource "google_storage_bucket_object" "index" {
   name    = "index"
-  bucket  = "${google_storage_bucket.website.self_link}"
+  bucket  = "${google_storage_bucket.website.name}"
   content =  <<EOF
 You've reached the ${var.fqdn} index page
 EOF
@@ -29,7 +29,7 @@ EOF
 
 resource "google_storage_bucket_object" "error" {
   name    = "error"
-  bucket  = "${google_storage_bucket.website.self_link}"
+  bucket  = "${google_storage_bucket.website.name}"
   content =  <<EOF
 You've reached the ${var.fqdn} error page
 EOF
