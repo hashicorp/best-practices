@@ -25,8 +25,6 @@ resource "google_storage_bucket_object" "index" {
   content =  <<EOF
 You've reached the ${var.fqdn} index page
 EOF
-
-  content_type = "text/plain"
 }
 
 resource "google_storage_bucket_object" "error" {
@@ -35,8 +33,6 @@ resource "google_storage_bucket_object" "error" {
   content =  <<EOF
 You've reached the ${var.fqdn} error page
 EOF
-
-  content_type = "text/plain"
 }
 
 resource "google_dns_record_set" "website" {
