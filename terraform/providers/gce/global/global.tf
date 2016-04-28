@@ -16,7 +16,7 @@ atlas {
 
 resource "google_dns_managed_zone" "zone" {
   name     = "${var.name}"
-  dns_name = "${var.domain}"
+  dns_name = "${var.domain}."
 }
 
 module "prod_website" {

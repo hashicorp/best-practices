@@ -9,7 +9,7 @@ variable "index_page"    { default = "index.html" }
 variable "error_page"    { default = "error.html" }
 
 resource "google_storage_bucket" "website" {
-  name            = "website"
+  name            = "${var.fqdn}"
   predefined_acl  = "publicRead"
   force_destroy   = true
 
