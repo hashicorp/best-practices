@@ -79,7 +79,6 @@ resource "aws_instance" "haproxy" {
 
   tags      { 
     Name = "${var.name}"
-    demo = "true"
   }
   lifecycle { create_before_destroy = true }
 }
