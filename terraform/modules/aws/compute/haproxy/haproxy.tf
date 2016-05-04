@@ -21,7 +21,10 @@ resource "aws_security_group" "haproxy" {
   vpc_id      = "${var.vpc_id}"
   description = "HAProxy security group"
 
-  tags      { Name = "${var.name}" }
+  tags      { 
+    Name = "${var.name}" 
+    Test = "yes"
+  }
   lifecycle { create_before_destroy = true }
 
   ingress {
