@@ -16,7 +16,10 @@ resource "aws_security_group" "bastion" {
   vpc_id      = "${var.vpc_id}"
   description = "Bastion security group"
 
-  tags      { Name = "${var.name}" }
+  tags      { 
+    Name = "${var.name}" 
+    Demo = "true"
+  }
   lifecycle { create_before_destroy = true }
 
   ingress {
