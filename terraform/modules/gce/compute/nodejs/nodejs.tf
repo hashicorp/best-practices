@@ -31,49 +31,22 @@ variable "route_zone_id"       { }
 variable "vault_token"         { default = "" }
 variable "vault_policy"        { default = "nodejs" }
 
-resource "aws_security_group" "elb" {
-  name        = "${var.name}.elb"
-  vpc_id      = "${var.vpc_id}"
-  description = "Security group for Nodejs ELB"
+resource "google_compute_firewall" "nodejs" {
+  name        = "${var.name}"
+  network     = "${var.network}"
+  description = "Firewall rule for Nodejs"
 
   tags      { Name = "${var.name}-elb" }
   lifecycle { create_before_destroy = true }
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
-    cidr_blocks = ["0.0.0.0/0"]
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443"]
   }
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_iam_server_certificate" "nodejs" {
-  name             = "${var.region}-${var.name}"
-  certificate_body = "${var.site_ssl_cert}"
-  private_key      = "${var.site_ssl_key}"
-
-  lifecycle { create_before_destroy = true }
-
-  provisioner "local-exec" {
-    command = <<EOF
-      echo "Sleep 10 secends so that the cert is propagated by aws iam service"
-      echo "See https://github.com/hashicorp/terraform/issues/2499 (terraform ~v0.6.1)"
-      sleep 10
-EOF
+  allow {
+    protocol    = "icmp"
+    //TODO add tags to subnets
   }
 }
 

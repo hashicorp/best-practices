@@ -9,7 +9,7 @@ variable "public_subnet"     { }
 variable "atlas_username"    { }
 variable "atlas_environment" { }
 variable "atlas_token"       { }
-variable "image_url"         { }
+variable "image"             { }
 variable "nodes"             { }
 variable "machine_type"      { default = "g1-small"}
 variable "sub_domain"        { }
@@ -60,7 +60,7 @@ resource "google_compute_instance" "haproxy" {
   can_ip_forward              = "true"
 
   disk {
-    image = "${var.image_url}"
+    image = "${var.image}"
   }
 
   network_interface {
