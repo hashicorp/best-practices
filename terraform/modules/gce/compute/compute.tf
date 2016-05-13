@@ -3,13 +3,10 @@
 #--------------------------------------------------------------
 
 variable "name"               { }
-variable "region"             { }
-variable "vpc_id"             { }
-variable "vpc_cidr"           { }
+variable "zone"               { }
+variable "network"            { }
 variable "key_name"           { }
-variable "azs"                { }
-variable "private_subnet_ids" { }
-variable "public_subnet_ids"  { }
+variable "public_subnet"      { }
 variable "site_ssl_cert"      { }
 variable "site_ssl_key"       { }
 variable "vault_ssl_cert"     { }
@@ -18,38 +15,37 @@ variable "atlas_environment"  { }
 variable "atlas_aws_global"   { }
 variable "atlas_token"        { }
 variable "sub_domain"         { }
-variable "route_zone_id"      { }
+variable "managed_zone"       { }
 variable "vault_token"        { default = "" }
 
-variable "haproxy_amis"          { }
+variable "haproxy_image"          { }
 variable "haproxy_node_count"    { }
-variable "haproxy_instance_type" { }
+variable "haproxy_machine_type" { }
 
-variable "nodejs_blue_ami"            { }
+variable "nodejs_blue_image"            { }
 variable "nodejs_blue_node_count"     { }
-variable "nodejs_blue_instance_type"  { }
+variable "nodejs_blue_machine_type"  { }
 variable "nodejs_blue_weight"         { }
-variable "nodejs_green_ami"           { }
+variable "nodejs_green_image"           { }
 variable "nodejs_green_node_count"    { }
-variable "nodejs_green_instance_type" { }
+variable "nodejs_green_machine_type" { }
 variable "nodejs_green_weight"        { }
 
 module "haproxy" {
   source = "./haproxy"
 
   name               = "${var.name}-haproxy"
-  vpc_id             = "${var.vpc_id}"
-  vpc_cidr           = "${var.vpc_cidr}"
+  network            = "${var.network}"
   key_name           = "${var.key_name}"
-  subnet_ids         = "${var.public_subnet_ids}"
+  public_subnet      = "${var.public_subnet}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
-  amis               = "${var.haproxy_amis}"
+  image              = "${var.haproxy_image}"
   nodes              = "${var.haproxy_node_count}"
-  instance_type      = "${var.haproxy_instance_type}"
+  machine_type       = "${var.haproxy_machine_type}"
   sub_domain         = "${var.sub_domain}"
-  route_zone_id      = "${var.route_zone_id}"
+  managed_zone       = "${var.managed_zone}"
 }
 
 module "nodejs" {
