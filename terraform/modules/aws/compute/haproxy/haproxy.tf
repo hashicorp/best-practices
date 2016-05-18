@@ -80,7 +80,10 @@ resource "aws_instance" "haproxy" {
 
   vpc_security_group_ids = ["${aws_security_group.haproxy.id}"]
 
-  tags      { Name = "${var.name}" }
+  tags      { 
+    Name = "${var.name}" 
+    Demo = "true"
+  }
   lifecycle { create_before_destroy = true }
 }
 
