@@ -9,9 +9,7 @@ variable "private_subnets"   { }
 variable "public_subnets"    { }
 variable "ssl_cert"          { }
 variable "ssl_key"           { }
-variable "private_key"       { }
 variable "sub_domain"        { }
-variable "route_zone_id"     { }
 
 variable "bastion_machine_type"  { }
 variable "openvpn_machine_type"  { }

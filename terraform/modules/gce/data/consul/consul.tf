@@ -6,7 +6,6 @@ variable "name"               { default = "consul" }
 variable "network"            { }
 variable "zone"               { default = "us-central1-c" }
 variable "public_subnet"      { }
-variable "key_name"           { }
 variable "atlas_username"     { }
 variable "atlas_environment"  { }
 variable "atlas_token"        { }
@@ -51,7 +50,6 @@ resource "google_compute_instance" "consul" {
   count                   = "${var.nodes}"
   machine_type            = "${var.machine_type}"
   zone                    = "${var.zone}"
-  key_name                = "${var.key_name}"
   metadata_startup_script = "${element(template_file.user_data.*.rendered, count.index)}"
 
   tags { Name = "${var.name}.${count.index+1}" }

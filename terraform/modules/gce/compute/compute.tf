@@ -5,14 +5,13 @@
 variable "name"               { }
 variable "zone"               { }
 variable "network"            { }
-variable "key_name"           { }
 variable "public_subnet"      { }
 variable "site_ssl_cert"      { }
 variable "site_ssl_key"       { }
 variable "vault_ssl_cert"     { }
 variable "atlas_username"     { }
 variable "atlas_environment"  { }
-variable "atlas_aws_global"   { }
+variable "atlas_gce_global"   { }
 variable "atlas_token"        { }
 variable "sub_domain"         { }
 variable "managed_zone"       { }
@@ -36,7 +35,6 @@ module "haproxy" {
 
   name               = "${var.name}-haproxy"
   network            = "${var.network}"
-  key_name           = "${var.key_name}"
   public_subnet      = "${var.public_subnet}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
@@ -55,7 +53,6 @@ module "nodejs" {
   region              = "${var.region}"
   vpc_id              = "${var.vpc_id}"
   vpc_cidr            = "${var.vpc_cidr}"
-  key_name            = "${var.key_name}"
   azs                 = "${var.azs}"
   private_subnet_ids  = "${var.private_subnet_ids}"
   public_subnet_ids   = "${var.public_subnet_ids}"
@@ -64,7 +61,7 @@ module "nodejs" {
   vault_ssl_cert      = "${var.vault_ssl_cert}"
   atlas_username      = "${var.atlas_username}"
   atlas_environment   = "${var.atlas_environment}"
-  atlas_aws_global    = "${var.atlas_aws_global}"
+  atlas_gce_global    = "${var.atlas_gce_global}"
   atlas_token         = "${var.atlas_token}"
   blue_weight         = "${var.nodejs_blue_weight}"
   blue_ami            = "${var.nodejs_blue_ami}"

@@ -9,7 +9,6 @@ variable "private_subnet_ids" { }
 variable "public_subnet"      { }
 variable "ssl_cert"           { }
 variable "ssl_key"            { }
-variable "key_name"           { }
 variable "atlas_username"     { }
 variable "atlas_environment"  { }
 variable "atlas_token"        { }
@@ -36,7 +35,6 @@ module "consul" {
   network            = "${var.network}"
   zone               = "${var.zone}"
   public_subnet      = "${var.public_subnet}"
-  key_name           = "${var.key_name}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
@@ -59,7 +57,6 @@ module "vault" {
   public_subnet      = "${var.public_subnet}"
   ssl_cert           = "${var.ssl_cert}"
   ssl_key            = "${var.ssl_key}"
-  key_name           = "${var.key_name}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"

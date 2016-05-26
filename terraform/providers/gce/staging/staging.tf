@@ -1,9 +1,11 @@
 variable "name"              { }
 variable "artifact_type"     { }
+variable "zone"              { }
 variable "region"            { }
+variable "project"           { }
 variable "sub_domain"        { }
 variable "atlas_environment" { }
-variable "atlas_aws_global"  { }
+variable "atlas_gce_global"  { }
 variable "atlas_token"       { }
 variable "atlas_username"    { }
 variable "site_public_key"   { }
@@ -14,28 +16,25 @@ variable "vault_ssl_cert"    { }
 variable "vault_ssl_key"     { }
 variable "vault_token"       { default = "" }
 
-variable "vpc_cidr"          { }
-variable "azs"               { }
 variable "private_subnets"   { }
-variable "ephemeral_subnets" { }
 variable "public_subnets"    { }
 
-variable "bastion_instance_type" { }
+variable "bastion_machine_type" { }
 
-variable "openvpn_instance_type" { }
-variable "openvpn_ami"           { }
+variable "openvpn_machine_type"  { }
+variable "openvpn_image"         { }
 variable "openvpn_user"          { }
 variable "openvpn_admin_user"    { }
 variable "openvpn_admin_pw"      { }
-variable "openvpn_cidr"          { }
+variable "openvpn_cidr"          { default = "${var.private_subnets}" }
 
 variable "consul_node_count"    { }
-variable "consul_instance_type" { }
+variable "consul_machine_type"  { }
 variable "consul_artifact_name" { }
 variable "consul_artifacts"     { }
 
 variable "vault_node_count"    { }
-variable "vault_instance_type" { }
+variable "vault_machine_type"  { }
 variable "vault_artifact_name" { }
 variable "vault_artifacts"     { }
 
@@ -53,59 +52,45 @@ variable "nodejs_green_weight"        { }
 variable "nodejs_artifact_name"       { }
 variable "nodejs_artifacts"           { }
 
-provider "aws" {
+provider "google" {
   region = "${var.region}"
+  project = "${var.project}"
 }
 
 atlas {
   name = "${var.atlas_username}/${var.atlas_environment}"
 }
 
-resource "aws_key_pair" "site_key" {
-  key_name   = "${var.atlas_environment}"
-  public_key = "${var.site_public_key}"
-
-  lifecycle { create_before_destroy = true }
-}
-
-resource "terraform_remote_state" "aws_global" {
+resource "terraform_remote_state" "gce_global" {
   backend = "atlas"
 
   config {
-    name = "${var.atlas_username}/${var.atlas_aws_global}"
+    name = "${var.atlas_username}/${var.atlas_gce_global}"
   }
 
   lifecycle { create_before_destroy = true }
 }
 
 module "network" {
-  source = "../../../modules/aws/network"
+  source = "../../../modules/gce/network"
 
   name              = "${var.name}"
-  vpc_cidr          = "${var.vpc_cidr}"
-  azs               = "${var.azs}"
+  zone              = "${var.zone}"
   region            = "${var.region}"
   private_subnets   = "${var.private_subnets}"
   ephemeral_subnets = "${var.ephemeral_subnets}"
   public_subnets    = "${var.public_subnets}"
   ssl_cert          = "${var.site_ssl_cert}"
   ssl_key           = "${var.site_ssl_key}"
-  key_name          = "${aws_key_pair.site_key.key_name}"
   private_key       = "${var.site_private_key}"
   sub_domain        = "${var.sub_domain}"
-  route_zone_id     = "${terraform_remote_state.aws_global.output.zone_id}"
 
-  bastion_instance_type = "${var.bastion_instance_type}"
-  openvpn_instance_type = "${var.openvpn_instance_type}"
-  openvpn_ami           = "${var.openvpn_ami}"
-  openvpn_user          = "${var.openvpn_user}"
-  openvpn_admin_user    = "${var.openvpn_admin_user}"
-  openvpn_admin_pw      = "${var.openvpn_admin_pw}"
-  openvpn_cidr          = "${var.openvpn_cidr}"
+  bastion_machine_type = "${var.bastion_instance_type}"
+  openvpn_machine_type = "${var.openvpn_instance_type}"
 }
 
 module "artifact_consul" {
-  source = "../../../modules/aws/util/artifact"
+  source = "../../../modules/gce/util/artifact"
 
   type             = "${var.artifact_type}"
   region           = "${var.region}"
@@ -115,7 +100,7 @@ module "artifact_consul" {
 }
 
 module "artifact_vault" {
-  source = "../../../modules/aws/util/artifact"
+  source = "../../../modules/gce/util/artifact"
 
   type             = "${var.artifact_type}"
   region           = "${var.region}"
@@ -125,39 +110,37 @@ module "artifact_vault" {
 }
 
 module "data" {
-  source = "../../../modules/aws/data"
+  source = "../../../modules/gce/data"
 
   name               = "${var.name}"
+  zone               = "${var.zone}"
   region             = "${var.region}"
-  vpc_id             = "${module.network.vpc_id}"
-  vpc_cidr           = "${var.vpc_cidr}"
   private_subnet_ids = "${module.network.private_subnet_ids}"
   public_subnet_ids  = "${module.network.public_subnet_ids}"
   ssl_cert           = "${var.vault_ssl_cert}"
   ssl_key            = "${var.vault_ssl_key}"
-  key_name           = "${aws_key_pair.site_key.key_name}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
   sub_domain         = "${var.sub_domain}"
-  route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
+  managed_zone       = "${terraform_remote_state.gce_global.output.zone_id}"
 
-  consul_amis          = "${module.artifact_consul.amis}"
+  consul_image         = "${module.artifact_consul.image}"
   consul_node_count    = "${var.consul_node_count}"
-  consul_instance_type = "${var.consul_instance_type}"
+  consul_machine_type  = "${var.consul_machine_type}"
   openvpn_user         = "${var.openvpn_user}"
   openvpn_host         = "${module.network.openvpn_private_ip}"
   private_key          = "${var.site_private_key}"
   bastion_host         = "${module.network.bastion_public_ip}"
   bastion_user         = "${module.network.bastion_user}"
 
-  vault_amis          = "${module.artifact_vault.amis}"
-  vault_node_count    = "${var.vault_node_count}"
-  vault_instance_type = "${var.vault_instance_type}"
+  vault_image          = "${module.artifact_vault.image}"
+  vault_node_count     = "${var.vault_node_count}"
+  vault_machine_type   = "${var.vault_machine_type}"
 }
 
 module "artifact_haproxy" {
-  source = "../../../modules/aws/util/artifact"
+  source = "../../../modules/gce/util/artifact"
 
   type             = "${var.artifact_type}"
   region           = "${var.region}"
@@ -167,7 +150,7 @@ module "artifact_haproxy" {
 }
 
 module "artifact_nodejs" {
-  source = "../../../modules/aws/util/artifact"
+  source = "../../../modules/gce/util/artifact"
 
   type             = "${var.artifact_type}"
   region           = "${var.region}"
@@ -177,58 +160,54 @@ module "artifact_nodejs" {
 }
 
 module "compute" {
-  source = "../../../modules/aws/compute"
+  source = "../../../modules/gce/compute"
 
   name               = "${var.name}"
-  region             = "${var.region}"
-  vpc_id             = "${module.network.vpc_id}"
-  vpc_cidr           = "${var.vpc_cidr}"
-  key_name           = "${aws_key_pair.site_key.key_name}"
-  azs                = "${var.azs}"
-  private_subnet_ids = "${module.network.private_subnet_ids}"
-  public_subnet_ids  = "${module.network.public_subnet_ids}"
+  zone               = "${var.zone}"
+  network            = "${var.network}"
+  public_subnet      = "${module.network.public_subnet_ids}"
   site_ssl_cert      = "${var.site_ssl_cert}"
   site_ssl_key       = "${var.site_ssl_key}"
   vault_ssl_cert     = "${var.vault_ssl_cert}"
   atlas_username     = "${var.atlas_username}"
   atlas_environment  = "${var.atlas_environment}"
-  atlas_aws_global   = "${var.atlas_aws_global}"
+  atlas_gce_global   = "${var.atlas_gce_global}"
   atlas_token        = "${var.atlas_token}"
   sub_domain         = "${var.sub_domain}"
-  route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
+  managed_zone       = "${terraform_remote_state.gce_global.output.zone_id}"
   vault_token        = "${var.vault_token}"
 
-  haproxy_amis          = "${module.artifact_haproxy.amis}"
-  haproxy_node_count    = "${var.haproxy_node_count}"
-  haproxy_instance_type = "${var.haproxy_instance_type}"
+  haproxy_image          = "${module.artifact_haproxy.image}"
+  haproxy_node_count     = "${var.haproxy_node_count}"
+  haproxy_machine_type   = "${var.haproxy_machine_type}"
 
-  nodejs_blue_ami            = "${element(split(",", module.artifact_nodejs.amis), 0)}"
+  nodejs_blue_image            = "${module.artifact_nodejs.image}"
   nodejs_blue_node_count     = "${var.nodejs_blue_node_count}"
-  nodejs_blue_instance_type  = "${var.nodejs_blue_instance_type}"
+  nodejs_blue_machine_type  = "${var.nodejs_blue_machine_type}"
   nodejs_blue_weight         = "${var.nodejs_blue_weight}"
-  nodejs_green_ami           = "${element(split(",", module.artifact_nodejs.amis), 1)}"
+  nodejs_green_image           = "${module.artifact_nodejs.image}"
   nodejs_green_node_count    = "${var.nodejs_green_node_count}"
-  nodejs_green_instance_type = "${var.nodejs_green_instance_type}"
+  nodejs_green_machine_type = "${var.nodejs_green_machine_type}"
   nodejs_green_weight        = "${var.nodejs_green_weight}"
 }
 
 module "website" {
-  source = "../../../modules/aws/util/website"
+  source = "../../../modules/gce/util/website"
 
-  fqdn          = "${var.sub_domain}.${terraform_remote_state.aws_global.output.prod_fqdn}"
+  fqdn          = "${var.sub_domain}.${terraform_remote_state.gce_global.output.prod_fqdn}"
   sub_domain    = "${var.sub_domain}"
-  route_zone_id = "${terraform_remote_state.aws_global.output.zone_id}"
+  managed_zone  = "${terraform_remote_state.gce_global.output.zone_id}"
 }
 
 output "configuration" {
   value = <<CONFIGURATION
 
 Visit the static website hosted on S3:
-  Prod: ${terraform_remote_state.aws_global.output.prod_fqdn}
-        ${terraform_remote_state.aws_global.output.prod_endpoint}
+  Prod: ${terraform_remote_state.gce_global.output.prod_fqdn}
+        ${terraform_remote_state.gce_global.output.prod_endpoint}
 
-  Staging: ${terraform_remote_state.aws_global.output.staging_fqdn}
-           ${terraform_remote_state.aws_global.output.staging_endpoint}
+  Staging: ${terraform_remote_state.gce_global.output.staging_fqdn}
+           ${terraform_remote_state.gce_global.output.staging_endpoint}
 
   Region: ${module.website.fqdn}
           ${module.website.endpoint}
