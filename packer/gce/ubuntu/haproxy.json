@@ -1,0 +1,84 @@
+{
+  "variables": {
+    "gce_project_id":   "{{env `GCE_PROJECT_ID`}}",
+    "gce_zone":         "{{env `GCE_DEFAULT_ZONE`}}",
+    "gce_source_image": "{{env `GCE_SOURCE_IMAGE`}}",
+    "gce_account_file": "{{env `GOOGLE_CREDENTIALS`}}",
+    "atlas_username":   "{{env `ATLAS_USERNAME`}}",
+    "name":             "gce-{{env `GCE_DEFAULT_ZONE`}}-ubuntu-haproxy",
+    "ssh_username":     "ubuntu",
+    "scripts_dir":      "scripts/ubuntu",
+    "config_dir":       "config",
+    "dns_listen_addr":  "127.0.0.1"
+  },
+  "push": {
+    "name": "{{user `atlas_username`}}/{{user `name`}}",
+    "base_dir": "../../.",
+    "include": [
+      "{{user `scripts_dir`}}/*",
+      "{{user `scripts_dir`}}/upstart/*",
+      "{{user `config_dir`}}/*",
+      "{{user `config_dir`}}/consul/*",
+      "{{user `config_dir`}}/consul_template/*",
+      "{{user `config_dir`}}/consul_template/templates/*"
+    ],
+    "vcs": false
+  },
+  "builders": [
+    {
+      "type":              "googlecompute",
+      "account_file":      "{{user `gce_account_file`}}",
+      "project_id":        "{{user `gce_project_id`}}",
+      "zone":              "{{user `gce_zone`}}",
+      "source_image":      "{{user `gce_source_image`}}",
+      "network":           "default",
+      "ssh_username":      "{{user `ssh_username`}}",
+      "image_name":        "packer-{{user `name`}}-{{timestamp}}",
+      "image_description": "packer-{{user `name`}}-image",
+      "use_internal_ip":   false,
+      "tags":              [
+        "{{user `name`}}"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "mkdir -p /ops/{{user `scripts_dir`}}",
+        "chmod a+w /ops/{{user `scripts_dir`}}",
+        "mkdir -p /ops/{{user `config_dir`}}",
+        "chmod a+w /ops/{{user `config_dir`}}"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{user `scripts_dir`}}/.",
+      "destination": "/ops/{{user `scripts_dir`}}"
+    },
+    {
+      "type": "file",
+      "source": "{{user `config_dir`}}/.",
+      "destination": "/ops/{{user `config_dir`}}"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "sh /ops/{{user `scripts_dir`}}/haproxy.sh {{user `config_dir`}} {{user `scripts_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/cleanup.sh"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "atlas",
+      "artifact": "{{user `atlas_username`}}/{{user `name`}}",
+      "artifact_type": "google.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@
 Below are the infrastructures we currently have best practices for. Navigate to each provider to see what will be provisioned.
 
 - [AWS](terraform/providers/aws/README.md)
+- [Google Cloud Engine](terraform/providers/gce/README.md)
 
 ### Getting Started
 
