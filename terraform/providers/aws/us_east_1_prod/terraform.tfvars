@@ -33,11 +33,10 @@ vault_token       = "REPLACE_IN_ATLAS" # No need to update until Vault is config
 # Network
 #--------------------------------------------------------------
 
-vpc_cidr          = "10.139.0.0/16"
-azs               = "us-east-1a,us-east-1c,us-east-1e" # AZs are region specific
-private_subnets   = "10.139.1.0/24,10.139.2.0/24,10.139.3.0/24" # Creating one private subnet per AZ
-ephemeral_subnets = "10.139.11.0/24,10.139.12.0/24,10.139.13.0/24" # Creating one ephemeral subnet per AZ
-public_subnets    = "10.139.101.0/24,10.139.102.0/24,10.139.103.0/24" # Creating one public subnet per AZ
+vpc_cidr        = "10.139.0.0/16"
+azs             = "us-east-1a,us-east-1c,us-east-1e" # AZs are region specific
+private_subnets = "10.139.1.0/24,10.139.2.0/24,10.139.3.0/24" # Creating one private subnet per AZ
+public_subnets  = "10.139.11.0/24,10.139.12.0/24,10.139.13.0/24" # Creating one public subnet per AZ
 
 # Bastion
 bastion_instance_type = "t2.micro"

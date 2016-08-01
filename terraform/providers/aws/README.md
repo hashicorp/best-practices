@@ -6,8 +6,6 @@ This project will deploy an end to end infrastructure in AWS that includes the b
   - VPC
   - Public subnets
   - Private subnets
-  - Ephemeral subnets
-    - Ephemeral nodes (nodes that are recycled often like ASG nodes), need to be in separate subnets from long-running nodes (like ElastiCache and RDS) because AWS maintains an ARP cache with a semi-long expiration time. So if node A with IP 10.0.0.123 gets terminated, and node B comes in and picks up 10.0.0.123 in a relatively short period of time, the stale ARP cache entry will still be there, so traffic will just fail to reach the new node.
   - NAT
   - OpenVPN
   - Bastion host

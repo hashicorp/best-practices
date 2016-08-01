@@ -2,19 +2,18 @@
 # This module creates all networking resources
 #--------------------------------------------------------------
 
-variable "name"              { }
-variable "vpc_cidr"          { }
-variable "azs"               { }
-variable "region"            { }
-variable "private_subnets"   { }
-variable "ephemeral_subnets" { }
-variable "public_subnets"    { }
-variable "ssl_cert"          { }
-variable "ssl_key"           { }
-variable "key_name"          { }
-variable "private_key"       { }
-variable "sub_domain"        { }
-variable "route_zone_id"     { }
+variable "name"            { }
+variable "vpc_cidr"        { }
+variable "azs"             { }
+variable "region"          { }
+variable "private_subnets" { }
+variable "public_subnets"  { }
+variable "ssl_cert"        { }
+variable "ssl_key"         { }
+variable "key_name"        { }
+variable "private_key"     { }
+variable "sub_domain"      { }
+variable "route_zone_id"   { }
 
 variable "bastion_instance_type" { }
 variable "openvpn_instance_type" { }
@@ -71,24 +70,6 @@ module "private_subnet" {
   nat_gateway_ids = "${module.nat.nat_gateway_ids}"
 }
 
-# The reason for this is that ephemeral nodes (nodes that are recycled often like ASG nodes),
-# need to be in separate subnets from long-running nodes (like Elasticache and RDS) because
-# AWS maintains an ARP cache with a semi-long expiration time.
-
-# So if node A with IP 10.0.0.123 gets terminated, and node B comes in and picks up 10.0.0.123
-# in a relatively short period of time, the stale ARP cache entry will still be there,
-# so traffic will just fail to reach the new node.
-module "ephemeral_subnets" {
-  source = "./private_subnet"
-
-  name   = "${var.name}-ephemeral"
-  vpc_id = "${module.vpc.vpc_id}"
-  cidrs  = "${var.ephemeral_subnets}"
-  azs    = "${var.azs}"
-
-  nat_gateway_ids = "${module.nat.nat_gateway_ids}"
-}
-
 module "openvpn" {
   source = "./openvpn"
 
@@ -114,7 +95,7 @@ module "openvpn" {
 
 resource "aws_network_acl" "acl" {
   vpc_id     = "${module.vpc.vpc_id}"
-  subnet_ids = ["${concat(split(",", module.public_subnet.subnet_ids), split(",", module.private_subnet.subnet_ids), split(",", module.ephemeral_subnets.subnet_ids))}"]
+  subnet_ids = ["${concat(split(",", module.public_subnet.subnet_ids), split(",", module.private_subnet.subnet_ids))}"]
 
   ingress {
     protocol   = "-1"
@@ -142,9 +123,8 @@ output "vpc_id"   { value = "${module.vpc.vpc_id}" }
 output "vpc_cidr" { value = "${module.vpc.vpc_cidr}" }
 
 # Subnets
-output "public_subnet_ids"    { value = "${module.public_subnet.subnet_ids}" }
-output "private_subnet_ids"   { value = "${module.private_subnet.subnet_ids}" }
-output "ephemeral_subnet_ids" { value = "${module.ephemeral_subnets.subnet_ids}" }
+output "public_subnet_ids"  { value = "${module.public_subnet.subnet_ids}" }
+output "private_subnet_ids" { value = "${module.private_subnet.subnet_ids}" }
 
 # Bastion
 output "bastion_user"       { value = "${module.bastion.user}" }

@@ -14,11 +14,10 @@ variable "vault_ssl_cert"    { }
 variable "vault_ssl_key"     { }
 variable "vault_token"       { default = "" }
 
-variable "vpc_cidr"          { }
-variable "azs"               { }
-variable "private_subnets"   { }
-variable "ephemeral_subnets" { }
-variable "public_subnets"    { }
+variable "vpc_cidr"        { }
+variable "azs"             { }
+variable "private_subnets" { }
+variable "public_subnets"  { }
 
 variable "bastion_instance_type" { }
 
@@ -81,19 +80,18 @@ resource "terraform_remote_state" "aws_global" {
 module "network" {
   source = "../../../modules/aws/network"
 
-  name              = "${var.name}"
-  vpc_cidr          = "${var.vpc_cidr}"
-  azs               = "${var.azs}"
-  region            = "${var.region}"
-  private_subnets   = "${var.private_subnets}"
-  ephemeral_subnets = "${var.ephemeral_subnets}"
-  public_subnets    = "${var.public_subnets}"
-  ssl_cert          = "${var.site_ssl_cert}"
-  ssl_key           = "${var.site_ssl_key}"
-  key_name          = "${aws_key_pair.site_key.key_name}"
-  private_key       = "${var.site_private_key}"
-  sub_domain        = "${var.sub_domain}"
-  route_zone_id     = "${terraform_remote_state.aws_global.output.zone_id}"
+  name            = "${var.name}"
+  vpc_cidr        = "${var.vpc_cidr}"
+  azs             = "${var.azs}"
+  region          = "${var.region}"
+  private_subnets = "${var.private_subnets}"
+  public_subnets  = "${var.public_subnets}"
+  ssl_cert        = "${var.site_ssl_cert}"
+  ssl_key         = "${var.site_ssl_key}"
+  key_name        = "${aws_key_pair.site_key.key_name}"
+  private_key     = "${var.site_private_key}"
+  sub_domain      = "${var.sub_domain}"
+  route_zone_id   = "${terraform_remote_state.aws_global.output.zone_id}"
 
   bastion_instance_type = "${var.bastion_instance_type}"
   openvpn_instance_type = "${var.openvpn_instance_type}"
