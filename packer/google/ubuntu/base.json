@@ -1,0 +1,94 @@
+{
+  "variables": {
+    "atlas_username":   "{{env `ATLAS_USERNAME`}}",
+    "gce_project_id":   "{{env `GCE_PROJECT_ID`}}",
+    "gce_zone":         "{{env `GCE_DEFAULT_ZONE`}}",
+    "gce_source_image": "{{env `GCE_SOURCE_IMAGE`}}",
+    "name":             "google-ubuntu-base",
+    "scripts_dir":      "scripts",
+    "config_dir":       "config",
+    "ssh_username":     "ubuntu",
+    "dns_listen_addr":  "127.0.0.1"
+  },
+  "push": {
+    "name": "{{user `atlas_username`}}/{{user `name`}}",
+    "base_dir": "../../../packer",
+    "include": [
+      "google/account.json",
+      "{{user `scripts_dir`}}/*",
+      "{{user `scripts_dir`}}/ubuntu/*",
+      "{{user `scripts_dir`}}/ubuntu/upstart/*",
+      "{{user `config_dir`}}/*",
+      "{{user `config_dir`}}/consul/*",
+      "{{user `config_dir`}}/consul_template/*",
+      "{{user `config_dir`}}/consul_template/templates/*",
+      "{{user `config_dir`}}/envconsul/*",
+      "{{user `config_dir`}}/vault/*",
+      "{{user `config_dir`}}/vault/policies/*",
+      "{{user `config_dir`}}/vault/scripts/*"
+    ],
+    "vcs": false
+  },
+  "builders": [
+    {
+      "type":              "googlecompute",
+      "project_id":        "{{user `gce_project_id`}}",
+      "account_file":      "google/account.json",
+      "zone":              "{{user `gce_zone`}}",
+      "network":           "default",
+      "source_image":      "{{user `gce_source_image`}}",
+      "ssh_username":      "{{user `ssh_username`}}",
+      "image_name":        "packer-{{user `name`}}-{{timestamp}}",
+      "image_description": "packer-{{user `name`}}-image",
+      "use_internal_ip":   false,
+      "tags": [
+        "{{user `name`}}"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "mkdir -p /ops/{{user `scripts_dir`}}",
+        "chmod a+w /ops/{{user `scripts_dir`}}",
+        "mkdir -p /ops/{{user `config_dir`}}",
+        "chmod a+w /ops/{{user `config_dir`}}"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{user `scripts_dir`}}/",
+      "destination": "/ops/{{user `scripts_dir`}}"
+    },
+    {
+      "type": "file",
+      "source": "{{user `config_dir`}}/",
+      "destination": "/ops/{{user `config_dir`}}"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/dependencies.sh",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/consul.sh {{user `config_dir`}} {{user `scripts_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/consul_template.sh {{user `config_dir`}} {{user `scripts_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/envconsul.sh {{user `config_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/dnsmasq.sh {{user `dns_listen_addr`}}",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/cleanup.sh"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "atlas",
+      "artifact": "{{user `atlas_username`}}/{{user `name`}}",
+      "artifact_type": "google.image",
+      "metadata": {
+        "created_at": "{{timestamp}}",
+        "zone": "{{user `gce_zone`}}"
+      }
+    }
+  ]
+}
