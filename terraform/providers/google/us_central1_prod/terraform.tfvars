@@ -1,0 +1,8 @@
+project            	= "REPLACE_IN_ATLAS"
+region            	= "us-central1"
+credentials        	= "REPLACE_IN_ATLAS"
+atlas_username      	= "REPLACE_IN_ATLAS"
+atlas_environment     	= "google-us-central1-prod"
+atlas_token		= "REPLACE_IN_ATLAS"
+base_name            	= "prod"
+cidr 			= "10.140.0.0/16"
