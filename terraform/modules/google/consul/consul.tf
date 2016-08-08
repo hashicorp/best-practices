@@ -6,12 +6,9 @@ variable "base_name"           	{}
 variable "nodes"              	{ default = "3" }
 variable "project"        	{}
 variable "region"        	{}
-variable "ssh_keys"		{}
-variable "private_key"        	{}
 variable "atlas_username"    	{}
 variable "atlas_environment"    {}
 variable "atlas_token"		{}
-variable "cidr"         	{}
 variable "image"                {}
 variable "subnetwork_name"	{}
 
@@ -37,16 +34,7 @@ resource "google_compute_instance" "consul" {
   machine_type 	= "n1-standard-1"
   zone         	= "us-central1-a"
 
-  # metadata {
-  #   ssh-keys = "${var.ssh_keys}"
-  # }
-
   metadata_startup_script = "${element(template_file.consul_config.*.rendered, count.index)}"
-
-  # connection {
-  #   user = "ubuntu"
-  #   private_key = "${var.private_key}"
-  # }
 
   disk {
     image = "${var.image}"
