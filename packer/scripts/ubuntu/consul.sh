@@ -29,7 +29,7 @@ chmod 755 $CONSULDIR
 cp $CONFIGDIR/consul/consul_client.json $CONSULCONFIGDIR/base.json
 
 # Upstart config
-cp $SCRIPTSDIR/upstart/consul.conf /etc/init/consul.conf
+cp $SCRIPTSDIR/ubuntu/upstart/consul.conf /etc/init/consul.conf
 
 curl -L $CONSULWEBUI > ui.zip
 unzip ui.zip -d $CONSULDIR/ui

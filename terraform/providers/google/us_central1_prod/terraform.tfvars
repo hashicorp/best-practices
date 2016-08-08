@@ -1,6 +1,8 @@
 project            	= "REPLACE_IN_ATLAS"
 region            	= "us-central1"
 credentials        	= "REPLACE_IN_ATLAS"
+ssh_keys		= "REPLACE_IN_ATLAS"
+private_key		= "REPLACE_IN_ATLAS"
 atlas_username      	= "REPLACE_IN_ATLAS"
 atlas_environment     	= "google-us-central1-prod"
 atlas_token		= "REPLACE_IN_ATLAS"
