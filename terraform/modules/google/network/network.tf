@@ -1,20 +1,22 @@
-variable "base_name"  {}
+variable "name" {}
+
 variable "region" {}
+
 variable "cidr" {}
 
 resource "google_compute_network" "network" {
-  name       = "${var.base_name}-network"
+  name = "${var.name}-network"
 }
 
 resource "google_compute_subnetwork" "default-us-central1" {
-  name    = "${var.base_name}-subnetwork"
+  name          = "${var.name}-subnetwork"
   ip_cidr_range = "${var.cidr}"
   network       = "${google_compute_network.network.self_link}"
   region        = "${var.region}"
 }
 
 resource "google_compute_firewall" "allow-internal" {
-  name    = "${var.base_name}-network-allow-internal"
+  name    = "${var.name}-network-allow-internal"
   network = "${google_compute_network.network.name}"
 
   allow {
@@ -32,12 +34,12 @@ resource "google_compute_firewall" "allow-internal" {
   }
 
   source_ranges = [
-    "${var.cidr}"
+    "${var.cidr}",
   ]
 }
 
 resource "google_compute_firewall" "allow-ssh" {
-  name    = "${var.base_name}-network-allow-ssh"
+  name    = "${var.name}-network-allow-ssh"
   network = "${google_compute_network.network.name}"
 
   allow {
@@ -48,5 +50,10 @@ resource "google_compute_firewall" "allow-ssh" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-output "name"     { value = "${google_compute_network.network.name}" }
-output "subnetwork_name" { value = "${google_compute_subnetwork.default-us-central1.name}" }
+output "name" {
+  value = "${google_compute_network.network.name}"
+}
+
+output "subnetwork_name" {
+  value = "${google_compute_subnetwork.default-us-central1.name}"
+}
