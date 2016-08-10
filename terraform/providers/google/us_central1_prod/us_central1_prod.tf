@@ -36,6 +36,10 @@ variable "vault_token" {
   default = ""
 }
 
+variable "haproxy_artifact_name" {}
+variable "haproxy_node_count"    { }
+variable "haproxy_instance_type" { }
+
 provider "google" {
   credentials = "${var.credentials}"
   project     = "${var.project}"
@@ -88,3 +92,27 @@ module "data" {
   vault_ssl_cert      = "${var.vault_ssl_cert}"
   vault_ssl_key       = "${var.vault_ssl_key}"
 }
+
+data "atlas_artifact" "google-ubuntu-haproxy" {
+  name  = "${var.atlas_username}/${var.haproxy_artifact_name}"
+  type  = "google.image"
+  build = "latest"
+}
+
+module "compute" {
+  source = "../../../modules/google/compute"
+
+  name              = "${var.name}"
+  zone              = "${var.zone}"
+  atlas_username    = "${var.atlas_username}"
+  atlas_environment = "${var.atlas_environment}"
+  atlas_token       = "${var.atlas_token}"
+  subnetwork        = "${module.network.subnetwork_name}"
+
+  haproxy_image         = "${data.atlas_artifact.google-ubuntu-haproxy.id}"
+  haproxy_node_count    = "${var.haproxy_node_count}"
+  haproxy_instance_type = "${var.haproxy_instance_type}"
+
+}
+
+
