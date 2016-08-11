@@ -8,8 +8,7 @@
     "scripts_dir":      "scripts",
     "config_dir":       "config",
     "ssh_username":     "ubuntu",
-    "host_app_dir":     "/application",
-    "slug_app_dir":     "app/"
+    "host_app_dir":     "/application"
   },
   "push": {
     "name": "{{user `atlas_username`}}/{{user `name`}}",
@@ -19,6 +18,7 @@
       "{{user `scripts_dir`}}/*",
       "{{user `scripts_dir`}}/ubuntu/*",
       "{{user `scripts_dir`}}/ubuntu/upstart/*",
+      "{{user `scripts_dir`}}/ubuntu/nodejs_app/*",
       "{{user `config_dir`}}/*",
       "{{user `config_dir`}}/consul/*",
       "{{user `config_dir`}}/consul_template/*",
@@ -78,15 +78,15 @@
     },
     {
       "type": "file",
-      "source": "{{user `slug_app_dir`}}",
+      "source": "{{user `scripts_dir`}}/ubuntu/nodejs_app/",
       "destination": "{{user `host_app_dir`}}"
     },
     {
       "type": "shell",
       "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "inline": [
-        "sh /ops/{{user `scripts_dir`}}/nodejs.sh {{user `config_dir`}} {{user `scripts_dir`}}",
-        "sh /ops/{{user `scripts_dir`}}/cleanup.sh"
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/nodejs.sh {{user `config_dir`}} {{user `scripts_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/cleanup.sh"
       ]
     }
   ],

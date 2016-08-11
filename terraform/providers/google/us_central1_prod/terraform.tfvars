@@ -36,6 +36,16 @@ vault_token = "REPLACE_IN_ATLAS" # No need to update until Vault is configured
 
 haproxy_artifact_name = "google-ubuntu-haproxy"
 
-haproxy_node_count = "3"
+haproxy_node_count = "1"
 
 haproxy_instance_type = "n1-standard-1"
+
+nodejs_artifact_name = "google-ubuntu-nodejs"
+
+nodejs_node_count = "1"
+
+nodejs_instance_type = "n1-standard-1"
+
+site_ssl_cert = "REPLACE_IN_ATLAS"
+site_ssl_key = "REPLACE_IN_ATLAS"
+

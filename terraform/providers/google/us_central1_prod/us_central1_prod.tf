@@ -40,6 +40,12 @@ variable "haproxy_artifact_name" {}
 variable "haproxy_node_count"    { }
 variable "haproxy_instance_type" { }
 
+variable "nodejs_artifact_name"          { }
+variable "nodejs_node_count"    { }
+variable "nodejs_instance_type" { }
+variable "site_ssl_cert"     { }
+variable "site_ssl_key" { }
+
 provider "google" {
   credentials = "${var.credentials}"
   project     = "${var.project}"
@@ -99,6 +105,12 @@ data "atlas_artifact" "google-ubuntu-haproxy" {
   build = "latest"
 }
 
+data "atlas_artifact" "google-ubuntu-nodejs" {
+  name  = "${var.atlas_username}/${var.nodejs_artifact_name}"
+  type  = "google.image"
+  build = "latest"
+}
+
 module "compute" {
   source = "../../../modules/google/compute"
 
@@ -113,6 +125,13 @@ module "compute" {
   haproxy_node_count    = "${var.haproxy_node_count}"
   haproxy_instance_type = "${var.haproxy_instance_type}"
 
+  nodejs_image         = "${data.atlas_artifact.google-ubuntu-nodejs.id}"
+  nodejs_node_count    = "${var.nodejs_node_count}"
+  nodejs_instance_type = "${var.nodejs_instance_type}"
+  site_ssl_cert = "${var.site_ssl_cert}"
+  site_ssl_key = "${var.site_ssl_key}"
+  vault_ssl_cert = "${var.vault_ssl_cert}"
+  vault_token = "${var.vault_token}"
 }
 
 

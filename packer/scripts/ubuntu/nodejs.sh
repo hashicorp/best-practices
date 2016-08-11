@@ -22,6 +22,7 @@ cp $CONFIGDIR/consul/nodejs.json /etc/consul.d/nodejs.json
 
 # Consul Template config
 cp $CONFIGDIR/consul_template/nodejs.hcl /etc/consul_template.d/nodejs.hcl
+cp $CONFIGDIR/consul_template/nodejs_aws.hcl /etc/consul_template.d/nodejs_aws.hcl
 cp $CONFIGDIR/consul_template/templates/vault_aws.ctmpl /opt/consul_template/vault_aws.ctmpl
 cp $CONFIGDIR/consul_template/templates/vault_generic.ctmpl /opt/consul_template/vault_generic.ctmpl
 
@@ -33,4 +34,4 @@ cp $CONFIGDIR/vault/policies/nodejs.json $VAULTPOLICIES/nodejs.json
 cp $CONFIGDIR/vault/policies/aws_nodejs.json $VAULTPOLICIES/aws_nodejs.json
 
 # Upstart config
-cp $SCRIPTSDIR/upstart/nodejs.conf /etc/init/nodejs.conf
+cp $SCRIPTSDIR/ubuntu/upstart/nodejs.conf /etc/init/nodejs.conf

@@ -1,0 +1,60 @@
+{
+  "variables": {
+    "app_slug": "{{ env `ATLAS_APPLICATION_SLUG` }}"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "progrium/cedarish:cedar14",
+      "commit": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "curl --silent http://dl.gliderlabs.com/herokuish/latest/linux_x86_64.tgz | tar -xzC /bin"
+      ]
+    },
+    {
+      "type": "file",
+      "source": ".",
+      "destination": "/tmp/app"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "ls -lRa /tmp/app"
+      ]
+    },	    
+    {
+      "type": "shell",
+      "inline": [
+        "herokuish buildpack install https://github.com/heroku/heroku-buildpack-nodejs",
+        "herokuish buildpack build",
+	"cd /app",
+        "tar czvf /tmp/slug.tar.gz .",
+        "sleep 10"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "/tmp/slug.tar.gz",
+      "destination": "slug.tar.gz",
+      "direction": "download"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "artifice",
+        "files": ["slug.tar.gz"]
+      },
+      {
+        "type": "atlas",
+        "artifact": "{{user `app_slug` }}",
+        "artifact_type": "archive"
+      }
+    ]
+  ] 
+}
