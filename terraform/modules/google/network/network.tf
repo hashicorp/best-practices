@@ -4,15 +4,12 @@ variable "region" {}
 
 variable "cidr" {}
 
-resource "google_compute_network" "network" {
-  name = "${var.name}-network"
-}
+variable "public_subnets" {}
 
-resource "google_compute_subnetwork" "default-us-central1" {
-  name          = "${var.name}-subnetwork"
-  ip_cidr_range = "${var.cidr}"
-  network       = "${google_compute_network.network.self_link}"
-  region        = "${var.region}"
+variable "private_subnets" {}
+
+resource "google_compute_network" "network" {
+  name = "${var.name}"
 }
 
 resource "google_compute_firewall" "allow-internal" {
@@ -50,10 +47,32 @@ resource "google_compute_firewall" "allow-ssh" {
   source_ranges = ["0.0.0.0/0"]
 }
 
+module "public_subnet" {
+  source = "./public_subnet"
+
+  name               = "${var.name}-public"
+  region             = "${var.region}"
+  network            = "${google_compute_network.network.self_link}"
+  cidrs               = "${var.public_subnets}"
+}
+
+module "private_subnet" {
+  source = "./private_subnet"
+
+  name               = "${var.name}-private"
+  region             = "${var.region}"
+  network            = "${google_compute_network.network.self_link}"
+  cidrs               = "${var.private_subnets}"
+}
+
 output "name" {
   value = "${google_compute_network.network.name}"
 }
 
-output "subnetwork_name" {
-  value = "${google_compute_subnetwork.default-us-central1.name}"
+output "public_subnet_names" {
+  value = "${module.public_subnet.subnet_names}"
+}
+
+output "private_subnet_names" {
+  value = "${module.private_subnet.subnet_names}"
 }

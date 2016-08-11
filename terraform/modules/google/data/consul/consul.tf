@@ -10,7 +10,7 @@ variable "project" {}
 
 variable "region" {}
 
-variable "zone" {}
+variable "zones" {}
 
 variable "atlas_username" {}
 
@@ -18,7 +18,7 @@ variable "atlas_environment" {}
 
 variable "atlas_token" {}
 
-variable "subnetwork" {}
+variable "private_subnet_names" {}
 
 variable "image" {}
 
@@ -47,7 +47,7 @@ resource "google_compute_instance" "consul" {
   name         = "${var.name}-${count.index}"
   count        = "${var.nodes}"
   machine_type = "${var.instance_type}"
-  zone         = "${var.zone}"
+  zone         = "${element(split(",", var.zones), count.index)}"
 
   metadata_startup_script = "${element(template_file.consul_config.*.rendered, count.index)}"
 
@@ -56,7 +56,7 @@ resource "google_compute_instance" "consul" {
   }
 
   network_interface {
-    subnetwork = "${var.subnetwork}"
+    subnetwork = "${element(split(",", var.private_subnet_names), count.index)}"
 
     access_config {
       # ephemeral

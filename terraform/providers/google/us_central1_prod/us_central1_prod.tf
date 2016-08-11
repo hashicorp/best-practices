@@ -4,7 +4,7 @@ variable "project" {}
 
 variable "region" {}
 
-variable "zone" {}
+variable "zones" {}
 
 variable "credentials" {}
 
@@ -15,6 +15,10 @@ variable "atlas_environment" {}
 variable "atlas_token" {}
 
 variable "cidr" {}
+
+variable "private_subnets" {}
+
+variable "public_subnets" {}
 
 variable "consul_artifact_name" {}
 
@@ -62,6 +66,8 @@ module "network" {
   name   = "${var.name}"
   region = "${var.region}"
   cidr   = "${var.cidr}"
+  public_subnets = "${var.public_subnets}"
+  private_subnets = "${var.private_subnets}"
 }
 
 data "atlas_artifact" "google-ubuntu-consul" {
@@ -82,11 +88,12 @@ module "data" {
   name              = "${var.name}"
   project           = "${var.project}"
   region            = "${var.region}"
-  zone              = "${var.zone}"
+  zones              = "${var.zones}"
   atlas_username    = "${var.atlas_username}"
   atlas_environment = "${var.atlas_environment}"
   atlas_token       = "${var.atlas_token}"
-  subnetwork        = "${module.network.subnetwork_name}"
+  private_subnet_names        = "${module.network.private_subnet_names}"
+  public_subnet_names        = "${module.network.public_subnet_names}"
 
   consul_image         = "${data.atlas_artifact.google-ubuntu-consul.id}"
   consul_node_count    = "${var.consul_node_count}"
@@ -115,11 +122,12 @@ module "compute" {
   source = "../../../modules/google/compute"
 
   name              = "${var.name}"
-  zone              = "${var.zone}"
+  zones              = "${var.zones}"
   atlas_username    = "${var.atlas_username}"
   atlas_environment = "${var.atlas_environment}"
   atlas_token       = "${var.atlas_token}"
-  subnetwork        = "${module.network.subnetwork_name}"
+  private_subnet_names        = "${module.network.private_subnet_names}"
+  public_subnet_names        = "${module.network.public_subnet_names}"
 
   haproxy_image         = "${data.atlas_artifact.google-ubuntu-haproxy.id}"
   haproxy_node_count    = "${var.haproxy_node_count}"
