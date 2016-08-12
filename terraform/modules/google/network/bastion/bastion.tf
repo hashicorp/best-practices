@@ -25,6 +25,9 @@ resource "google_compute_instance" "bastion" {
       # ephemeral
     }
   }
+
+  tags = ["bastion"]
+
 }
 
 output "private_ip" {

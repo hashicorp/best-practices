@@ -39,6 +39,7 @@ resource "google_compute_firewall" "allow-internal" {
   source_ranges = [
     "${var.cidr}",
   ]
+
 }
 
 resource "google_compute_firewall" "allow-ssh" {
@@ -51,6 +52,9 @@ resource "google_compute_firewall" "allow-ssh" {
   }
 
   source_ranges = ["0.0.0.0/0"]
+
+  # target_tags = ["bastion"]
+
 }
 
 module "public_subnet" {
