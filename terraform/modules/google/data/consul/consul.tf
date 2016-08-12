@@ -62,6 +62,9 @@ resource "google_compute_instance" "consul" {
       # ephemeral
     }
   }
+
+  tags = ["consul"]
+
 }
 
 output "private_ips" {

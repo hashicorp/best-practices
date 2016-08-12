@@ -59,6 +59,9 @@ resource "google_compute_instance" "nodejs" {
       # ephemeral
     }
   }
+
+  tags = ["nodejs"]
+
 }
 
 output "private_ips" {

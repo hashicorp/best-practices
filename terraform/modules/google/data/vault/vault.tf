@@ -69,8 +69,12 @@ resource "google_compute_instance" "vault" {
       # ephemeral
     }
   }
+
+  tags = ["vault"]
+
 }
 
 output "private_ips" {
   value = "${join(",", google_compute_instance.vault.*.network_interface.0.address)}"
 }
+

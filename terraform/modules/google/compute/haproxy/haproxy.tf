@@ -45,6 +45,9 @@ resource "google_compute_instance" "haproxy" {
       # ephemeral
     }
   }
+
+  tags = ["haproxy"]
+
 }
 
 output "private_ips" {
