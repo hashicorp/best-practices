@@ -50,6 +50,9 @@ variable "nodejs_instance_type" { }
 variable "site_ssl_cert"     { }
 variable "site_ssl_key" { }
 
+variable "bastion_image" {}
+variable "bastion_instance_type" {}
+
 provider "google" {
   credentials = "${var.credentials}"
   project     = "${var.project}"
@@ -65,9 +68,12 @@ module "network" {
 
   name   = "${var.name}"
   region = "${var.region}"
+  zones = "${var.zones}"
   cidr   = "${var.cidr}"
   public_subnets = "${var.public_subnets}"
   private_subnets = "${var.private_subnets}"
+  bastion_image = "${var.bastion_image}"
+  bastion_instance_type = "${var.bastion_instance_type}"
 }
 
 data "atlas_artifact" "google-ubuntu-consul" {

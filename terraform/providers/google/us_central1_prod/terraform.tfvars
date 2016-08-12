@@ -53,3 +53,6 @@ nodejs_instance_type = "n1-standard-1"
 site_ssl_cert = "REPLACE_IN_ATLAS"
 site_ssl_key = "REPLACE_IN_ATLAS"
 
+bastion_image = "ubuntu-1404-trusty-v20160114e"
+bastion_instance_type = "n1-standard-1"
+
