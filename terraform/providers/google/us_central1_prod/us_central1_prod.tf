@@ -148,4 +148,18 @@ module "compute" {
   vault_token = "${var.vault_token}"
 }
 
+output "configuration" {
+  value = <<CONFIGURATION
+Add your private key and SSH into any private node via the Bastion host:
+  ssh-add ../../../modules/keys/demo.pem
+  ssh -A ubuntu@${module.network.bastion_public_ip}
+Private node IPs:
+  Consul: ${join("\n          ", formatlist("ssh ubuntu@%s", split(",", module.data.consul_private_ips)))}
+  Vault: ${join("\n         ", formatlist("ssh ubuntu@%s", split(",", module.data.vault_private_ips)))}
+  HAProxy: ${join("\n           ", formatlist("ssh ubuntu@%s", split(",", module.compute.haproxy_private_ips)))}
+  Node.js: ${join("\n           ", formatlist("ssh ubuntu@%s", split(",", module.compute.nodejs_private_ips)))}
+CONFIGURATION
+}
+
+
 

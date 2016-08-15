@@ -53,7 +53,8 @@ resource "google_compute_firewall" "allow-ssh" {
 
   source_ranges = ["0.0.0.0/0"]
 
-  # target_tags = ["bastion"]
+  # uncomment to restrict public ssh to the bastion host
+  target_tags = ["bastion"]
 
 }
 
@@ -95,4 +96,8 @@ output "public_subnet_names" {
 
 output "private_subnet_names" {
   value = "${module.private_subnet.subnet_names}"
+}
+
+output "bastion_public_ip" {
+  value = "${module.bastion.public_ip}"
 }
