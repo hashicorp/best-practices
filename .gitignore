@@ -1,5 +1,7 @@
+account.json
 .terraform
 *tfstate*
+setup/*
 crash.log
 dist
 *.zip
@@ -10,3 +12,4 @@ logs
 *.key
 *.pub
 *.pem
+*.swp
