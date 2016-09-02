@@ -33,7 +33,7 @@ variable "ssl_cert" {}
 variable "ssl_key" {}
 
 resource "template_file" "vault_config" {
-  template = "${path.module}/vault.sh.tpl"
+  template = "${file("${path.module}/vault.sh.tpl")}"
   count    = "${var.nodes}"
 
   vars {

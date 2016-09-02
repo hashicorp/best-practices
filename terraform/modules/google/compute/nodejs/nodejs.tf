@@ -22,7 +22,7 @@ variable "vault_token"         { default = "" }
 variable "vault_policy"        { default = "nodejs" }
 
 resource "template_file" "nodejs_config" {
-  template = "${path.module}/nodejs.sh.tpl"
+  template = "${file("${path.module}/nodejs.sh.tpl")}"
   count    = "${var.nodes}"
 
   lifecycle { create_before_destroy = true }

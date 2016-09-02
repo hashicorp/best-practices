@@ -13,7 +13,7 @@ variable "nodes"             { }
 variable "instance_type"     { }
 
 resource "template_file" "haproxy_config" {
-  template = "${path.module}/haproxy.sh.tpl"
+  template = "${file("${path.module}/haproxy.sh.tpl")}"
   count    = "${var.nodes}"
 
   lifecycle { create_before_destroy = true }

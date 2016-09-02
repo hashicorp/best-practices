@@ -27,7 +27,7 @@ variable "nodes" {}
 variable "instance_type" {}
 
 resource "template_file" "consul_config" {
-  template = "${path.module}/consul.sh.tpl"
+  template = "${file("${path.module}/consul.sh.tpl")}"
   count    = "${var.nodes}"
 
   vars {
