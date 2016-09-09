@@ -2,13 +2,19 @@ variable "name" {}
 
 variable "region" {}
 
-variable "zones" {}
+variable "zones" {
+  type = "list"
+}
 
 variable "cidr" {}
 
-variable "public_subnets" {}
+variable "public_subnets" {
+  type = "list"
+}
 
-variable "private_subnets" {}
+variable "private_subnets" {
+  type = "list"
+}
 
 variable "bastion_image" {}
 

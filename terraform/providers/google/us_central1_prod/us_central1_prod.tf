@@ -4,7 +4,9 @@ variable "project" {}
 
 variable "region" {}
 
-variable "zones" {}
+variable "zones" {
+  type = "list"
+}
 
 variable "credentials" {}
 
@@ -16,9 +18,13 @@ variable "atlas_token" {}
 
 variable "cidr" {}
 
-variable "private_subnets" {}
+variable "private_subnets" {
+  type = "list"
+}
 
-variable "public_subnets" {}
+variable "public_subnets" {
+  type = "list"
+}
 
 variable "consul_artifact_name" {}
 

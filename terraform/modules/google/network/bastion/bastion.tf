@@ -4,22 +4,26 @@
 #--------------------------------------------------------------
 
 variable "name"              { }
-variable "zones"				 { }
-variable "public_subnet_names" { }
+variable "zones"	 { 
+  type = "list"
+}
+variable "public_subnet_names" { 
+  type = "list"
+}
 variable "image" 			 { }
 variable "instance_type"     { }
 
 resource "google_compute_instance" "bastion" {
   name         = "${var.name}"
   machine_type = "${var.instance_type}"
-  zone         = "${element(split(",", var.zones), 0)}"
+  zone         = "${element(var.zones, 0)}"
 
   disk {
     image = "${var.image}"
   }
 
   network_interface {
-    subnetwork = "${element(split(",", var.public_subnet_names), 0)}"
+    subnetwork = "${element(var.public_subnet_names, 0)}"
 
     access_config {
       # ephemeral

@@ -4,7 +4,7 @@ project = "REPLACE_IN_ATLAS"
 
 region = "us-central1"
 
-zones = "us-central1-a,us-central1-b,us-central1-c"
+zones = ["us-central1-a", "us-central1-b", "us-central1-c"]
 
 credentials = "REPLACE_IN_ATLAS"
 
@@ -16,9 +16,9 @@ atlas_token = "REPLACE_IN_ATLAS"
 
 cidr = "10.139.0.0/16"
 
-private_subnets = "10.139.1.0/24,10.139.2.0/24,10.139.3.0/24"
+private_subnets = ["10.139.1.0/24", "10.139.2.0/24", "10.139.3.0/24"]
 
-public_subnets = "10.139.101.0/24,10.139.102.0/24,10.139.103.0/24"
+public_subnets = ["10.139.101.0/24", "10.139.102.0/24", "10.139.103.0/24"]
 
 consul_artifact_name = "google-ubuntu-consul"
 

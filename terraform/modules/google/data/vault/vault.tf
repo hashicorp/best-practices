@@ -10,7 +10,9 @@ variable "project" {}
 
 variable "region" {}
 
-variable "zones" {}
+variable "zones" {
+  type = "list"
+}
 
 variable "atlas_username" {}
 
@@ -18,9 +20,13 @@ variable "atlas_environment" {}
 
 variable "atlas_token" {}
 
-variable "private_subnet_names" {}
+variable "private_subnet_names" {
+  type = "list"
+}
 
-variable "public_subnet_names" {}
+variable "public_subnet_names" {
+  type = "list"
+}
 
 variable "image" {}
 
@@ -54,7 +60,7 @@ resource "google_compute_instance" "vault" {
   name         = "${var.name}-${count.index}"
   count        = "${var.nodes}"
   machine_type = "${var.instance_type}"
-  zone         = "${element(split(",", var.zones), count.index)}"
+  zone         = "${element(var.zones, count.index)}"
 
   metadata_startup_script = "${element(template_file.vault_config.*.rendered, count.index)}"
 
@@ -63,7 +69,7 @@ resource "google_compute_instance" "vault" {
   }
 
   network_interface {
-    subnetwork = "${element(split(",", var.private_subnet_names), count.index)}"
+    subnetwork = "${element(var.private_subnet_names, count.index)}"
 
     access_config {
       # ephemeral
@@ -75,6 +81,6 @@ resource "google_compute_instance" "vault" {
 }
 
 output "private_ips" {
-  value = "${join(",", google_compute_instance.vault.*.network_interface.0.address)}"
+  value = ["${google_compute_instance.vault.*.network_interface.0.address}"]
 }
 

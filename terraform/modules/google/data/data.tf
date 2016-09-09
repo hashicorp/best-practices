@@ -10,7 +10,9 @@ variable "project" {}
 
 variable "region" {}
 
-variable "zones" {}
+variable "zones" {
+  type = "list"
+}
 
 variable "atlas_username" {}
 
@@ -18,9 +20,13 @@ variable "atlas_environment" {}
 
 variable "atlas_token" {}
 
-variable "private_subnet_names" {}
+variable "private_subnet_names" {
+  type = "list"
+}
 
-variable "public_subnet_names" {}
+variable "public_subnet_names" {
+  type = "list"
+}
 
 variable "consul_image" {}
 
