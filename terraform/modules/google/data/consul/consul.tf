@@ -30,7 +30,7 @@ variable "nodes" {}
 
 variable "instance_type" {}
 
-resource "template_file" "consul_config" {
+data "template_file" "consul_config" {
   template = "${file("${path.module}/consul.sh.tpl")}"
   count    = "${var.nodes}"
 
@@ -42,9 +42,9 @@ resource "template_file" "consul_config" {
     node_name           = "${var.name}-${count.index}"
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
+#   lifecycle {
+#    create_before_destroy = true
+#   }
 }
 
 resource "google_compute_instance" "consul" {
@@ -53,7 +53,7 @@ resource "google_compute_instance" "consul" {
   machine_type = "${var.instance_type}"
   zone         = "${element(var.zones, count.index)}"
 
-  metadata_startup_script = "${element(template_file.consul_config.*.rendered, count.index)}"
+  metadata_startup_script = "${element(data.template_file.consul_config.*.rendered, count.index)}"
 
   disk {
     image = "${var.image}"
