@@ -1,31 +1,50 @@
 #--------------------------------------------------------------
+
 # This module creates all resources necessary for HAProxy
+
 #--------------------------------------------------------------
 
-variable "name"              { default = "haproxy" }
-variable "vpc_id"            { }
-variable "vpc_cidr"          { }
-variable "key_name"          { }
-variable "subnet_ids"        { }
-variable "atlas_username"    { }
-variable "atlas_environment" { }
-variable "atlas_token"       { }
-variable "amis"              { }
-variable "nodes"             { }
-variable "instance_type"     { }
-variable "sub_domain"        { }
-variable "route_zone_id"     { }
+variable "name" {
+  default = "haproxy"
+}
+
+variable "vpc_id" {}
+
+variable "vpc_cidr" {}
+
+variable "key_name" {}
+
+variable "subnet_ids" {}
+
+variable "atlas_username" {}
+
+variable "atlas_environment" {}
+
+variable "atlas_token" {}
+
+variable "amis" {}
+
+variable "nodes" {}
+
+variable "instance_type" {}
+
+variable "sub_domain" {}
+
+variable "route_zone_id" {}
 
 resource "aws_security_group" "haproxy" {
   name        = "${var.name}"
   vpc_id      = "${var.vpc_id}"
   description = "HAProxy security group"
 
-  tags      { 
-    Name = "${var.name}" 
+  tags {
+    Name = "${var.name}"
     Demo = "true"
   }
-  lifecycle { create_before_destroy = true }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   ingress {
     protocol    = "tcp"
@@ -60,7 +79,9 @@ resource "template_file" "user_data" {
   template = "${path.module}/haproxy.sh.tpl"
   count    = "${var.nodes}"
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -80,8 +101,13 @@ resource "aws_instance" "haproxy" {
 
   vpc_security_group_ids = ["${aws_security_group.haproxy.id}"]
 
-  tags      { Name = "${var.name}" }
-  lifecycle { create_before_destroy = true }
+  tags {
+    Name = "${var.name}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_route53_record" "haproxy_public" {
@@ -100,7 +126,18 @@ resource "aws_route53_record" "haproxy_private" {
   records = ["${aws_instance.haproxy.*.private_ip}"]
 }
 
-output "public_ips"   { value = "${join(",", aws_instance.haproxy.*.public_ip)}" }
-output "private_ips"  { value = "${join(",", aws_instance.haproxy.*.private_ip)}" }
-output "public_fqdn"  { value = "${aws_route53_record.haproxy_public.fqdn}" }
-output "private_fqdn" { value = "${aws_route53_record.haproxy_private.fqdn}" }
+output "public_ips" {
+  value = "${join(",", aws_instance.haproxy.*.public_ip)}"
+}
+
+output "private_ips" {
+  value = "${join(",", aws_instance.haproxy.*.private_ip)}"
+}
+
+output "public_fqdn" {
+  value = "${aws_route53_record.haproxy_public.fqdn}"
+}
+
+output "private_fqdn" {
+  value = "${aws_route53_record.haproxy_private.fqdn}"
+}

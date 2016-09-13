@@ -1,31 +1,50 @@
 #--------------------------------------------------------------
+
 # This module creates all resources necessary for the
+
 # Node.js application
+
 #--------------------------------------------------------------
 
-variable "name"                { }
-variable "zones"              { 
-  type = "list"
-}
-variable "atlas_username"      { }
-variable "atlas_environment"   { }
-variable "atlas_token"         { }
-variable "private_subnet_names"              {
-  type = "list"
-}
-variable "public_subnet_names"              {
-  type = "list"
-}
-variable "image"            { }
-variable "nodes"          { }
-variable "instance_type"  { }
+variable "name" {}
 
-variable "site_ssl_cert"       { }
-variable "site_ssl_key"        { }
-variable "vault_ssl_cert"      { }
+variable "zones" {
+  type = "list"
+}
 
-variable "vault_token"         { default = "" }
-variable "vault_policy"        { default = "nodejs" }
+variable "atlas_username" {}
+
+variable "atlas_environment" {}
+
+variable "atlas_token" {}
+
+variable "private_subnet_names" {
+  type = "list"
+}
+
+variable "public_subnet_names" {
+  type = "list"
+}
+
+variable "image" {}
+
+variable "nodes" {}
+
+variable "instance_type" {}
+
+variable "site_ssl_cert" {}
+
+variable "site_ssl_key" {}
+
+variable "vault_ssl_cert" {}
+
+variable "vault_token" {
+  default = ""
+}
+
+variable "vault_policy" {
+  default = "nodejs"
+}
 
 data "template_file" "nodejs_config" {
   template = "${file("${path.module}/nodejs.sh.tpl")}"
@@ -65,7 +84,6 @@ resource "google_compute_instance" "nodejs" {
   }
 
   tags = ["nodejs"]
-
 }
 
 output "private_ips" {

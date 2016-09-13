@@ -1,43 +1,83 @@
 #--------------------------------------------------------------
+
 # This module creates all resources necessary for the
+
 # Node.js application
+
 #--------------------------------------------------------------
 
-variable "name"                { default = "nodejs" }
-variable "region"              { }
-variable "vpc_id"              { }
-variable "vpc_cidr"            { }
-variable "key_name"            { }
-variable "azs"                 { }
-variable "private_subnet_ids"  { }
-variable "public_subnet_ids"   { }
-variable "site_ssl_cert"       { }
-variable "site_ssl_key"        { }
-variable "vault_ssl_cert"      { }
-variable "atlas_username"      { }
-variable "atlas_environment"   { }
-variable "atlas_aws_global"    { }
-variable "atlas_token"         { }
-variable "blue_ami"            { }
-variable "blue_nodes"          { }
-variable "blue_instance_type"  { }
-variable "blue_weight"         { }
-variable "green_ami"           { }
-variable "green_nodes"         { }
-variable "green_instance_type" { }
-variable "green_weight"        { }
-variable "sub_domain"          { }
-variable "route_zone_id"       { }
-variable "vault_token"         { default = "" }
-variable "vault_policy"        { default = "nodejs" }
+variable "name" {
+  default = "nodejs"
+}
+
+variable "region" {}
+
+variable "vpc_id" {}
+
+variable "vpc_cidr" {}
+
+variable "key_name" {}
+
+variable "azs" {}
+
+variable "private_subnet_ids" {}
+
+variable "public_subnet_ids" {}
+
+variable "site_ssl_cert" {}
+
+variable "site_ssl_key" {}
+
+variable "vault_ssl_cert" {}
+
+variable "atlas_username" {}
+
+variable "atlas_environment" {}
+
+variable "atlas_aws_global" {}
+
+variable "atlas_token" {}
+
+variable "blue_ami" {}
+
+variable "blue_nodes" {}
+
+variable "blue_instance_type" {}
+
+variable "blue_weight" {}
+
+variable "green_ami" {}
+
+variable "green_nodes" {}
+
+variable "green_instance_type" {}
+
+variable "green_weight" {}
+
+variable "sub_domain" {}
+
+variable "route_zone_id" {}
+
+variable "vault_token" {
+  default = ""
+}
+
+variable "vault_policy" {
+  default = "nodejs"
+}
 
 resource "aws_security_group" "elb" {
   name        = "${var.name}.elb"
   vpc_id      = "${var.vpc_id}"
   description = "Security group for Nodejs ELB"
 
-  tags      { Name = "${var.name}-elb" }
-  lifecycle { create_before_destroy = true }
+  tags {
+    Name = "${var.name}-elb"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   ingress {
     protocol    = "tcp"
@@ -66,7 +106,9 @@ resource "aws_iam_server_certificate" "nodejs" {
   certificate_body = "${var.site_ssl_cert}"
   private_key      = "${var.site_ssl_key}"
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   provisioner "local-exec" {
     command = <<EOF
@@ -85,7 +127,9 @@ resource "aws_elb" "blue" {
   subnets         = ["${split(",", var.public_subnet_ids)}"]
   security_groups = ["${aws_security_group.elb.id}"]
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   listener {
     lb_port           = 80
@@ -119,7 +163,9 @@ resource "aws_elb" "green" {
   subnets         = ["${split(",", var.public_subnet_ids)}"]
   security_groups = ["${aws_security_group.elb.id}"]
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   listener {
     lb_port           = 80
@@ -152,13 +198,17 @@ resource "terraform_remote_state" "aws_global" {
     name = "${var.atlas_username}/${var.atlas_aws_global}"
   }
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "template_file" "blue_user_data" {
   template = "${path.module}/nodejs.sh.tpl"
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -179,7 +229,9 @@ resource "template_file" "blue_user_data" {
 resource "template_file" "green_user_data" {
   template = "${path.module}/nodejs.sh.tpl"
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -246,9 +298,26 @@ resource "aws_route53_record" "green" {
   }
 }
 
-output "blue_elb_zone_id"   { value = "${aws_elb.blue.zone_id}" }
-output "blue_private_fqdn"  { value = "${aws_route53_record.blue.fqdn}" }
-output "blue_elb_dns"       { value = "${aws_elb.blue.dns_name}" }
-output "green_elb_zone_id"  { value = "${aws_elb.green.zone_id}" }
-output "green_private_fqdn" { value = "${aws_route53_record.green.fqdn}" }
-output "green_elb_dns"      { value = "${aws_elb.green.dns_name}" }
+output "blue_elb_zone_id" {
+  value = "${aws_elb.blue.zone_id}"
+}
+
+output "blue_private_fqdn" {
+  value = "${aws_route53_record.blue.fqdn}"
+}
+
+output "blue_elb_dns" {
+  value = "${aws_elb.blue.dns_name}"
+}
+
+output "green_elb_zone_id" {
+  value = "${aws_elb.green.zone_id}"
+}
+
+output "green_private_fqdn" {
+  value = "${aws_route53_record.green.fqdn}"
+}
+
+output "green_elb_dns" {
+  value = "${aws_elb.green.dns_name}"
+}

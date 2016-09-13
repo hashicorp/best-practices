@@ -45,7 +45,6 @@ resource "google_compute_firewall" "allow-internal" {
   source_ranges = [
     "${var.cidr}",
   ]
-
 }
 
 resource "google_compute_firewall" "allow-ssh" {
@@ -61,25 +60,24 @@ resource "google_compute_firewall" "allow-ssh" {
 
   # uncomment to restrict public ssh to the bastion host
   target_tags = ["bastion"]
-
 }
 
 module "public_subnet" {
   source = "./public_subnet"
 
-  name               = "${var.name}-public"
-  region             = "${var.region}"
-  network            = "${google_compute_network.network.self_link}"
-  cidrs              = "${var.public_subnets}"
+  name    = "${var.name}-public"
+  region  = "${var.region}"
+  network = "${google_compute_network.network.self_link}"
+  cidrs   = "${var.public_subnets}"
 }
 
 module "private_subnet" {
   source = "./private_subnet"
 
-  name               = "${var.name}-private"
-  region             = "${var.region}"
-  network            = "${google_compute_network.network.self_link}"
-  cidrs              = "${var.private_subnets}"
+  name    = "${var.name}-private"
+  region  = "${var.region}"
+  network = "${google_compute_network.network.self_link}"
+  cidrs   = "${var.private_subnets}"
 }
 
 module "bastion" {

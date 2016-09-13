@@ -1,31 +1,55 @@
 #--------------------------------------------------------------
+
 # This module creates all resources necessary for Consul
+
 #--------------------------------------------------------------
 
-variable "name"               { default = "consul" }
-variable "vpc_id"             { }
-variable "vpc_cidr"           { }
-variable "private_subnet_ids" { }
-variable "key_name"           { }
-variable "atlas_username"     { }
-variable "atlas_environment"  { }
-variable "atlas_token"        { }
-variable "amis"               { }
-variable "nodes"              { }
-variable "instance_type"      { }
-variable "openvpn_user"       { }
-variable "openvpn_host"       { }
-variable "private_key"        { }
-variable "bastion_host"       { }
-variable "bastion_user"       { }
+variable "name" {
+  default = "consul"
+}
+
+variable "vpc_id" {}
+
+variable "vpc_cidr" {}
+
+variable "private_subnet_ids" {}
+
+variable "key_name" {}
+
+variable "atlas_username" {}
+
+variable "atlas_environment" {}
+
+variable "atlas_token" {}
+
+variable "amis" {}
+
+variable "nodes" {}
+
+variable "instance_type" {}
+
+variable "openvpn_user" {}
+
+variable "openvpn_host" {}
+
+variable "private_key" {}
+
+variable "bastion_host" {}
+
+variable "bastion_user" {}
 
 resource "aws_security_group" "consul" {
   name        = "${var.name}"
   vpc_id      = "${var.vpc_id}"
   description = "Security group for Consul"
 
-  tags      { Name = "${var.name}" }
-  lifecycle { create_before_destroy = true }
+  tags {
+    Name = "${var.name}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   ingress {
     protocol    = -1
@@ -46,7 +70,9 @@ resource "template_file" "user_data" {
   count    = "${var.nodes}"
   template = "${path.module}/consul.sh.tpl"
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   vars {
     atlas_username      = "${var.atlas_username}"
@@ -67,7 +93,9 @@ resource "aws_instance" "consul" {
 
   vpc_security_group_ids = ["${aws_security_group.consul.id}"]
 
-  tags { Name = "${var.name}.${count.index+1}" }
+  tags {
+    Name = "${var.name}.${count.index+1}"
+  }
 }
 
 resource "null_resource" "openvpn_dns" {
@@ -86,15 +114,19 @@ resource "null_resource" "openvpn_dns" {
 
   provisioner "remote-exec" {
     inline = [
-      # Turn on custom DNS
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.client.routing.reroute_dns -v custom ConfigPut",
-      # Point custom DNS at consul
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.server.dhcp_option.dns.0 -v ${element(aws_instance.consul.*.private_ip, 0)} ConfigPut",
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.server.dhcp_option.dns.1 -v ${element(aws_instance.consul.*.private_ip, 1)} ConfigPut",
-      # Do a warm restart so the config is picked up
       "sudo /usr/local/openvpn_as/scripts/sacli start",
     ]
+
+    # Turn on custom DNS
+
+    # Point custom DNS at consul
   }
 }
 
-output "private_ips" { value = "${join(",", aws_instance.consul.*.private_ip)}" }
+# Do a warm restart so the config is picked up
+output "private_ips" {
+  value = "${join(",", aws_instance.consul.*.private_ip)}"
+}

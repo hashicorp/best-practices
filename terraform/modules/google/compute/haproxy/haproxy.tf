@@ -1,20 +1,30 @@
 #--------------------------------------------------------------
+
 # This module creates all resources necessary for HAProxy
+
 #--------------------------------------------------------------
 
-variable "name"              { }
+variable "name" {}
+
 variable "zones" {
   type = "list"
 }
-variable "atlas_username"    { }
-variable "atlas_environment" { }
-variable "atlas_token"       { }
-variable "private_subnet_names"              { 
+
+variable "atlas_username" {}
+
+variable "atlas_environment" {}
+
+variable "atlas_token" {}
+
+variable "private_subnet_names" {
   type = "list"
 }
+
 variable "image" {}
-variable "nodes"             { }
-variable "instance_type"     { }
+
+variable "nodes" {}
+
+variable "instance_type" {}
 
 data "template_file" "haproxy_config" {
   template = "${file("${path.module}/haproxy.sh.tpl")}"
@@ -49,7 +59,6 @@ resource "google_compute_instance" "haproxy" {
   }
 
   tags = ["haproxy"]
-
 }
 
 output "private_ips" {

@@ -47,17 +47,17 @@ variable "vault_instance_type" {}
 module "consul" {
   source = "./consul"
 
-  name              = "${var.name}-consul"
-  project           = "${var.project}"
-  region            = "${var.region}"
-  zones              = "${var.zones}"
-  atlas_username    = "${var.atlas_username}"
-  atlas_environment = "${var.atlas_environment}"
-  atlas_token       = "${var.atlas_token}"
-  private_subnet_names        = "${var.private_subnet_names}"
-  image             = "${var.consul_image}"
-  nodes             = "${var.consul_node_count}"
-  instance_type     = "${var.consul_instance_type}"
+  name                 = "${var.name}-consul"
+  project              = "${var.project}"
+  region               = "${var.region}"
+  zones                = "${var.zones}"
+  atlas_username       = "${var.atlas_username}"
+  atlas_environment    = "${var.atlas_environment}"
+  atlas_token          = "${var.atlas_token}"
+  private_subnet_names = "${var.private_subnet_names}"
+  image                = "${var.consul_image}"
+  nodes                = "${var.consul_node_count}"
+  instance_type        = "${var.consul_instance_type}"
 }
 
 module "vault" {
@@ -66,18 +66,18 @@ module "vault" {
   name    = "${var.name}-vault"
   project = "${var.project}"
   region  = "${var.region}"
-  zones    = "${var.zones}"
+  zones   = "${var.zones}"
 
-  atlas_username    = "${var.atlas_username}"
-  atlas_environment = "${var.atlas_environment}"
-  atlas_token       = "${var.atlas_token}"
-  private_subnet_names        = "${var.private_subnet_names}"
-  public_subnet_names        = "${var.public_subnet_names}"
-  ssl_cert          = "${var.vault_ssl_cert}"
-  ssl_key           = "${var.vault_ssl_key}"
-  image             = "${var.vault_image}"
-  nodes             = "${var.vault_node_count}"
-  instance_type     = "${var.vault_instance_type}"
+  atlas_username       = "${var.atlas_username}"
+  atlas_environment    = "${var.atlas_environment}"
+  atlas_token          = "${var.atlas_token}"
+  private_subnet_names = "${var.private_subnet_names}"
+  public_subnet_names  = "${var.public_subnet_names}"
+  ssl_cert             = "${var.vault_ssl_cert}"
+  ssl_key              = "${var.vault_ssl_key}"
+  image                = "${var.vault_image}"
+  nodes                = "${var.vault_node_count}"
+  instance_type        = "${var.vault_instance_type}"
 }
 
 # Consul

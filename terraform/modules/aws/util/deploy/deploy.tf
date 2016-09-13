@@ -1,30 +1,54 @@
 #--------------------------------------------------------------
+
 # This module is used to achieve a blue/green deploy strategy
+
 #--------------------------------------------------------------
 
-variable "name"                { default = "deploy" }
-variable "vpc_id"              { }
-variable "vpc_cidr"            { }
-variable "key_name"            { }
-variable "azs"                 { }
-variable "private_subnet_ids"  { }
-variable "blue_elb_id"         { }
-variable "blue_ami"            { }
-variable "blue_nodes"          { }
-variable "blue_instance_type"  { }
-variable "blue_user_data"      { }
-variable "green_elb_id"        { }
-variable "green_ami"           { }
-variable "green_nodes"         { }
-variable "green_instance_type" { }
-variable "green_user_data"     { }
+variable "name" {
+  default = "deploy"
+}
+
+variable "vpc_id" {}
+
+variable "vpc_cidr" {}
+
+variable "key_name" {}
+
+variable "azs" {}
+
+variable "private_subnet_ids" {}
+
+variable "blue_elb_id" {}
+
+variable "blue_ami" {}
+
+variable "blue_nodes" {}
+
+variable "blue_instance_type" {}
+
+variable "blue_user_data" {}
+
+variable "green_elb_id" {}
+
+variable "green_ami" {}
+
+variable "green_nodes" {}
+
+variable "green_instance_type" {}
+
+variable "green_user_data" {}
 
 resource "aws_security_group" "deploy" {
   vpc_id      = "${var.vpc_id}"
   description = "Security group for ${var.name} Blue/Green deploy Launch Configuration"
 
-  tags      { Name = "${var.name}" }
-  lifecycle { create_before_destroy = true }
+  tags {
+    Name = "${var.name}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   ingress {
     protocol    = -1
@@ -49,7 +73,9 @@ resource "aws_launch_configuration" "blue" {
   security_groups = ["${aws_security_group.deploy.id}"]
   user_data       = "${var.blue_user_data}"
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_autoscaling_group" "blue" {
@@ -63,11 +89,13 @@ resource "aws_autoscaling_group" "blue" {
   vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
   load_balancers        = ["${var.blue_elb_id}"]
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tag {
-    key   = "Name"
-    value = "${var.name}.blue"
+    key                 = "Name"
+    value               = "${var.name}.blue"
     propagate_at_launch = true
   }
 }
@@ -80,7 +108,9 @@ resource "aws_launch_configuration" "green" {
   security_groups = ["${aws_security_group.deploy.id}"]
   user_data       = "${var.green_user_data}"
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_autoscaling_group" "green" {
@@ -94,11 +124,13 @@ resource "aws_autoscaling_group" "green" {
   vpc_zone_identifier   = ["${split(",", var.private_subnet_ids)}"]
   load_balancers        = ["${var.green_elb_id}"]
 
-  lifecycle { create_before_destroy = true }
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tag {
-    key   = "Name"
-    value = "${var.name}.green"
+    key                 = "Name"
+    value               = "${var.name}.green"
     propagate_at_launch = true
   }
 }
