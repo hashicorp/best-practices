@@ -1,26 +1,16 @@
 #--------------------------------------------------------------
-
 # This module is used to create an S3 bucket website
-
 #--------------------------------------------------------------
 
-variable "fqdn" {}
-
-variable "sub_domain" {}
-
-variable "route_zone_id" {}
-
-variable "index_page" {
-  default = "index.html"
-}
-
-variable "error_page" {
-  default = "error.html"
-}
+variable "fqdn"          { }
+variable "sub_domain"    { }
+variable "route_zone_id" { }
+variable "index_page"    { default = "index.html" }
+variable "error_page"    { default = "error.html" }
 
 resource "aws_s3_bucket" "website" {
-  bucket        = "${var.fqdn}"
-  acl           = "public-read"
+  bucket = "${var.fqdn}"
+  acl = "public-read"
   force_destroy = true
 
   website {
@@ -47,10 +37,9 @@ EOF
 }
 
 resource "aws_s3_bucket_object" "index" {
-  bucket = "${aws_s3_bucket.website.id}"
-  key    = "${var.index_page}"
-
-  content = <<EOF
+  bucket  = "${aws_s3_bucket.website.id}"
+  key     = "${var.index_page}"
+  content =  <<EOF
 You've reached the ${var.fqdn} index page
 EOF
 
@@ -58,10 +47,9 @@ EOF
 }
 
 resource "aws_s3_bucket_object" "error" {
-  bucket = "${aws_s3_bucket.website.id}"
-  key    = "${var.error_page}"
-
-  content = <<EOF
+  bucket  = "${aws_s3_bucket.website.id}"
+  key     = "${var.error_page}"
+  content =  <<EOF
 You've reached the ${var.fqdn} error page
 EOF
 
@@ -79,7 +67,6 @@ resource "aws_iam_access_key" "website" {
 resource "aws_iam_user_policy" "website" {
   name = "${var.fqdn}"
   user = "${aws_iam_user.website.name}"
-
   policy = <<EOF
 {
   "Statement": [
@@ -107,18 +94,7 @@ resource "aws_route53_record" "website" {
   }
 }
 
-output "domain" {
-  value = "${aws_s3_bucket.website.website_domain}"
-}
-
-output "hosted_zone_id" {
-  value = "${aws_s3_bucket.website.hosted_zone_id}"
-}
-
-output "endpoint" {
-  value = "${aws_s3_bucket.website.website_endpoint}"
-}
-
-output "fqdn" {
-  value = "${aws_route53_record.website.fqdn}"
-}
+output "domain"         { value = "${aws_s3_bucket.website.website_domain}" }
+output "hosted_zone_id" { value = "${aws_s3_bucket.website.hosted_zone_id}" }
+output "endpoint"       { value = "${aws_s3_bucket.website.website_endpoint}" }
+output "fqdn"           { value = "${aws_route53_record.website.fqdn}" }

@@ -1,3 +1,5 @@
+
+
 # This module creates all resources necessary for Vault 
 
 #--------------------------------------------------------------
@@ -48,6 +50,7 @@ data "template_file" "vault_config" {
     ssl_cert          = "${var.ssl_cert}"
     ssl_key           = "${var.ssl_key}"
   }
+
 }
 
 resource "google_compute_instance" "vault" {
@@ -71,8 +74,10 @@ resource "google_compute_instance" "vault" {
   }
 
   tags = ["vault"]
+
 }
 
 output "private_ips" {
   value = ["${google_compute_instance.vault.*.network_interface.0.address}"]
 }
+

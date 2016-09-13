@@ -47,23 +47,16 @@ variable "vault_token" {
 }
 
 variable "haproxy_artifact_name" {}
+variable "haproxy_node_count"    { }
+variable "haproxy_instance_type" { }
 
-variable "haproxy_node_count" {}
-
-variable "haproxy_instance_type" {}
-
-variable "nodejs_artifact_name" {}
-
-variable "nodejs_node_count" {}
-
-variable "nodejs_instance_type" {}
-
-variable "site_ssl_cert" {}
-
-variable "site_ssl_key" {}
+variable "nodejs_artifact_name"          { }
+variable "nodejs_node_count"    { }
+variable "nodejs_instance_type" { }
+variable "site_ssl_cert"     { }
+variable "site_ssl_key" { }
 
 variable "bastion_image" {}
-
 variable "bastion_instance_type" {}
 
 provider "google" {
@@ -79,13 +72,13 @@ atlas {
 module "network" {
   source = "../../../modules/google/network"
 
-  name                  = "${var.name}"
-  region                = "${var.region}"
-  zones                 = "${var.zones}"
-  cidr                  = "${var.cidr}"
-  public_subnets        = "${var.public_subnets}"
-  private_subnets       = "${var.private_subnets}"
-  bastion_image         = "${var.bastion_image}"
+  name   = "${var.name}"
+  region = "${var.region}"
+  zones = "${var.zones}"
+  cidr   = "${var.cidr}"
+  public_subnets = "${var.public_subnets}"
+  private_subnets = "${var.private_subnets}"
+  bastion_image = "${var.bastion_image}"
   bastion_instance_type = "${var.bastion_instance_type}"
 }
 
@@ -104,15 +97,15 @@ data "atlas_artifact" "google-ubuntu-vault" {
 module "data" {
   source = "../../../modules/google/data"
 
-  name                 = "${var.name}"
-  project              = "${var.project}"
-  region               = "${var.region}"
-  zones                = "${var.zones}"
-  atlas_username       = "${var.atlas_username}"
-  atlas_environment    = "${var.atlas_environment}"
-  atlas_token          = "${var.atlas_token}"
-  private_subnet_names = "${module.network.private_subnet_names}"
-  public_subnet_names  = "${module.network.public_subnet_names}"
+  name              = "${var.name}"
+  project           = "${var.project}"
+  region            = "${var.region}"
+  zones              = "${var.zones}"
+  atlas_username    = "${var.atlas_username}"
+  atlas_environment = "${var.atlas_environment}"
+  atlas_token       = "${var.atlas_token}"
+  private_subnet_names        = "${module.network.private_subnet_names}"
+  public_subnet_names        = "${module.network.public_subnet_names}"
 
   consul_image         = "${data.atlas_artifact.google-ubuntu-consul.id}"
   consul_node_count    = "${var.consul_node_count}"
@@ -140,13 +133,13 @@ data "atlas_artifact" "google-ubuntu-nodejs" {
 module "compute" {
   source = "../../../modules/google/compute"
 
-  name                 = "${var.name}"
-  zones                = "${var.zones}"
-  atlas_username       = "${var.atlas_username}"
-  atlas_environment    = "${var.atlas_environment}"
-  atlas_token          = "${var.atlas_token}"
-  private_subnet_names = "${module.network.private_subnet_names}"
-  public_subnet_names  = "${module.network.public_subnet_names}"
+  name              = "${var.name}"
+  zones              = "${var.zones}"
+  atlas_username    = "${var.atlas_username}"
+  atlas_environment = "${var.atlas_environment}"
+  atlas_token       = "${var.atlas_token}"
+  private_subnet_names        = "${module.network.private_subnet_names}"
+  public_subnet_names        = "${module.network.public_subnet_names}"
 
   haproxy_image         = "${data.atlas_artifact.google-ubuntu-haproxy.id}"
   haproxy_node_count    = "${var.haproxy_node_count}"
@@ -155,10 +148,10 @@ module "compute" {
   nodejs_image         = "${data.atlas_artifact.google-ubuntu-nodejs.id}"
   nodejs_node_count    = "${var.nodejs_node_count}"
   nodejs_instance_type = "${var.nodejs_instance_type}"
-  site_ssl_cert        = "${var.site_ssl_cert}"
-  site_ssl_key         = "${var.site_ssl_key}"
-  vault_ssl_cert       = "${var.vault_ssl_cert}"
-  vault_token          = "${var.vault_token}"
+  site_ssl_cert = "${var.site_ssl_cert}"
+  site_ssl_key = "${var.site_ssl_key}"
+  vault_ssl_cert = "${var.vault_ssl_cert}"
+  vault_token = "${var.vault_token}"
 }
 
 output "configuration" {
@@ -172,3 +165,6 @@ Private node IPs:
   Node.js: ${join("\n           ", formatlist("ssh ubuntu@%s", split(",", module.compute.nodejs_private_ips)))}
 CONFIGURATION
 }
+
+
+

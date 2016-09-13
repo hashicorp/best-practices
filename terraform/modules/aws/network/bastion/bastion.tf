@@ -1,39 +1,23 @@
 #--------------------------------------------------------------
-
 # This module creates all resources necessary for a Bastion
-
 # host
-
 #--------------------------------------------------------------
 
-variable "name" {
-  default = "bastion"
-}
-
-variable "vpc_id" {}
-
-variable "vpc_cidr" {}
-
-variable "region" {}
-
-variable "public_subnet_ids" {}
-
-variable "key_name" {}
-
-variable "instance_type" {}
+variable "name"              { default = "bastion" }
+variable "vpc_id"            { }
+variable "vpc_cidr"          { }
+variable "region"            { }
+variable "public_subnet_ids" { }
+variable "key_name"          { }
+variable "instance_type"     { }
 
 resource "aws_security_group" "bastion" {
   name        = "${var.name}"
   vpc_id      = "${var.vpc_id}"
   description = "Bastion security group"
 
-  tags {
-    Name = "${var.name}"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  tags      { Name = "${var.name}" }
+  lifecycle { create_before_destroy = true }
 
   ingress {
     protocol    = -1
@@ -72,23 +56,10 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
   associate_public_ip_address = true
 
-  tags {
-    Name = "${var.name}"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  tags      { Name = "${var.name}" }
+  lifecycle { create_before_destroy = true }
 }
 
-output "user" {
-  value = "ubuntu"
-}
-
-output "private_ip" {
-  value = "${aws_instance.bastion.private_ip}"
-}
-
-output "public_ip" {
-  value = "${aws_instance.bastion.public_ip}"
-}
+output "user"       { value = "ubuntu" }
+output "private_ip" { value = "${aws_instance.bastion.private_ip}" }
+output "public_ip"  { value = "${aws_instance.bastion.public_ip}" }

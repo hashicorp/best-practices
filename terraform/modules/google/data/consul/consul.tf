@@ -42,11 +42,9 @@ data "template_file" "consul_config" {
     node_name           = "${var.name}-${count.index}"
   }
 
-  #   lifecycle {
-
-  #    create_before_destroy = true
-
-  #   }
+#   lifecycle {
+#    create_before_destroy = true
+#   }
 }
 
 resource "google_compute_instance" "consul" {
@@ -70,6 +68,7 @@ resource "google_compute_instance" "consul" {
   }
 
   tags = ["consul"]
+
 }
 
 output "private_ips" {

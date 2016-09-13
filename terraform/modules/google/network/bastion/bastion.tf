@@ -1,24 +1,17 @@
 #--------------------------------------------------------------
-
 # This module creates all resources necessary for a Bastion
-
 # host
-
 #--------------------------------------------------------------
 
-variable "name" {}
-
-variable "zones" {
+variable "name"              { }
+variable "zones"	 { 
   type = "list"
 }
-
-variable "public_subnet_names" {
+variable "public_subnet_names" { 
   type = "list"
 }
-
-variable "image" {}
-
-variable "instance_type" {}
+variable "image" 			 { }
+variable "instance_type"     { }
 
 resource "google_compute_instance" "bastion" {
   name         = "${var.name}"
@@ -38,6 +31,7 @@ resource "google_compute_instance" "bastion" {
   }
 
   tags = ["bastion"]
+
 }
 
 output "private_ip" {

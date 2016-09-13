@@ -1,46 +1,27 @@
 #--------------------------------------------------------------
-
 # This module creates all networking resources
-
 #--------------------------------------------------------------
 
-variable "name" {}
+variable "name"            { }
+variable "vpc_cidr"        { }
+variable "azs"             { }
+variable "region"          { }
+variable "private_subnets" { }
+variable "public_subnets"  { }
+variable "ssl_cert"        { }
+variable "ssl_key"         { }
+variable "key_name"        { }
+variable "private_key"     { }
+variable "sub_domain"      { }
+variable "route_zone_id"   { }
 
-variable "vpc_cidr" {}
-
-variable "azs" {}
-
-variable "region" {}
-
-variable "private_subnets" {}
-
-variable "public_subnets" {}
-
-variable "ssl_cert" {}
-
-variable "ssl_key" {}
-
-variable "key_name" {}
-
-variable "private_key" {}
-
-variable "sub_domain" {}
-
-variable "route_zone_id" {}
-
-variable "bastion_instance_type" {}
-
-variable "openvpn_instance_type" {}
-
-variable "openvpn_ami" {}
-
-variable "openvpn_user" {}
-
-variable "openvpn_admin_user" {}
-
-variable "openvpn_admin_pw" {}
-
-variable "openvpn_cidr" {}
+variable "bastion_instance_type" { }
+variable "openvpn_instance_type" { }
+variable "openvpn_ami"           { }
+variable "openvpn_user"          { }
+variable "openvpn_admin_user"    { }
+variable "openvpn_admin_pw"      { }
+variable "openvpn_cidr"          { }
 
 module "vpc" {
   source = "./vpc"
@@ -134,56 +115,26 @@ resource "aws_network_acl" "acl" {
     to_port    = 0
   }
 
-  tags {
-    Name = "${var.name}-all"
-  }
+  tags { Name = "${var.name}-all" }
 }
 
 # VPC
-output "vpc_id" {
-  value = "${module.vpc.vpc_id}"
-}
-
-output "vpc_cidr" {
-  value = "${module.vpc.vpc_cidr}"
-}
+output "vpc_id"   { value = "${module.vpc.vpc_id}" }
+output "vpc_cidr" { value = "${module.vpc.vpc_cidr}" }
 
 # Subnets
-output "public_subnet_ids" {
-  value = "${module.public_subnet.subnet_ids}"
-}
-
-output "private_subnet_ids" {
-  value = "${module.private_subnet.subnet_ids}"
-}
+output "public_subnet_ids"  { value = "${module.public_subnet.subnet_ids}" }
+output "private_subnet_ids" { value = "${module.private_subnet.subnet_ids}" }
 
 # Bastion
-output "bastion_user" {
-  value = "${module.bastion.user}"
-}
-
-output "bastion_private_ip" {
-  value = "${module.bastion.private_ip}"
-}
-
-output "bastion_public_ip" {
-  value = "${module.bastion.public_ip}"
-}
+output "bastion_user"       { value = "${module.bastion.user}" }
+output "bastion_private_ip" { value = "${module.bastion.private_ip}" }
+output "bastion_public_ip"  { value = "${module.bastion.public_ip}" }
 
 # NAT
-output "nat_gateway_ids" {
-  value = "${module.nat.nat_gateway_ids}"
-}
+output "nat_gateway_ids" { value = "${module.nat.nat_gateway_ids}" }
 
 # OpenVPN
-output "openvpn_private_ip" {
-  value = "${module.openvpn.private_ip}"
-}
-
-output "openvpn_public_ip" {
-  value = "${module.openvpn.public_ip}"
-}
-
-output "openvpn_public_fqdn" {
-  value = "${module.openvpn.public_fqdn}"
-}
+output "openvpn_private_ip"  { value = "${module.openvpn.private_ip}" }
+output "openvpn_public_ip"   { value = "${module.openvpn.public_ip}" }
+output "openvpn_public_fqdn" { value = "${module.openvpn.public_fqdn}" }

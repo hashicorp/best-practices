@@ -1,55 +1,32 @@
 #--------------------------------------------------------------
-
 # This module creates all resources necessary for OpenVPN
-
 #--------------------------------------------------------------
 
-variable "name" {
-  default = "openvpn"
-}
-
-variable "vpc_id" {}
-
-variable "vpc_cidr" {}
-
-variable "public_subnet_ids" {}
-
-variable "ssl_cert" {}
-
-variable "ssl_key" {}
-
-variable "key_name" {}
-
-variable "private_key" {}
-
-variable "ami" {}
-
-variable "instance_type" {}
-
-variable "bastion_host" {}
-
-variable "bastion_user" {}
-
-variable "openvpn_user" {}
-
-variable "openvpn_admin_user" {}
-
-variable "openvpn_admin_pw" {}
-
-variable "vpn_cidr" {}
-
-variable "sub_domain" {}
-
-variable "route_zone_id" {}
+variable "name"               { default = "openvpn" }
+variable "vpc_id"             { }
+variable "vpc_cidr"           { }
+variable "public_subnet_ids"  { }
+variable "ssl_cert"           { }
+variable "ssl_key"            { }
+variable "key_name"           { }
+variable "private_key"        { }
+variable "ami"                { }
+variable "instance_type"      { }
+variable "bastion_host"       { }
+variable "bastion_user"       { }
+variable "openvpn_user"       { }
+variable "openvpn_admin_user" { }
+variable "openvpn_admin_pw"   { }
+variable "vpn_cidr"           { }
+variable "sub_domain"         { }
+variable "route_zone_id"      { }
 
 resource "aws_security_group" "openvpn" {
-  name        = "${var.name}"
-  vpc_id      = "${var.vpc_id}"
+  name   = "${var.name}"
+  vpc_id = "${var.vpc_id}"
   description = "OpenVPN security group"
 
-  tags {
-    Name = "${var.name}"
-  }
+  tags { Name = "${var.name}" }
 
   ingress {
     protocol    = -1
@@ -89,9 +66,7 @@ resource "aws_instance" "openvpn" {
 
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
 
-  tags {
-    Name = "${var.name}"
-  }
+  tags { Name = "${var.name}" }
 
   # `admin_user` and `admin_pw` need to be passed in to the appliance through `user_data`, see docs -->
   # https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/
@@ -110,20 +85,18 @@ USERDATA
     }
 
     inline = [
+      # Insert our SSL cert
       "echo '${var.ssl_cert}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.crt > /dev/null",
       "echo '${var.ssl_key}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.key > /dev/null",
+      # Set VPN network info
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.daemon.0.client.network -v ${element(split("/", var.vpn_cidr), 0)} ConfigPut",
       "sudo /usr/local/openvpn_as/scripts/sacli -k vpn.daemon.0.client.netmask_bits -v ${element(split("/", var.vpn_cidr), 1)} ConfigPut",
+      # Do a warm restart so the config is picked up
       "sudo /usr/local/openvpn_as/scripts/sacli start",
     ]
-
-    # Insert our SSL cert
-
-    # Set VPN network info
   }
 }
 
-# Do a warm restart so the config is picked up
 resource "aws_route53_record" "openvpn" {
   zone_id = "${var.route_zone_id}"
   name    = "vpn.${var.sub_domain}"
@@ -132,14 +105,6 @@ resource "aws_route53_record" "openvpn" {
   records = ["${aws_instance.openvpn.public_ip}"]
 }
 
-output "private_ip" {
-  value = "${aws_instance.openvpn.private_ip}"
-}
-
-output "public_ip" {
-  value = "${aws_instance.openvpn.public_ip}"
-}
-
-output "public_fqdn" {
-  value = "${aws_route53_record.openvpn.fqdn}"
-}
+output "private_ip"  { value = "${aws_instance.openvpn.private_ip}" }
+output "public_ip"   { value = "${aws_instance.openvpn.public_ip}" }
+output "public_fqdn" { value = "${aws_route53_record.openvpn.fqdn}" }
