@@ -10,7 +10,7 @@ variable "cidrs" {
 
 resource "google_compute_subnetwork" "private" {
   name          = "${var.name}-${count.index}"
-  count 		= "${length(var.cidrs)}"
+  count         = "${length(var.cidrs)}"
   ip_cidr_range = "${element(var.cidrs, count.index)}"
   network       = "${var.network}"
   region        = "${var.region}"
