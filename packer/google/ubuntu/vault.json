@@ -4,6 +4,7 @@
     "gce_project_id":   "{{env `GCE_PROJECT_ID`}}",
     "gce_zone":         "{{env `GCE_DEFAULT_ZONE`}}",
     "gce_source_image": "{{env `GCE_SOURCE_IMAGE`}}",
+    "gce_credentials":  "{{env `GCE_CREDENTIALS`}}",
     "name":             "google-ubuntu-vault",
     "scripts_dir":      "scripts",
     "config_dir":       "config",
@@ -14,7 +15,6 @@
     "name": "{{user `atlas_username`}}/{{user `name`}}",
     "base_dir": "../../../packer",
     "include": [
-      "google/account.json",
       "{{user `scripts_dir`}}/*",
       "{{user `scripts_dir`}}/ubuntu/*",
       "{{user `scripts_dir`}}/ubuntu/upstart/*",
@@ -33,7 +33,7 @@
     {
       "type":              "googlecompute",
       "project_id":        "{{user `gce_project_id`}}",
-      "account_file":      "google/account.json",
+      "account_file":      "{{user `gce_credentials`}}",
       "zone":              "{{user `gce_zone`}}",
       "network":           "default",
       "source_image":      "{{user `gce_source_image`}}",
