@@ -3,7 +3,7 @@
     "atlas_username":   "{{env `ATLAS_USERNAME`}}",
     "gce_project_id":   "{{env `GCE_PROJECT_ID`}}",
     "gce_zone":         "{{env `GCE_DEFAULT_ZONE`}}",
-    "gce_source_image": "{{env `GCE_SOURCE_IMAGE`}}",
+    "gce_source_image": "{{env `ATLAS_BASE_ARTIFACT_GOOGLE_IMAGE_ID`}}",
     "gce_credentials":  "{{env `GCE_CREDENTIALS`}}",
     "name":             "google-ubuntu-haproxy",
     "scripts_dir":      "scripts",
