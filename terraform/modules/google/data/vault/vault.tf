@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-=======
-#--------------------------------------------------------------
-
->>>>>>> parent of cd9de66... replace template_file resources with data sources
 # This module creates all resources necessary for Vault 
-
-#--------------------------------------------------------------
 
 variable "name" {}
 
