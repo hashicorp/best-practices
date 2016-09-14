@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+#--------------------------------------------------------------
+
+>>>>>>> parent of cd9de66... replace template_file resources with data sources
 # This module creates all resources necessary for Vault 
 
 #--------------------------------------------------------------
@@ -36,7 +41,7 @@ variable "ssl_cert" {}
 
 variable "ssl_key" {}
 
-data "template_file" "vault_config" {
+resource "template_file" "vault_config" {
   template = "${file("${path.module}/vault.sh.tpl")}"
   count    = "${var.nodes}"
 
@@ -48,6 +53,10 @@ data "template_file" "vault_config" {
     ssl_cert          = "${var.ssl_cert}"
     ssl_key           = "${var.ssl_key}"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_compute_instance" "vault" {
@@ -56,7 +65,7 @@ resource "google_compute_instance" "vault" {
   machine_type = "${var.instance_type}"
   zone         = "${element(var.zones, count.index)}"
 
-  metadata_startup_script = "${element(data.template_file.vault_config.*.rendered, count.index)}"
+  metadata_startup_script = "${element(template_file.vault_config.*.rendered, count.index)}"
 
   disk {
     image = "${var.image}"

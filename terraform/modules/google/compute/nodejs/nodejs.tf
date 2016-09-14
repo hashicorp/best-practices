@@ -46,9 +46,11 @@ variable "vault_policy" {
   default = "nodejs"
 }
 
-data "template_file" "nodejs_config" {
+resource "template_file" "nodejs_config" {
   template = "${file("${path.module}/nodejs.sh.tpl")}"
   count    = "${var.nodes}"
+
+  lifecycle { create_before_destroy = true }
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -69,7 +71,7 @@ resource "google_compute_instance" "nodejs" {
   machine_type = "${var.instance_type}"
   zone         = "${element(var.zones, count.index)}"
 
-  metadata_startup_script = "${element(data.template_file.nodejs_config.*.rendered, count.index)}"
+  metadata_startup_script = "${element(template_file.nodejs_config.*.rendered, count.index)}"
 
   disk {
     image = "${var.image}"
