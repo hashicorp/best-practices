@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAME="${node_name}-$(hostname)"
+NAME="${node_name}"
 SANITIZEDNAME=$${NAME//-/_} # Replace hyphens with underscores, Consul Template doesn't like hyphens
 SSLCERTDIR=/usr/local/etc
 SSLSITECERTPATH=$SSLCERTDIR/site.crt
@@ -167,38 +167,12 @@ logger "Update /etc/envconsul.d/nodejs.hcl with secret_path"
 sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /etc/envconsul.d/nodejs.hcl
 
 service nodejs restart
-
-logger "--- Transit Backend Setup ---"
-logger "Checking if Transit backend is mounted..."
-
-TRANSITMOUNTED=$(
-  curl \
-    -H "X-Vault-Token: ${vault_token}" \
-    -LX GET \
-    $VAULT/v1/sys/mounts \
-    | grep -c "transit"
-)
-
-echo "Transit backend mount status: $TRANSITMOUNTED"
-
-if [ $TRANSITMOUNTED -eq 0 ]; then
-  logger "Mounting Transit backend..."
-
-  logger $(
-    curl \
-      -H "X-Vault-Token: ${vault_token}" \
-      -H "Content-Type: application/json" \
-      -LX POST \
-      -d "{\"type\":\"transit\", \"description\":\"encryption as a service\"}" \
-      $VAULT/v1/sys/mounts/transit
-  )
-
-  logger "Transit backend mounted."
-else
-  logger "Transit backend already mounted."
-fi
-
 service consul_template restart
+
+logger "Create Consul KV envconsul watches to display Vault secret"
+
+curl -X PUT -d '1' $CONSUL/v1/kv/service/nodejs/show_vault
+curl -X PUT -d 'generic.html' $CONSUL/v1/kv/service/nodejs/vault_files
 
 logger "Node.js configuration complete"
 

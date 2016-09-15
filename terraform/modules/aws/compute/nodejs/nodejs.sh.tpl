@@ -165,38 +165,6 @@ logger "Update /etc/envconsul.d/nodejs.hcl with secret_path"
 
 sed -i -- "s/{{ secret_path }}/$GENERICSECRETPATH/g" /etc/envconsul.d/nodejs.hcl
 
-service nodejs restart
-
-logger "--- Transit Backend Setup ---"
-logger "Checking if Transit backend is mounted..."
-
-TRANSITMOUNTED=$(
-  curl \
-    -H "X-Vault-Token: ${vault_token}" \
-    -LX GET \
-    $VAULT/v1/sys/mounts \
-    | grep -c "transit"
-)
-
-echo "Transit backend mount status: $TRANSITMOUNTED"
-
-if [ $TRANSITMOUNTED -eq 0 ]; then
-  logger "Mounting Transit backend..."
-
-  logger $(
-    curl \
-      -H "X-Vault-Token: ${vault_token}" \
-      -H "Content-Type: application/json" \
-      -LX POST \
-      -d "{\"type\":\"transit\", \"description\":\"encryption as a service\"}" \
-      $VAULT/v1/sys/mounts/transit
-  )
-
-  logger "Transit backend mounted."
-else
-  logger "Transit backend already mounted."
-fi
-
 logger "--- AWS Backend Setup ---"
 logger "Checking if AWS backend is mounted..."
 
@@ -271,7 +239,13 @@ AWSCREDPATH=$${AWSCREDPATH//\//\\/}
 sed -i -- "s/{{ node_name }}/$NAME/g" /opt/consul_template/vault_aws.ctmpl
 sed -i -- "s/{{ cred_path }}/$AWSCREDPATH/g" /opt/consul_template/vault_aws.ctmpl
 
+service nodejs restart
 service consul_template restart
+
+logger "Create Consul KV envconsul watches to display Vault secret"
+
+curl -X PUT -d '1' $CONSUL/v1/kv/service/nodejs/show_vault
+curl -X PUT -d 'aws.html,generic.html' $CONSUL/v1/kv/service/nodejs/vault_files
 
 logger "Node.js configuration complete"
 
