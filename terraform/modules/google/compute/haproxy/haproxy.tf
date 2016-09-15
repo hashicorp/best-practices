@@ -16,7 +16,9 @@ variable "atlas_environment" {}
 
 variable "atlas_token" {}
 
-variable "private_subnet_names" {
+variable "network" { default = "default" }
+
+variable "public_subnet_names" {
   type = "list"
 }
 
@@ -25,6 +27,8 @@ variable "image" {}
 variable "nodes" {}
 
 variable "instance_type" {}
+
+variable "ssh_keys" {}
 
 resource "template_file" "haproxy_config" {
   template = "${file("${path.module}/haproxy.sh.tpl")}"
@@ -48,21 +52,42 @@ resource "google_compute_instance" "haproxy" {
 
   metadata_startup_script = "${element(template_file.haproxy_config.*.rendered, count.index)}"
 
+  metadata {
+    sshKeys = "${var.ssh_keys}"
+  }
+
   disk {
     image = "${var.image}"
   }
 
   network_interface {
-    subnetwork = "${element(var.private_subnet_names, count.index)}"
+    subnetwork = "${element(var.public_subnet_names, count.index)}"
 
     access_config {
       # ephemeral
     }
   }
 
-  tags = ["haproxy"]
+  tags = ["${var.name}", "haproxy"]
+}
+
+resource "google_compute_firewall" "allow-http" {
+  name    = "${var.name}-allow-http"
+  network = "${var.network}"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["${var.name}"]
 }
 
 output "private_ips" {
   value = ["${google_compute_instance.haproxy.*.network_interface.0.address}"]
+}
+
+output "public_ips" {
+  value = ["${google_compute_instance.haproxy.network_interface.0.access_config.0.assigned_nat_ip}"]
 }

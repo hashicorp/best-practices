@@ -20,10 +20,16 @@ variable "image" {}
 
 variable "instance_type" {}
 
+variable "ssh_keys" {}
+
 resource "google_compute_instance" "bastion" {
   name         = "${var.name}"
   machine_type = "${var.instance_type}"
   zone         = "${element(var.zones, 0)}"
+
+  metadata {
+    sshKeys = "${var.ssh_keys}"
+  }
 
   disk {
     image = "${var.image}"

@@ -16,6 +16,8 @@ variable "atlas_environment" {}
 
 variable "atlas_token" {}
 
+variable "ssh_keys" {}
+
 variable "cidr" {}
 
 variable "private_subnets" {
@@ -79,12 +81,14 @@ atlas {
 module "network" {
   source = "../../../modules/google/network"
 
-  name                  = "${var.name}"
-  region                = "${var.region}"
-  zones                 = "${var.zones}"
-  cidr                  = "${var.cidr}"
-  public_subnets        = "${var.public_subnets}"
-  private_subnets       = "${var.private_subnets}"
+  name            = "${var.name}"
+  region          = "${var.region}"
+  zones           = "${var.zones}"
+  cidr            = "${var.cidr}"
+  public_subnets  = "${var.public_subnets}"
+  private_subnets = "${var.private_subnets}"
+  ssh_keys        = "${var.ssh_keys}"
+
   bastion_image         = "${var.bastion_image}"
   bastion_instance_type = "${var.bastion_instance_type}"
 }
@@ -113,6 +117,7 @@ module "data" {
   atlas_token          = "${var.atlas_token}"
   private_subnet_names = "${module.network.private_subnet_names}"
   public_subnet_names  = "${module.network.public_subnet_names}"
+  ssh_keys             = "${var.ssh_keys}"
 
   consul_image         = "${data.atlas_artifact.google-ubuntu-consul.id}"
   consul_node_count    = "${var.consul_node_count}"
@@ -145,8 +150,10 @@ module "compute" {
   atlas_username       = "${var.atlas_username}"
   atlas_environment    = "${var.atlas_environment}"
   atlas_token          = "${var.atlas_token}"
+  network              = "${module.network.name}"
   private_subnet_names = "${module.network.private_subnet_names}"
   public_subnet_names  = "${module.network.public_subnet_names}"
+  ssh_keys             = "${var.ssh_keys}"
 
   haproxy_image         = "${data.atlas_artifact.google-ubuntu-haproxy.id}"
   haproxy_node_count    = "${var.haproxy_node_count}"
@@ -164,8 +171,11 @@ module "compute" {
 output "configuration" {
   value = <<CONFIGURATION
 
+Visit the Node.js website:
+  HAProxy: ${join("\n           ", formatlist("http://%s/", module.compute.haproxy_public_ips))}
+
 Add your private key and SSH into any private node via the Bastion host:
-  ssh ubuntu@${module.network.bastion_public_ip}
+  ssh -A ubuntu@${module.network.bastion_public_ip}
 
 Private node IPs:
   Node.js: ${join("\n           ", formatlist("ssh ubuntu@%s", module.compute.nodejs_private_ips))}

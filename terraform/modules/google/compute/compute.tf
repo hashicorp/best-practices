@@ -16,6 +16,8 @@ variable "atlas_environment" {}
 
 variable "atlas_token" {}
 
+variable "network" { default = "default" }
+
 variable "private_subnet_names" {
   type = "list"
 }
@@ -44,6 +46,8 @@ variable "vault_ssl_cert" {}
 
 variable "vault_token" {}
 
+variable "ssh_keys" {}
+
 module "haproxy" {
   source = "./haproxy"
 
@@ -52,10 +56,12 @@ module "haproxy" {
   atlas_username       = "${var.atlas_username}"
   atlas_environment    = "${var.atlas_environment}"
   atlas_token          = "${var.atlas_token}"
-  private_subnet_names = "${var.private_subnet_names}"
+  network              = "${var.network}"
+  public_subnet_names  = "${var.public_subnet_names}"
   image                = "${var.haproxy_image}"
   nodes                = "${var.haproxy_node_count}"
   instance_type        = "${var.haproxy_instance_type}"
+  ssh_keys             = "${var.ssh_keys}"
 }
 
 module "nodejs" {
@@ -75,10 +81,15 @@ module "nodejs" {
   site_ssl_key         = "${var.site_ssl_key}"
   vault_ssl_cert       = "${var.vault_ssl_cert}"
   vault_token          = "${var.vault_token}"
+  ssh_keys             = "${var.ssh_keys}"
 }
 
 output "haproxy_private_ips" {
   value = "${module.haproxy.private_ips}"
+}
+
+output "haproxy_public_ips" {
+  value = "${module.haproxy.public_ips}"
 }
 
 output "nodejs_private_ips" {

@@ -46,6 +46,8 @@ variable "vault_policy" {
   default = "nodejs"
 }
 
+variable "ssh_keys" {}
+
 resource "template_file" "nodejs_config" {
   template = "${file("${path.module}/nodejs.sh.tpl")}"
   count    = "${var.nodes}"
@@ -72,6 +74,10 @@ resource "google_compute_instance" "nodejs" {
   zone         = "${element(var.zones, count.index)}"
 
   metadata_startup_script = "${element(template_file.nodejs_config.*.rendered, count.index)}"
+
+  metadata {
+    sshKeys = "${var.ssh_keys}"
+  }
 
   disk {
     image = "${var.image}"

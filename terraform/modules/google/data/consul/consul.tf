@@ -30,6 +30,8 @@ variable "nodes" {}
 
 variable "instance_type" {}
 
+variable "ssh_keys" {}
+
 resource "template_file" "consul_config" {
   template = "${file("${path.module}/consul.sh.tpl")}"
   count    = "${var.nodes}"
@@ -54,6 +56,10 @@ resource "google_compute_instance" "consul" {
   zone         = "${element(var.zones, count.index)}"
 
   metadata_startup_script = "${element(template_file.consul_config.*.rendered, count.index)}"
+
+  metadata {
+    sshKeys = "${var.ssh_keys}"
+  }
 
   disk {
     image = "${var.image}"

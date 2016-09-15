@@ -44,6 +44,8 @@ variable "vault_node_count" {}
 
 variable "vault_instance_type" {}
 
+variable "ssh_keys" {}
+
 module "consul" {
   source = "./consul"
 
@@ -58,6 +60,7 @@ module "consul" {
   image                = "${var.consul_image}"
   nodes                = "${var.consul_node_count}"
   instance_type        = "${var.consul_instance_type}"
+  ssh_keys             = "${var.ssh_keys}"
 }
 
 module "vault" {
@@ -78,6 +81,7 @@ module "vault" {
   image                = "${var.vault_image}"
   nodes                = "${var.vault_node_count}"
   instance_type        = "${var.vault_instance_type}"
+  ssh_keys             = "${var.ssh_keys}"
 }
 
 # Consul

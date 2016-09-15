@@ -14,6 +14,8 @@ atlas_environment = "google-us-central1-prod"
 
 atlas_token = "REPLACE_IN_ATLAS"
 
+ssh_keys = "REPLACE_IN_ATLAS"
+
 cidr = "10.139.0.0/16"
 
 private_subnets = ["10.139.1.0/24", "10.139.2.0/24", "10.139.3.0/24"]

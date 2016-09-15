@@ -1,4 +1,4 @@
-# This module creates all resources necessary for Vault 
+# This module creates all resources necessary for Vault
 
 variable "name" {}
 
@@ -34,6 +34,8 @@ variable "ssl_cert" {}
 
 variable "ssl_key" {}
 
+variable "ssh_keys" {}
+
 resource "template_file" "vault_config" {
   template = "${file("${path.module}/vault.sh.tpl")}"
   count    = "${var.nodes}"
@@ -59,6 +61,10 @@ resource "google_compute_instance" "vault" {
   zone         = "${element(var.zones, count.index)}"
 
   metadata_startup_script = "${element(template_file.vault_config.*.rendered, count.index)}"
+
+  metadata {
+    sshKeys = "${var.ssh_keys}"
+  }
 
   disk {
     image = "${var.image}"

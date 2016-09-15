@@ -20,6 +20,8 @@ variable "bastion_image" {}
 
 variable "bastion_instance_type" {}
 
+variable "ssh_keys" {}
+
 resource "google_compute_network" "network" {
   name = "${var.name}"
 }
@@ -88,6 +90,7 @@ module "bastion" {
   public_subnet_names = "${module.public_subnet.subnet_names}"
   image               = "${var.bastion_image}"
   instance_type       = "${var.bastion_instance_type}"
+  ssh_keys            = "${var.ssh_keys}"
 }
 
 output "name" {
