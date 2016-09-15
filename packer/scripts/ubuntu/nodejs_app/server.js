@@ -31,4 +31,3 @@ function handleRequest(req, res) {
 http.createServer(handleRequest).listen(port);
 
 console.log("Static file server running at\n  => http://localhost:" + port);
-console.log("\nVault secret: " + vaultSecret);
