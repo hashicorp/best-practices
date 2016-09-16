@@ -72,8 +72,8 @@
       "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "inline": [
         "sh /ops/{{user `scripts_dir`}}/ubuntu/dependencies.sh",
-        "sh /ops/{{user `scripts_dir`}}/ubuntu/consul.sh {{user `config_dir`}} {{user `scripts_dir`}}",
-        "sh /ops/{{user `scripts_dir`}}/ubuntu/consul_template.sh {{user `config_dir`}} {{user `scripts_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/consul.sh {{user `config_dir`}} {{user `scripts_dir`}}/ubuntu",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/consul_template.sh {{user `config_dir`}} {{user `scripts_dir`}}/ubuntu",
         "sh /ops/{{user `scripts_dir`}}/ubuntu/envconsul.sh {{user `config_dir`}}",
         "sh /ops/{{user `scripts_dir`}}/ubuntu/dnsmasq.sh {{user `dns_listen_addr`}}",
         "sh /ops/{{user `scripts_dir`}}/ubuntu/cleanup.sh"

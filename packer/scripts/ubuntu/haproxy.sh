@@ -25,4 +25,4 @@ cp $CONFIGDIR/consul_template/haproxy.hcl /etc/consul_template.d/haproxy.hcl
 cp $CONFIGDIR/consul_template/templates/haproxy.ctmpl /opt/consul_template/haproxy.ctmpl
 
 # Upstart config
-cp $SCRIPTSDIR/ubuntu/upstart/haproxy.conf /etc/init/haproxy.conf
+cp $SCRIPTSDIR/upstart/haproxy.conf /etc/init/haproxy.conf

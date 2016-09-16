@@ -39,4 +39,4 @@ cp -R $CONFIGDIR/vault/policies/* $VAULTPOLICIES/.
 cp -R $CONFIGDIR/vault/scripts/* $VAULTSCRIPTS/.
 
 # Upstart config
-cp $SCRIPTSDIR/ubuntu/upstart/vault.conf /etc/init/vault.conf
+cp $SCRIPTSDIR/upstart/vault.conf /etc/init/vault.conf

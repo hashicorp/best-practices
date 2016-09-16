@@ -34,4 +34,4 @@ cp $CONFIGDIR/vault/policies/nodejs.json $VAULTPOLICIES/nodejs.json
 cp $CONFIGDIR/vault/policies/aws_nodejs.json $VAULTPOLICIES/aws_nodejs.json
 
 # Upstart config
-cp $SCRIPTSDIR/ubuntu/upstart/nodejs.conf /etc/init/nodejs.conf
+cp $SCRIPTSDIR/upstart/nodejs.conf /etc/init/nodejs.conf

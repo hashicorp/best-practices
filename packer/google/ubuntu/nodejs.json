@@ -85,7 +85,7 @@
       "type": "shell",
       "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "inline": [
-        "sh /ops/{{user `scripts_dir`}}/ubuntu/nodejs.sh {{user `config_dir`}} {{user `scripts_dir`}}",
+        "sh /ops/{{user `scripts_dir`}}/ubuntu/nodejs.sh {{user `config_dir`}} {{user `scripts_dir`}}/ubuntu",
         "sh /ops/{{user `scripts_dir`}}/ubuntu/cleanup.sh"
       ]
     }

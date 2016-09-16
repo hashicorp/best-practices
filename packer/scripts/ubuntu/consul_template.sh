@@ -28,4 +28,4 @@ chmod 755 $CTDIR
 cp $CONFIGDIR/consul_template/base.hcl $CTCONFIGDIR/base.hcl
 
 # Upstart config
-cp $SCRIPTSDIR/ubuntu/upstart/consul_template.conf /etc/init/consul_template.conf
+cp $SCRIPTSDIR/upstart/consul_template.conf /etc/init/consul_template.conf
