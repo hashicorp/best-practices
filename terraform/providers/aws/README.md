@@ -156,25 +156,6 @@ We built artifacts for the `us-east-1` region in this walkthrough. If you'd like
 
 If you decide to update any of the artifact names, be sure those name changes are reflected in your `terraform.tfvars` file(s).
 
-### Deploy a `us-east-1` Node.js Application
-
-- [ ] Fork the [`demo-app-nodejs` repo](https://github.com/hashicorp/demo-app-nodejs)
-- [ ] Use the [New Application](https://atlas.hashicorp.com/applications/new) tool to create your Node.js Application
-  - [ ] **Choose a name for the application**: `aws-us-east-1-nodejs`
-  - [ ] **Compile Application**: checked
-  - [ ] **Build Template**: `aws-us-east-1-ubuntu-nodejs`
-  - [ ] **Connect application to a GitHub repository**
-    - [ ] **GitHub repository**: `demo-app-nodejs`
-    - [ ] Leave both **Application directory** and **Application Template** blank
-
-Upload new versions of the application by merging a commit into master from your forked repo. This will upload your latest app code and trigger a Packer build to create a new compiled application artifact.
-
-If you don't have a change to make, you can force an application ingress into Atlas with an empty commit.
-
-    $ git commit --allow-empty -m "Force a change in Atlas"
-
-If you want to create artifacts in other regions, complete these same steps but select a Build Template from the region you'd like.
-
 ### Provision the `aws-global` Environment
 
 - [ ] Use the [Import Terraform Configuration from GitHub](https://atlas.hashicorp.com/configurations/import) tool to import the `aws-global` Environment from GitHub
