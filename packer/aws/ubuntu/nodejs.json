@@ -9,8 +9,7 @@
     "ssh_username":   "ubuntu",
     "scripts_dir":    "scripts/ubuntu",
     "config_dir":     "config",
-    "host_app_dir":   "/application",
-    "slug_app_dir":   "app/"
+    "host_app_dir":   "/application"
   },
   "push": {
     "name": "{{user `atlas_username`}}/{{user `name`}}",
@@ -18,6 +17,7 @@
     "include": [
       "{{user `scripts_dir`}}/*",
       "{{user `scripts_dir`}}/upstart/*",
+      "{{user `scripts_dir`}}/nodejs_app/*",
       "{{user `config_dir`}}/*",
       "{{user `config_dir`}}/consul/*",
       "{{user `config_dir`}}/consul_template/*",
@@ -79,7 +79,7 @@
     },
     {
       "type": "file",
-      "source": "{{user `slug_app_dir`}}",
+      "source": "{{user `scripts_dir`}}/nodejs_app/",
       "destination": "{{user `host_app_dir`}}"
     },
     {
