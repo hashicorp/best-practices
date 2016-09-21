@@ -29,11 +29,6 @@ Clone the repo:
 
 ```bash
 $ git clone https://github.com/hashicorp/best-practices.git
-```
-
-Checkout the Google Provider branch:
-
-```bash
 $ cd best-practices
 ```
 
