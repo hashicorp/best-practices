@@ -3,13 +3,14 @@
   "service": {
     "name": "web",
     "port": 8888,
-    "tags": ["nodejs", "{{ deploy }}"],
-    "check": {
-      "id": "nodejs",
-      "name": "Running on port 8888",
-      "http": "http://localhost:8888",
-      "interval": "10s",
-      "timeout": "1s"
-    }
+    "tags": ["nodejs", "{{ deploy }}"]
+  },
+  "check": {
+    "id": "nodejs",
+    "service_id": "web",
+    "name": "Running on port 8888",
+    "http": "http://localhost:8888",
+    "interval": "10s",
+    "timeout": "1s"
   }
 }
