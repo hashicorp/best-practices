@@ -3,7 +3,7 @@ set -e
 
 cd /tmp
 
-ECVERSION=0.6.0
+ECVERSION=0.6.1
 CONFIGDIR=/ops/$1
 ECDOWNLOAD=https://releases.hashicorp.com/envconsul/${ECVERSION}/envconsul_${ECVERSION}_linux_amd64.zip
 ECCONFIGDIR=/etc/envconsul.d

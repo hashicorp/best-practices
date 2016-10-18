@@ -8,7 +8,7 @@ VAULTPOLICIES=/opt/vault/policies
 echo Installing Node.js...
 
 # Setup a proper node PPA
-curl -sL https://deb.nodesource.com/setup | sudo bash -
+curl -sL https://deb.nodesource.com/setup_4.x — Node.js v4 LTS "Argon" | sudo bash -
 
 apt-get -y update
 apt-get install -y -qq nodejs
