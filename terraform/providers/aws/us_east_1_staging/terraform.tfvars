@@ -46,7 +46,7 @@ nat_instance_type = "t2.micro"
 
 # OpenVPN - https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/
 openvpn_instance_type = "t2.micro"
-openvpn_ami           = "ami-5fe36434"
+openvpn_ami           = "ami-db5269b1"
 openvpn_user          = "openvpnas"
 openvpn_admin_user    = "vpnadmin"
 openvpn_admin_pw      = "sdEKxN2dwDK4FziU6QEKjUeegcC8ZfBYA3fzMgqXfocgQvWGRw"
