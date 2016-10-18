@@ -1,4 +1,5 @@
 {
+  "recursors": ["localhost:8600"],
   "service": {
     "name": "web",
     "port": 8888,
