@@ -20,7 +20,7 @@ if [ ! $(cget root-token) ]; then
 
   # Store master keys in consul for operator to retrieve and remove
   COUNTER=1
-  cat /tmp/vault.init | grep '\(hex\)' | awk '{print $6}' | for key in $(cat -); do
+  cat /tmp/vault.init | grep '^Unseal' | awk '{print $4}' | for key in $(cat -); do
     curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/unseal-key-$COUNTER -d $key
     COUNTER=$((COUNTER + 1))
   done
