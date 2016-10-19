@@ -33,8 +33,12 @@ SSLCERTPATH=$${SSLCERTPATH//\//\\/}
 SSLKEYPATH=$${SSLKEYPATH//\//\\/}
 
 sed -i -- "s/{{ node_name }}/${node_name}/g" /etc/vault.d/vault.hcl
+sed -i -- "s/{{ atlas_username }}/${atlas_username}/g" /etc/vault.d/vault.hcl
+sed -i -- "s/{{ atlas_environment }}/${atlas_environment}/g" /etc/vault.d/vault.hcl
+sed -i -- "s/{{ atlas_token }}/${atlas_token}/g" /etc/vault.d/vault.hcl
 sed -i -- "s/{{ tls_cert_file }}/$SSLCERTPATH/g" /etc/vault.d/vault.hcl
 sed -i -- "s/{{ tls_key_file }}/$SSLKEYPATH/g" /etc/vault.d/vault.hcl
+sed -i -- "s/{{ datacenter }}/${atlas_environment}/g" /etc/vault.d/vault.hcl
 
 service vault restart
 
