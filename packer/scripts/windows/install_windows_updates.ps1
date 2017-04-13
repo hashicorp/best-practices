@@ -4,7 +4,7 @@ $ProgressPreference = "SilentlyContinue"
 
 Write-Output "Starting PSWindowsUpdate Installation"
 # Install PSWindowsUpdate for scriptable Windows Updates
-$webDeployURL = "https://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc/file/41459/43/PSWindowsUpdate.zip"
+$webDeployURL = "https://gallery.technet.microsoft.com/scriptcenter/2d191bcd-3308-4edd-9de2-88dff796b0bc/file/66095/1/PSWindowsUpdate_1.4.5.zip"
 $filePath = "$($env:TEMP)\PSWindowsUpdate.zip"
 
 (New-Object System.Net.WebClient).DownloadFile($webDeployURL, $filePath)
@@ -25,7 +25,15 @@ Write-Output "Ended PSWindowsUpdate Installation"
 
 Write-Output "Starting Windows Update Installation"
 
-Import-Module PSWindowsUpdate
+Try 
+{
+    Import-Module PSWindowsUpdate -ErrorAction Stop
+}
+Catch
+{
+    Write-Error "Unable to install PSWindowsUpdate"
+    exit 1
+}
 
 if (Test-Path C:\Windows\Temp\PSWindowsUpdate.log) {
     # Save old logs
