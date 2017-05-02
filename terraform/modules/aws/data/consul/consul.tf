@@ -67,7 +67,10 @@ resource "aws_instance" "consul" {
 
   vpc_security_group_ids = ["${aws_security_group.consul.id}"]
 
-  tags { Name = "${var.name}.${count.index+1}" }
+  tags { 
+    Name = "${var.name}.${count.index+1}" 
+    Atlas = "${var.atlas_environment}"
+  }
 }
 
 resource "null_resource" "openvpn_dns" {
