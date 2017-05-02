@@ -282,5 +282,7 @@ Visit the HAProxy stats page:
 Interact with Vault:
   Vault: ${module.data.vault_private_fqdn}
          ${module.data.vault_elb_dns}
+         
+Cameron's demo.
 CONFIGURATION
 }
