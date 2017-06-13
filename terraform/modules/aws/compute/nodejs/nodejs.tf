@@ -218,7 +218,6 @@ resource "aws_route53_record" "blue" {
   zone_id        = "${var.route_zone_id}"
   name           = "nodejs.${var.sub_domain}"
   type           = "A"
-  weight         = "${var.blue_weight}"
   set_identifier = "blue"
 
   alias {
@@ -226,19 +225,26 @@ resource "aws_route53_record" "blue" {
     zone_id                = "${aws_elb.blue.zone_id}"
     evaluate_target_health = true
   }
+
+  weighted_routing_policy {
+    weight       = "${var.blue_weight}"
+  }
 }
 
 resource "aws_route53_record" "green" {
   zone_id        = "${var.route_zone_id}"
   name           = "nodejs.${var.sub_domain}"
   type           = "A"
-  weight         = "${var.green_weight}"
   set_identifier = "green"
 
   alias {
     name                   = "${aws_elb.green.dns_name}"
     zone_id                = "${aws_elb.green.zone_id}"
     evaluate_target_health = true
+  }
+
+  weighted_routing_policy {
+    weight       = "${var.blue_weight}"
   }
 }
 
