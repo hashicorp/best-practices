@@ -57,7 +57,7 @@ resource "aws_security_group" "haproxy" {
 }
 
 data "template_file" "user_data" {
-  template = "${file("haproxy.sh.tpl")}"
+  template = "${file("${path.module}/haproxy.sh.tpl")}"
   count    = "${var.nodes}"
 
   lifecycle { create_before_destroy = true }

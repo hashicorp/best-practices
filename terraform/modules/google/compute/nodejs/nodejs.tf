@@ -48,7 +48,7 @@ variable "vault_policy" {
 
 variable "ssh_keys" {}
 
-resource "template_file" "nodejs_config" {
+data "template_file" "nodejs_config" {
   template = "${file("${path.module}/nodejs.sh.tpl")}"
   count    = "${var.nodes}"
 
@@ -73,7 +73,7 @@ resource "google_compute_instance" "nodejs" {
   machine_type = "${var.instance_type}"
   zone         = "${element(var.zones, count.index)}"
 
-  metadata_startup_script = "${element(template_file.nodejs_config.*.rendered, count.index)}"
+  metadata_startup_script = "${element(data.template_file.nodejs_config.*.rendered, count.index)}"
 
   metadata {
     sshKeys = "${var.ssh_keys}"

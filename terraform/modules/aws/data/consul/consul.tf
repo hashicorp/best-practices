@@ -42,9 +42,9 @@ resource "aws_security_group" "consul" {
   }
 }
 
-resource "template_file" "user_data" {
+data "template_file" "user_data" {
   count    = "${var.nodes}"
-  template = "${path.module}/consul.sh.tpl"
+  template = "${file("${path.module}/consul.sh.tpl")}"
 
   lifecycle { create_before_destroy = true }
 
@@ -63,7 +63,7 @@ resource "aws_instance" "consul" {
   instance_type = "${var.instance_type}"
   key_name      = "${var.key_name}"
   subnet_id     = "${element(split(",", var.private_subnet_ids), count.index)}"
-  user_data     = "${element(template_file.user_data.*.rendered, count.index)}"
+  user_data     = "${element(data.template_file.user_data.*.rendered, count.index)}"
 
   vpc_security_group_ids = ["${aws_security_group.consul.id}"]
 

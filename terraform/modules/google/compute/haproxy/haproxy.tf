@@ -30,7 +30,7 @@ variable "instance_type" {}
 
 variable "ssh_keys" {}
 
-resource "template_file" "haproxy_config" {
+data "template_file" "haproxy_config" {
   template = "${file("${path.module}/haproxy.sh.tpl")}"
   count    = "${var.nodes}"
 
@@ -50,7 +50,7 @@ resource "google_compute_instance" "haproxy" {
   machine_type = "${var.instance_type}"
   zone         = "${element(var.zones, count.index)}"
 
-  metadata_startup_script = "${element(template_file.haproxy_config.*.rendered, count.index)}"
+  metadata_startup_script = "${element(data.template_file.haproxy_config.*.rendered, count.index)}"
 
   metadata {
     sshKeys = "${var.ssh_keys}"

@@ -36,7 +36,7 @@ variable "ssl_key" {}
 
 variable "ssh_keys" {}
 
-resource "template_file" "vault_config" {
+data "template_file" "vault_config" {
   template = "${file("${path.module}/vault.sh.tpl")}"
   count    = "${var.nodes}"
 
@@ -60,7 +60,7 @@ resource "google_compute_instance" "vault" {
   machine_type = "${var.instance_type}"
   zone         = "${element(var.zones, count.index)}"
 
-  metadata_startup_script = "${element(template_file.vault_config.*.rendered, count.index)}"
+  metadata_startup_script = "${element(data.template_file.vault_config.*.rendered, count.index)}"
 
   metadata {
     sshKeys = "${var.ssh_keys}"
