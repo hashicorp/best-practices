@@ -176,7 +176,7 @@ resource "template_file" "blue_user_data" {
   }
 }
 
-dataa "template_file" "green_user_data" {
+data "template_file" "green_user_data" {
   template = "${file("nodejs.sh.tpl")}"
 
   lifecycle { create_before_destroy = true }
