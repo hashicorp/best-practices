@@ -21,8 +21,8 @@ resource "aws_security_group" "haproxy" {
   vpc_id      = "${var.vpc_id}"
   description = "HAProxy security group"
 
-  tags      { 
-    Name = "${var.name}" 
+  tags      {
+    Name = "${var.name}"
     Demo = "true"
   }
   lifecycle { create_before_destroy = true }
@@ -56,8 +56,8 @@ resource "aws_security_group" "haproxy" {
   }
 }
 
-resource "template_file" "user_data" {
-  template = "${path.module}/haproxy.sh.tpl"
+data "template_file" "user_data" {
+  template = "${file("haproxy.sh.tpl")}"
   count    = "${var.nodes}"
 
   lifecycle { create_before_destroy = true }
@@ -76,7 +76,7 @@ resource "aws_instance" "haproxy" {
   instance_type = "${var.instance_type}"
   key_name      = "${var.key_name}"
   subnet_id     = "${element(split(",", var.subnet_ids), count.index)}"
-  user_data     = "${element(template_file.user_data.*.rendered, count.index)}"
+  user_data     = "${element(data.template_file.user_data.*.rendered, count.index)}"
 
   vpc_security_group_ids = ["${aws_security_group.haproxy.id}"]
 
