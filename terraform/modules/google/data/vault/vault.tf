@@ -49,9 +49,6 @@ data "template_file" "vault_config" {
     ssl_key           = "${var.ssl_key}"
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "google_compute_instance" "vault" {

@@ -158,8 +158,6 @@ resource "terraform_remote_state" "aws_global" {
 data "template_file" "blue_user_data" {
   template = "${file("${path.module}/nodejs.sh.tpl")}"
 
-  lifecycle { create_before_destroy = true }
-
   vars {
     atlas_username    = "${var.atlas_username}"
     atlas_environment = "${var.atlas_environment}"
@@ -178,8 +176,6 @@ data "template_file" "blue_user_data" {
 
 data "template_file" "green_user_data" {
   template = "${file("${path.module}/nodejs.sh.tpl")}"
-
-  lifecycle { create_before_destroy = true }
 
   vars {
     atlas_username    = "${var.atlas_username}"

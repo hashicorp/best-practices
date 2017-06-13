@@ -52,8 +52,6 @@ data "template_file" "nodejs_config" {
   template = "${file("${path.module}/nodejs.sh.tpl")}"
   count    = "${var.nodes}"
 
-  lifecycle { create_before_destroy = true }
-
   vars {
     atlas_username    = "${var.atlas_username}"
     atlas_environment = "${var.atlas_environment}"

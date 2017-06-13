@@ -34,8 +34,6 @@ data "template_file" "haproxy_config" {
   template = "${file("${path.module}/haproxy.sh.tpl")}"
   count    = "${var.nodes}"
 
-  lifecycle { create_before_destroy = true }
-
   vars {
     atlas_username    = "${var.atlas_username}"
     atlas_environment = "${var.atlas_environment}"

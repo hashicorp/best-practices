@@ -47,8 +47,6 @@ data "template_file" "user_data" {
   count    = "${var.nodes}"
   template = "${file("${path.module}/vault.sh.tpl")}"
 
-  lifecycle { create_before_destroy = true }
-
   vars {
     atlas_username    = "${var.atlas_username}"
     atlas_environment = "${var.atlas_environment}"
