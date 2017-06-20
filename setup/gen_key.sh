@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 usage() {
@@ -7,44 +8,52 @@ Generate a SSL keys
 
 Usage:
 
-  $0 <ENVIRONMENT> **<EXISTING_KEY>**
+  $0 <ENVIRONMENT> [EXISTING KEY]
 
-Where ENVIRONMENT is the Atlas Environment specified in terraform.tfvars. There is an optional second argument you can include that uses an existing private key.
+Where ENVIRONMENT is the Atlas Environment specified in terraform.tfvars. There
+is an optional second argument you can include that uses an existing private
+key.
 
-This will generate a .pem private key and a .pub public key in the directory specified.
+This will generate a .pem private key and a .pub public key in the directory
+specified.
 EOF
-
-  exit 1
 }
 
-ENVIRONMENT=$1
+main() {
+  local environment="$1"
+  local existingkey="$2"
+  local key="$environment"
 
-if [ "x$ENVIRONMENT" == "x" ]; then
-  echo
-  echo "ERROR: Specify environment as the second argument, e.g. aws-us-east-1-prod"
-  echo
-  usage
-fi
-
-EXISTINGKEY=$2
-KEY=$ENVIRONMENT
-
-if [ -s "$KEY.pem" ] && [ -s "$KEY.pub" ] && [ -z "$EXISTINGKEY" ]; then
-  echo Using existing key pair
-else
-  rm -rf $KEY*
-
-  if [ -z "$EXISTINGKEY" ]; then
-    echo No key pair exists and no private key arg was passed, generating new keys...
-    openssl genrsa -out $KEY.pem 1024
-    chmod 400 $KEY.pem
-    ssh-keygen -y -f $KEY.pem > $KEY.pub
-  else
-    echo Using private key $EXISTINGKEY for key pair...
-    cp $EXISTINGKEY $KEY.pem
-    chmod 400 $KEY.pem
-    ssh-keygen -y -f $KEY.pem > $KEY.pub
+  if [[ -z "$environment" || $# -eq 0 ]]; then
+    printf "ERROR: Specify environment as the second argument, e.g. aws-us-east-1-prod\n\n" >&2
+    usage
+    exit 1
   fi
 
-  ssh-add $KEY.pem
-fi
+  if [[ -s "$key.pem" && -s "$key.pub" && -z "$existingkey" ]]; then
+    echo "Using existing key pair"
+    return 0
+  fi
+
+  umask 277
+
+  if [[ -z "$existingkey" ]]; then
+    echo "No key pair exists and no private key arg was passed, generating new keys..."
+    rm -f "${key}.pem"
+    openssl genrsa -out "$key.pem" 1024
+
+  elif [[ -s "$existingkey" ]]; then
+    echo "Using private key $existingkey for key pair..."
+    cp "$existingkey" "$key.pem"
+
+  else
+    echo "ERROR: Missing or empty existing private key $existingkey!"
+    exit 1
+  fi
+
+  rm -f "${key}.pub"
+  ssh-keygen -y -f "$key.pem" > "$key.pub"
+}
+
+main "$@"
+
