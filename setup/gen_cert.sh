@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 usage() {
@@ -38,94 +39,89 @@ EOF
   exit 1
 }
 
-if ! which openssl > /dev/null; then
-  echo
-  echo "ERROR: The openssl executable was not found. This script requires openssl."
-  echo
-  usage
-fi
+create_cert() {
+  local base="$1"
+  local domain="$2"
+  local company="$3"
+  local sslconf="$4"
 
-DOMAIN=$1
+  echo "Creating $base cert"
 
-if [ "x$DOMAIN" == "x" ]; then
-  echo
-  echo "ERROR: Specify base domain as the first argument, e.g. mycompany.com"
-  echo
-  usage
-fi
+  local os="$(uname -s)"
+  local csr="${base}.csr"
+  local key="${base}.key"
+  local crt="${base}.crt"
 
-COMPANY=$2
+  # MinGW/MSYS issue: http://stackoverflow.com/questions/31506158/running-openssl-from-a-bash-script-on-windows-subject-does-not-start-with
+  local subj="/C=US/ST=California/L=San Francisco/O=${company}/OU=${base}/CN=${domain}"
+  if [[ "${os}" == "MINGW32"* || "${os}" == "MINGW64"* || "${os}" == "MSYS"* ]]; then
+    subj="//C=US\ST=California\L=San Francisco\O=${company}\OU=${base}\CN=${domain}"
+  fi
 
-if [ "x$COMPANY" == "x" ]; then
-  echo
-  echo "ERROR: Specify company as the third argument, e.g. HashiCorp"
-  echo
-  usage
-fi
+  openssl genrsa -out "$key" 2048
+  openssl req -new -out "$csr" -key "$key" -subj "${subj}" -config "$sslconf"
+  openssl x509 -req -days 3650 -in "$csr" -signkey "$key" -out "$crt" -extensions v3_req -extfile "$sslconf"
+}
 
-# Create a temporary build dir and make sure we clean it up. For
-# debugging, comment out the trap line.
-BUILDDIR=`mktemp -d /tmp/ssl-XXXXXX`
-trap "rm -rf $BUILDDIR" INT TERM EXIT
+main() {
+  local domain="$1"
+  local company="$2"
 
-echo "Creating site cert"
+  if ! which openssl > /dev/null; then
+    echo
+    echo "ERROR: The openssl executable was not found. This script requires openssl."
+    echo
+    usage
+  fi
 
-OS=$(uname -s)
-BASE="site"
-CSR="${BASE}.csr"
-KEY="${BASE}.key"
-CRT="${BASE}.crt"
-SITESSLCONF=${BUILDDIR}/site_selfsigned_openssl.cnf
+  if [[ -z "$domain" ]]; then
+    echo
+    echo "ERROR: Specify base domain as the first argument, e.g. mycompany.com"
+    echo
+    usage
+  fi
 
-cp openssl.cnf ${SITESSLCONF}
-(cat <<EOF
-[ alt_names ]
-DNS.1 = ${DOMAIN}
-DNS.2 = vault.${DOMAIN}
-DNS.3 = vpn.${DOMAIN}
-DNS.4 = nodejs.${DOMAIN}
-DNS.5 = haproxy.${DOMAIN}
-DNS.6 = private.haproxy.${DOMAIN}
+  if [[ -z "$company" ]]; then
+    echo
+    echo "ERROR: Specify company as the third argument, e.g. HashiCorp"
+    echo
+    usage
+  fi
+
+  umask 277
+
+  # Create a temporary build dir and make sure we clean it up. For
+  # debugging, comment out the trap line.
+  local builddir="$(mktemp -d /tmp/ssl-XXXXXX)"
+  trap "rm -rf '$builddir'" INT TERM EXIT
+
+  local sslconf="${builddir}/site_selfsigned_openssl.cnf"
+  cp openssl.cnf "${sslconf}"
+  (cat <<EOF
+  [ alt_names ]
+  DNS.1 = ${domain}
+  DNS.2 = vault.${domain}
+  DNS.3 = vpn.${domain}
+  DNS.4 = nodejs.${domain}
+  DNS.5 = haproxy.${domain}
+  DNS.6 = private.haproxy.${domain}
 EOF
-) >> $SITESSLCONF
+  ) >> "$sslconf"
+  create_cert "site" "$domain" "$company" "$sslconf"
 
-# MinGW/MSYS issue: http://stackoverflow.com/questions/31506158/running-openssl-from-a-bash-script-on-windows-subject-does-not-start-with
-if [[ "${OS}" == "MINGW32"* || "${OS}" == "MINGW64"* || "${OS}" == "MSYS"* ]]; then
-  SUBJ="//C=US\ST=California\L=San Francisco\O=${COMPANY}\OU=${BASE}\CN=${DOMAIN}"
-else
-  SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=${DOMAIN}"
-fi
-
-openssl genrsa -out $KEY 2048
-openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $SITESSLCONF
-openssl x509 -req -days 3650 -in $CSR -signkey $KEY -out $CRT -extensions v3_req -extfile $SITESSLCONF
-
-echo "Creating Vault cert"
-
-DOMAIN=consul
-BASE="vault"
-CSR="${BASE}.csr"
-KEY="${BASE}.key"
-CRT="${BASE}.crt"
-VAULTSSLCONF=${BUILDDIR}/vault_selfsigned_openssl.cnf
-
- cp openssl.cnf ${VAULTSSLCONF}
- (cat <<EOF
-[ alt_names ]
-DNS.1 = *.node.${DOMAIN}
-DNS.2 = *.service.${DOMAIN}
-IP.1 = 0.0.0.0
-IP.2 = 127.0.0.1
+  domain="consul"
+  sslconf=${builddir}/vault_selfsigned_openssl.cnf
+  cp openssl.cnf "${sslconf}"
+  (cat <<EOF
+  [ alt_names ]
+  DNS.1 = *.node.${domain}
+  DNS.2 = *.service.${domain}
+  IP.1 = 0.0.0.0
+  IP.2 = 127.0.0.1
 EOF
-) >> $VAULTSSLCONF
+  ) >> "$sslconf"
+  create_cert "vault" "$domain" "$company" "$sslconf"
+}
 
-# MinGW/MSYS issue: http://stackoverflow.com/questions/31506158/running-openssl-from-a-bash-script-on-windows-subject-does-not-start-with
-if [[ "${OS}" == "MINGW32"* || "${OS}" == "MINGW64"* || "${OS}" == "MSYS"* ]]; then
-  SUBJ="//C=US\ST=California\L=San Francisco\O=${COMPANY}\OU=${BASE}\CN=*.${DOMAIN}"
-else
-  SUBJ="/C=US/ST=California/L=San Francisco/O=${COMPANY}/OU=${BASE}/CN=*.${DOMAIN}"
-fi
+main "$@"
 
-openssl genrsa -out $KEY 2048
-openssl req -new -out $CSR -key $KEY -subj "${SUBJ}" -config $VAULTSSLCONF
-openssl x509 -req -days 3650 -in $CSR -signkey $KEY -out $CRT -extensions v3_req -extfile $VAULTSSLCONF
