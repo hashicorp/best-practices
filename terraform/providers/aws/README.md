@@ -37,6 +37,8 @@ Take all instructions from [Setup](https://github.com/hashicorp/best-practices/b
     - [Settings](https://atlas.hashicorp.com/settings) -> Your Organization -> "Teams" -> "Manage" or "Create" -> "Add user"
 - [ ] [Generate an Atlas API token](https://github.com/hashicorp/atlas-examples/blob/master/setup/general.md#generate-atlas-token)
 
+**Note**: Although we use Atlas as our remote state backend in this example, it is _not_ required, any [backend type](https://www.terraform.io/docs/backends/types/index.html) will work.
+
 **Note**: Terraform creates real resources in AWS that **cost money**. Don't forget to [destroy](https://github.com/hashicorp/best-practices/blob/master/terraform/providers/aws/README.md#terraform-destroy) your PoC environment when finished to avoid unnecessary expenses.
 
 ##### Set Local Environment Variables
