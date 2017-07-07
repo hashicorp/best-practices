@@ -88,7 +88,7 @@ main() {
     usage
   fi
 
-  umask 277
+  umask 077
 
   # Create a temporary build dir and make sure we clean it up. For
   # debugging, comment out the trap line.
