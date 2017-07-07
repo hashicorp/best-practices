@@ -155,10 +155,8 @@ resource "terraform_remote_state" "aws_global" {
   lifecycle { create_before_destroy = true }
 }
 
-resource "template_file" "blue_user_data" {
-  template = "${path.module}/nodejs.sh.tpl"
-
-  lifecycle { create_before_destroy = true }
+data "template_file" "blue_user_data" {
+  template = "${file("${path.module}/nodejs.sh.tpl")}"
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -176,10 +174,8 @@ resource "template_file" "blue_user_data" {
   }
 }
 
-resource "template_file" "green_user_data" {
-  template = "${path.module}/nodejs.sh.tpl"
-
-  lifecycle { create_before_destroy = true }
+data "template_file" "green_user_data" {
+  template = "${file("${path.module}/nodejs.sh.tpl")}"
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -210,12 +206,12 @@ module "deploy" {
   blue_ami            = "${var.blue_ami}"
   blue_nodes          = "${var.blue_nodes}"
   blue_instance_type  = "${var.blue_instance_type}"
-  blue_user_data      = "${template_file.blue_user_data.rendered}"
+  blue_user_data      = "${data.template_file.blue_user_data.rendered}"
   green_elb_id        = "${aws_elb.green.id}"
   green_ami           = "${var.green_ami}"
   green_nodes         = "${var.green_nodes}"
   green_instance_type = "${var.green_instance_type}"
-  green_user_data     = "${template_file.green_user_data.rendered}"
+  green_user_data     = "${data.template_file.green_user_data.rendered}"
 }
 
 resource "aws_route53_record" "blue" {
