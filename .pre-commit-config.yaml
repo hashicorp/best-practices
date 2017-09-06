@@ -9,6 +9,6 @@
   - id: forbid-tabs
 
 - repo: git://github.com/kintoandar/pre-commit.git
-  sha: v0.0.2
+  sha: v2.0.0
   hooks:
   - id: terraform_fmt
