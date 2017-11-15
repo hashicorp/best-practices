@@ -145,20 +145,17 @@ resource "aws_elb" "green" {
   }
 }
 
-resource "terraform_remote_state" "aws_global" {
+data "terraform_remote_state" "aws_global" {
   backend = "atlas"
 
   config {
     name = "${var.atlas_username}/${var.atlas_aws_global}"
   }
 
-  lifecycle { create_before_destroy = true }
 }
 
-resource "template_file" "blue_user_data" {
-  template = "${path.module}/nodejs.sh.tpl"
-
-  lifecycle { create_before_destroy = true }
+data "template_file" "blue_user_data" {
+  template = "${file("${path.module}/nodejs.sh.tpl")}"
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -171,15 +168,13 @@ resource "template_file" "blue_user_data" {
     vault_token       = "${var.vault_token}"
     vault_policy      = "${var.vault_policy}"
     aws_region        = "${var.region}"
-    aws_access_id     = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_access_ids), index(split(",", terraform_remote_state.aws_global.output.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
-    aws_secret_key    = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_secret_keys), index(split(",", terraform_remote_state.aws_global.output.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
+    aws_access_id     = "${element(split(",", data.terraform_remote_state.aws_global.iam_vault_access_ids), index(split(",", data.terraform_remote_state.aws_global.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
+    aws_secret_key    = "${element(split(",", data.terraform_remote_state.aws_global.iam_vault_secret_keys), index(split(",", data.terraform_remote_state.aws_global.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
   }
 }
 
-resource "template_file" "green_user_data" {
-  template = "${path.module}/nodejs.sh.tpl"
-
-  lifecycle { create_before_destroy = true }
+data "template_file" "green_user_data" {
+  template = "${file("${path.module}/nodejs.sh.tpl")}"
 
   vars {
     atlas_username    = "${var.atlas_username}"
@@ -192,8 +187,8 @@ resource "template_file" "green_user_data" {
     vault_token       = "${var.vault_token}"
     vault_policy      = "${var.vault_policy}"
     aws_region        = "${var.region}"
-    aws_access_id     = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_access_ids), index(split(",", terraform_remote_state.aws_global.output.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
-    aws_secret_key    = "${element(split(",", terraform_remote_state.aws_global.output.iam_vault_secret_keys), index(split(",", terraform_remote_state.aws_global.output.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
+    aws_access_id     = "${element(split(",", data.terraform_remote_state.aws_global.iam_vault_access_ids), index(split(",", data.terraform_remote_state.aws_global.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
+    aws_secret_key    = "${element(split(",", data.terraform_remote_state.aws_global.iam_vault_secret_keys), index(split(",", data.terraform_remote_state.aws_global.iam_vault_users), format("vault-%s", var.atlas_environment)))}"
   }
 }
 
@@ -210,20 +205,23 @@ module "deploy" {
   blue_ami            = "${var.blue_ami}"
   blue_nodes          = "${var.blue_nodes}"
   blue_instance_type  = "${var.blue_instance_type}"
-  blue_user_data      = "${template_file.blue_user_data.rendered}"
+  blue_user_data      = "${data.template_file.blue_user_data.rendered}"
   green_elb_id        = "${aws_elb.green.id}"
   green_ami           = "${var.green_ami}"
   green_nodes         = "${var.green_nodes}"
   green_instance_type = "${var.green_instance_type}"
-  green_user_data     = "${template_file.green_user_data.rendered}"
+  green_user_data     = "${data.template_file.green_user_data.rendered}"
 }
 
 resource "aws_route53_record" "blue" {
   zone_id        = "${var.route_zone_id}"
   name           = "nodejs.${var.sub_domain}"
   type           = "A"
-  weight         = "${var.blue_weight}"
   set_identifier = "blue"
+
+  weighted_routing_policy {
+    weight = "${var.blue_weight}"
+  }
 
   alias {
     name                   = "${aws_elb.blue.dns_name}"
@@ -236,8 +234,11 @@ resource "aws_route53_record" "green" {
   zone_id        = "${var.route_zone_id}"
   name           = "nodejs.${var.sub_domain}"
   type           = "A"
-  weight         = "${var.green_weight}"
   set_identifier = "green"
+
+  weighted_routing_policy {
+    weight = "${var.green_weight}"
+  }
 
   alias {
     name                   = "${aws_elb.green.dns_name}"
