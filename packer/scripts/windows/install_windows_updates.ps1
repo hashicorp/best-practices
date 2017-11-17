@@ -9,6 +9,9 @@ $filePath = "$($env:TEMP)\PSWindowsUpdate.zip"
 
 (New-Object System.Net.WebClient).DownloadFile($webDeployURL, $filePath)
 
+# Older versions of Powershell do not have 'Expand Archive'
+# Use Shell.Application custom object to unzip
+# https://stackoverflow.com/questions/27768303/how-to-unzip-a-file-in-powershell
 $shell = New-Object -ComObject Shell.Application
 $zipFile = $shell.NameSpace($filePath)
 $destinationFolder = $shell.NameSpace("C:\Program Files\WindowsPowerShell\Modules")
