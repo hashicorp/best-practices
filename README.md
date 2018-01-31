@@ -1,6 +1,6 @@
 # Deprecated
 
-This repository is deprecated. We are working on something exciting for the future.
+This repository is deprecated. Please checkout the official [Terraform Module Registry](https://registry.terraform.io) instead.
 
 ## Best Practices Ops
 
