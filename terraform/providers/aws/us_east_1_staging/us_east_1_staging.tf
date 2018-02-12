@@ -67,14 +67,12 @@ resource "aws_key_pair" "site_key" {
   lifecycle { create_before_destroy = true }
 }
 
-resource "terraform_remote_state" "aws_global" {
+data "terraform_remote_state" "aws_global" {
   backend = "atlas"
 
   config {
     name = "${var.atlas_username}/${var.atlas_aws_global}"
   }
-
-  lifecycle { create_before_destroy = true }
 }
 
 module "network" {
@@ -91,7 +89,7 @@ module "network" {
   key_name        = "${aws_key_pair.site_key.key_name}"
   private_key     = "${var.site_private_key}"
   sub_domain      = "${var.sub_domain}"
-  route_zone_id   = "${terraform_remote_state.aws_global.output.zone_id}"
+  route_zone_id   = "${data.terraform_remote_state.aws_global.zone_id}"
 
   bastion_instance_type = "${var.bastion_instance_type}"
   openvpn_instance_type = "${var.openvpn_instance_type}"
@@ -138,7 +136,7 @@ module "data" {
   atlas_environment  = "${var.atlas_environment}"
   atlas_token        = "${var.atlas_token}"
   sub_domain         = "${var.sub_domain}"
-  route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
+  route_zone_id      = "${data.terraform_remote_state.aws_global.zone_id}"
 
   consul_amis          = "${module.artifact_consul.amis}"
   consul_node_count    = "${var.consul_node_count}"
@@ -193,7 +191,7 @@ module "compute" {
   atlas_aws_global   = "${var.atlas_aws_global}"
   atlas_token        = "${var.atlas_token}"
   sub_domain         = "${var.sub_domain}"
-  route_zone_id      = "${terraform_remote_state.aws_global.output.zone_id}"
+  route_zone_id      = "${data.terraform_remote_state.aws_global.zone_id}"
   vault_token        = "${var.vault_token}"
 
   haproxy_amis          = "${module.artifact_haproxy.amis}"
@@ -213,20 +211,20 @@ module "compute" {
 module "website" {
   source = "../../../modules/aws/util/website"
 
-  fqdn          = "${var.sub_domain}.${terraform_remote_state.aws_global.output.prod_fqdn}"
+  fqdn          = "${var.sub_domain}.${data.terraform_remote_state.aws_global.prod_fqdn}"
   sub_domain    = "${var.sub_domain}"
-  route_zone_id = "${terraform_remote_state.aws_global.output.zone_id}"
+  route_zone_id = "${data.terraform_remote_state.aws_global.zone_id}"
 }
 
 output "configuration" {
   value = <<CONFIGURATION
 
 Visit the static website hosted on S3:
-  Prod: ${terraform_remote_state.aws_global.output.prod_fqdn}
-        ${terraform_remote_state.aws_global.output.prod_endpoint}
+  Prod: ${data.terraform_remote_state.aws_global.prod_fqdn}
+        ${data.terraform_remote_state.aws_global.prod_endpoint}
 
-  Staging: ${terraform_remote_state.aws_global.output.staging_fqdn}
-           ${terraform_remote_state.aws_global.output.staging_endpoint}
+  Staging: ${data.terraform_remote_state.aws_global.staging_fqdn}
+           ${data.terraform_remote_state.aws_global.staging_endpoint}
 
   Region: ${module.website.fqdn}
           ${module.website.endpoint}
