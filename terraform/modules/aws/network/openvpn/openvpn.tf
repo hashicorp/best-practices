@@ -85,6 +85,8 @@ USERDATA
     }
 
     inline = [
+      # Let openVPN some time to setup
+      "sleep 60",
       # Insert our SSL cert
       "echo '${var.ssl_cert}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.crt > /dev/null",
       "echo '${var.ssl_key}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.key > /dev/null",
