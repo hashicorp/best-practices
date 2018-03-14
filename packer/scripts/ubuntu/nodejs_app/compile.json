@@ -32,7 +32,7 @@
       "inline": [
         "herokuish buildpack install https://github.com/heroku/heroku-buildpack-nodejs",
         "herokuish buildpack build",
-	"cd /app",
+        "cd /app",
         "tar czvf /tmp/slug.tar.gz .",
         "sleep 10"
       ]
